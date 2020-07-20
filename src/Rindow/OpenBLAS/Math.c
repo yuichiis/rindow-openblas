@@ -60,26 +60,6 @@ static double d_sum(zend_long n,double *x,zend_long incX)
     return a;
 }
 
-static float s_max(zend_long n,float *x,zend_long incX)
-{
-    zend_long i;
-    float a=x[0];
-    for(i=1; i<n; i++) {
-        if(a < x[i*incX])
-            a = x[i*incX];
-    }
-    return a;
-}
-
-static double d_max(zend_long n,double *x,zend_long incX)
-{
-    zend_long i;
-    double a=x[0];
-    for(i=0; i<n; i++) {
-        a += x[i*incX];
-    }
-    return a;
-}
 
 static zend_object_handlers rindow_openblas_math_object_handlers;
 
