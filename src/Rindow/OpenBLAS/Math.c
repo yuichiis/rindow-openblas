@@ -2730,7 +2730,7 @@ static PHP_METHOD(Math, astype)
 }
 /* }}} */
 
-static inline void im2d_copyCell(
+static inline int im2d_copyCell(
     zend_bool reverse,
     php_rindow_openblas_buffer_t *images,
     zend_long images_pos,
@@ -2774,6 +2774,10 @@ static inline void im2d_copyCell(
                 if(yy<0 || yy>=vim_h ||
                        xx<0 || xx>=vim_w) {
                     if(!reverse) {
+    if(out->size<=out_channel_pos){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos over in clip", 0);
+        return -1;
+    }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             ((float*)(out->data))[out_channel_pos]
                                 = 0;
@@ -2784,6 +2788,14 @@ static inline void im2d_copyCell(
                     }
                 } else {
                     if(!reverse) {
+    if(images->size<=channel_pos){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos over in forward", 0);
+        return -1;
+    }
+    if(out->size<=out_channel_pos){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos over in forward", 0);
+        return -1;
+    }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             ((float*)(out->data))[out_channel_pos]
                                 = ((float*)(images->data))[channel_pos];
@@ -2792,6 +2804,14 @@ static inline void im2d_copyCell(
                                 = ((double*)(images->data))[channel_pos];
                         }
                     } else {
+    if(images->size<=channel_pos){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos over in reverse", 0);
+        return -1;
+    }
+    if(out->size<=out_channel_pos){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos over in reverse", 0);
+        return -1;
+    }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             ((float*)(images->data))[out_channel_pos]
                                 = ((float*)(out->data))[channel_pos];
@@ -2809,10 +2829,11 @@ static inline void im2d_copyCell(
         }
         filter_h_pos += filter_h_step;
     }
+    return 0;
 }
 
 
-static inline void im2d_stride(
+static inline int im2d_stride(
     zend_long batches,
     zend_long batch_pos,
     zend_long batch_step,
@@ -2858,7 +2879,8 @@ static inline void im2d_stride(
             stride_w_pos = stride_h_pos+(start_w*stride_w_step);
             vim_x = start_vim_x;
             for(x=start_w;x<end_w;x++) {
-                im2d_copyCell(
+                int rc;
+                rc = im2d_copyCell(
                     reverse,
                     images,
                     stride_w_pos,
@@ -2877,6 +2899,9 @@ static inline void im2d_stride(
                     out_filter_step,
                     out_channel_step
                 );
+                if(rc) {
+                    return rc;
+                }
                 stride_w_pos += stride_w_step;
                 vim_x += stride_w;
                 out_pos += out_cell_step;
@@ -2886,8 +2911,7 @@ static inline void im2d_stride(
         }    
         batch_pos += batch_step;
     }
-            zend_throw_exception(spl_ce_InvalidArgumentException, "Break!!!", 0);
-            return;
+    return 0;
 }
 
 /*
