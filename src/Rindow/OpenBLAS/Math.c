@@ -2941,6 +2941,21 @@ static PHP_METHOD(Math, im2col2d)
     zend_long start_w;
     zend_long end_h;
     zend_long end_w;
+    zend_long stride_h_step;
+    zend_long stride_w_step;
+    zend_long batch_step;
+    zend_long channel_step;
+    zend_long filter_h_step;
+    zend_long filter_w_step;
+    zend_long out_filter_step;
+    zend_long out_channel_step;
+    zend_long out_cell_step;
+    zend_long out_pos;
+    zend_long batch_pos;
+    zend_long start_vim_y;
+    zend_long start_vim_x;
+    zend_long vim_h;
+    zend_long vin_w;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 18, 18)
         Z_PARAM_BOOL(reverse)
