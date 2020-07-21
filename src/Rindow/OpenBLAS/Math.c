@@ -2885,10 +2885,9 @@ static inline void im2d_stride(
             vim_y += stride_h;
         }    
         batch_pos += batch_step;
+    }
             zend_throw_exception(spl_ce_InvalidArgumentException, "Break!!!", 0);
             return;
-
-    }
 }
 
 /*
