@@ -2996,7 +2996,7 @@ static PHP_METHOD(Math, im2col2d)
         "Invalid cols buffer offset or size")) {
         return;
     }
-    if(images->dtype!=php_rindow_openblas_dtype_float32||
+    if(images->dtype!=php_rindow_openblas_dtype_float32&&
         images->dtype!=php_rindow_openblas_dtype_float64) {
         zend_throw_exception(spl_ce_InvalidArgumentException, 
             "Unsupported data type", 0);
