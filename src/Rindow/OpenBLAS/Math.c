@@ -2885,6 +2885,9 @@ static inline void im2d_stride(
             vim_y += stride_h;
         }    
         batch_pos += batch_step;
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Break!!!", 0);
+            return;
+
     }
 }
 
@@ -3076,9 +3079,6 @@ static PHP_METHOD(Math, im2col2d)
     vim_h = (out_h-1)*stride_h+filter_h;
     vim_w = (out_w-1)*stride_w+filter_w;
     
-            zend_throw_exception(spl_ce_InvalidArgumentException, "Break!!!", 0);
-            return;
-
     im2d_stride(
         batches,
         batch_pos,
