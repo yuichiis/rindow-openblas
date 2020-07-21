@@ -2825,6 +2825,7 @@ static inline void im2d_stride(
     zend_long start_vim_y,
     zend_long start_vim_x,
     zend_long stride_h,
+    zend_long stride_w,
     zend_long reverse,
     php_rindow_openblas_buffer_t* images,
     zend_long filter_h,
@@ -2837,6 +2838,7 @@ static inline void im2d_stride(
     zend_long vim_w,
     php_rindow_openblas_buffer_t* cols,
     zend_long out_pos,
+    zend_long out_cell_step,
     zend_long out_filter_step,
     zend_long out_channel_step
     )
@@ -3087,6 +3089,7 @@ static PHP_METHOD(Math, im2col2d)
         start_vim_y,
         start_vim_x,
         stride_h,
+        stride_w,
         
         reverse,
         images,
@@ -3100,6 +3103,7 @@ static PHP_METHOD(Math, im2col2d)
         vim_w,
         cols,
         out_pos,
+        out_cell_step,
         out_filter_step,
         out_channel_step
     );
