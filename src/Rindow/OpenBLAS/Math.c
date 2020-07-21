@@ -2824,6 +2824,7 @@ static inline void im2d_stride(
     zend_long stride_w_step,
     zend_long start_vim_y,
     zend_long start_vim_x,
+    zend_long stride_h,
     zend_long reverse,
     php_rindow_openblas_buffer_t images,
     zend_long filter_h,
@@ -2981,10 +2982,6 @@ static PHP_METHOD(Math, im2col2d)
         Z_PARAM_LONG(cols_size)
     ZEND_PARSE_PARAMETERS_END();
 
-    if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_IM, images_size)) {
-        return;
-    }
     images = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(images_obj);
     if(php_rindow_openblas_assert_buffer_size(
         images, images_offset, images_size,
@@ -3089,6 +3086,7 @@ static PHP_METHOD(Math, im2col2d)
         stride_w_step,
         start_vim_y,
         start_vim_x,
+        stride_h,
         
         reverse,
         images,
