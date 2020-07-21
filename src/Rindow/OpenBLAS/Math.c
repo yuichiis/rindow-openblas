@@ -3091,34 +3091,6 @@ static PHP_METHOD(Math, im2col2d)
         out_channel_step
     );
     return;
-
-    if(php_rindow_openblas_dtype_is_int(dtype) || php_rindow_openblas_dtype_is_bool(dtype)) {
-        zend_long i,value;
-        for(i=0;i<n;i++) {
-            if(rindow_openblas_math_get_integer(
-                        bufferX->dtype, bufferX->data, offsetX,incX,
-                        i, &value)) {
-                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of X.", 0);
-                return;
-            }
-            rindow_openblas_math_set_integer(bufferY->dtype, bufferY->data, offsetY, incY, i, value);
-        }
-    } else if(php_rindow_openblas_dtype_is_float(dtype)) {
-        zend_long i;
-        double value;
-        for(i=0;i<n;i++) {
-            if(rindow_openblas_math_get_float(
-                        bufferX->dtype, bufferX->data, offsetX,incX,
-                        i, &value)) {
-                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of X.", 0);
-                return;
-            }
-            rindow_openblas_math_set_float(bufferY->dtype, bufferY->data, offsetY, incY, i, value);
-        }
-    } else {
-        zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
-        return;
-    }
 }
 /* }}} */
 
