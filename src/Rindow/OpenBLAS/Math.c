@@ -2741,11 +2741,14 @@ static inline int im2d_copyCell(
     zend_long filter_w,
     zend_long stride_h,
     zend_long stride_w,
+    zend_long channels_first,
+    
+    zend_long cols_channels_first,
     zend_long images_pos,
-
     zend_long vim_y,
     zend_long vim_x,
     php_rindow_openblas_buffer_t *out,
+    
     zend_long out_pos,
     zend_long out_h,
     zend_long out_w
@@ -2891,16 +2894,17 @@ static inline int im2d_stride(
     zend_long filter_w,
     zend_long stride_h,
     zend_long stride_w,
+    zend_long channels_first,
     
+    zend_long cols_channels_first,
     php_rindow_openblas_buffer_t* cols,
     zend_long out_h,
     zend_long out_w,
-
     zend_long start_h,
+    
     zend_long start_w,
     zend_long end_h,
-    zend_long end_w
-
+    zend_long end_w,
     zend_long batch_pos,
     zend_long out_pos
     )
@@ -2951,11 +2955,14 @@ static inline int im2d_stride(
                     filter_w,
                     stride_h,
                     stride_w,
+                    channels_first,
+                    
+                    cols_channels_first,
                     stride_w_pos,
-
                     vim_y,
                     vim_x,
                     cols,
+                    
                     out_pos,
                     out_h,
                     out_w
@@ -3126,16 +3133,17 @@ static PHP_METHOD(Math, im2col2d)
         filter_w,
         stride_h,
         stride_w,
-
+        channels_first,
+        
+        cols_channels_first,
         cols,
         out_h,
         out_w,
-        
         start_h,
+        
         start_w,
         end_h,
         end_w,
-        
         images_offset,
         cols_offset
     );
