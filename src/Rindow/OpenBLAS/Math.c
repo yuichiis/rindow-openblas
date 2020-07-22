@@ -2774,6 +2774,10 @@ static inline int im2d_copyCell(
                 if(yy<0 || yy>=vim_h ||
                        xx<0 || xx>=vim_w) {
                     if(!reverse) {
+    if(out_channel_pos<0){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos minus in clip", 0);
+        return -1;
+    }
     if(out->size<=out_channel_pos){
         zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos over in clip", 0);
         return -1;
@@ -2788,8 +2792,16 @@ static inline int im2d_copyCell(
                     }
                 } else {
                     if(!reverse) {
+    if(channel_pos<0){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos minus in forward", 0);
+        return -1;
+    }
     if(images->size<=channel_pos){
         zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos over in forward", 0);
+        return -1;
+    }
+    if(out_channel_pos<0){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos minus in forward", 0);
         return -1;
     }
     if(out->size<=out_channel_pos){
@@ -2797,15 +2809,23 @@ static inline int im2d_copyCell(
         return -1;
     }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
-                            ((float*)(out->data))[out_channel_pos]
+                            ((float*)(outdata))[out_channel_pos]
                                 = ((float*)(images->data))[channel_pos];
                         } else {
                             ((double*)(out->data))[out_channel_pos]
                                 = ((double*)(images->data))[channel_pos];
                         }
                     } else {
+    if(channel_pos<0){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos minus in reverse", 0);
+        return -1;
+    }
     if(images->size<=channel_pos){
         zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos over in reverse", 0);
+        return -1;
+    }
+    if(out_channel_pos<0){
+        zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos minus in reverse", 0);
         return -1;
     }
     if(out->size<=out_channel_pos){
