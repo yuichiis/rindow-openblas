@@ -2871,6 +2871,7 @@ static inline int im2d_copyCell(
                         }
                     }
 */
+;
                 }
                 out_channel_pos += out_channel_step;
                 channel_pos += channel_step;
