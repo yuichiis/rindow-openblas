@@ -2730,7 +2730,7 @@ static PHP_METHOD(Math, astype)
 }
 /* }}} */
 
-static inline int im2d_copyCell(
+static int im2d_copyCell(
     zend_bool reverse,
     php_rindow_openblas_buffer_t *images,
     zend_long images_pos,
@@ -2856,7 +2856,7 @@ static inline int im2d_copyCell(
 }
 
 
-static inline int im2d_stride(
+static int im2d_stride(
     zend_long batches,
     zend_long batch_pos,
     zend_long batch_step,
