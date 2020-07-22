@@ -2902,7 +2902,7 @@ static inline int im2d_stride(
     zend_long end_w
 
     zend_long batch_pos,
-    zend_long out_pos,
+    zend_long out_pos
     )
 {
     zend_long batch;
