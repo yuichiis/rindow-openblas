@@ -2800,6 +2800,7 @@ static inline int im2d_copyCell(
             out_channel_pos = out_filter_pos;
             xx = x+vim_x;
             for(c=0; c<channels; c++) {
+/*
                 if(yy<0 || yy>=vim_h ||
                        xx<0 || xx>=vim_w) {
                     if(!reverse) {
@@ -2869,6 +2870,7 @@ static inline int im2d_copyCell(
                                 = ((double*)(out->data))[channel_pos];
                         }
                     }
+*/
                 }
                 out_channel_pos += out_channel_step;
                 channel_pos += channel_step;
