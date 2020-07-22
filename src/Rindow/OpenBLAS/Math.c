@@ -2730,29 +2730,34 @@ static PHP_METHOD(Math, astype)
 }
 /* }}} */
 
-static int im2d_copyCell(
+static inline int im2d_copyCell(
     zend_bool reverse,
     php_rindow_openblas_buffer_t *images,
-    zend_long images_pos,
+    zend_long im_h,
+    zend_long im_w,
+    zend_long channels,
+    
     zend_long filter_h,
     zend_long filter_w,
-    
-    zend_long channels,
-    zend_long channel_step,
-    zend_long filter_h_step,
-    zend_long filter_w_step,
+    zend_long stride_h,
+    zend_long stride_w,
+    zend_long images_pos,
+
     zend_long vim_y,
-    
     zend_long vim_x,
-    zend_long vim_h,
-    zend_long vim_w,
     php_rindow_openblas_buffer_t *out,
     zend_long out_pos,
-    
-    zend_long out_filter_step,
-    zend_long out_channel_step
+    zend_long out_h,
+    zend_long out_w,
     )
 {
+    zend_long vim_h;
+    zend_long vim_w;
+    zend_long channel_step;
+    zend_long filter_h_step;
+    zend_long filter_w_step;
+    zend_long out_filter_step;
+    zend_long out_channel_step;
     zend_long y;
     zend_long x;
     zend_long filter_h_pos;
@@ -2766,6 +2771,24 @@ static int im2d_copyCell(
 
     filter_h_pos = images_pos;
     out_filter_pos = out_pos;
+    if(channels_first) {
+        channel_step = im_h*im_w;
+        filter_w_step = 1;
+        filter_h_step = im_w;
+    } else {
+        channel_step = 1;
+        filter_w_step = channels;
+        filter_h_step = filter_w_step*im_w;
+    }
+    if(cols_channels_first) {
+        out_filter_step = 1;
+        out_channel_step = filter_h*filter_w;
+    } else {
+        out_filter_step = channels;
+        out_channel_step = 1;
+    }
+    vim_h = (out_h-1)*stride_h+filter_h;
+    vim_w = (out_w-1)*stride_w+filter_w;
     for(y=0; y<filter_h; y++) {
         yy = y+vim_y;
         filter_w_pos = filter_h_pos;
@@ -2856,40 +2879,30 @@ static int im2d_copyCell(
 }
 
 
-static int im2d_stride(
+static inline int im2d_stride(
+    zend_long reverse,
+    php_rindow_openblas_buffer_t* images,
     zend_long batches,
-    zend_long batch_pos,
-    zend_long batch_step,
-    zend_long start_h,
-    zend_long start_w,
-    
-    zend_long end_h,
-    zend_long end_w,
-    zend_long stride_h_step,
-    zend_long stride_w_step,
-    zend_long start_vim_y,
-    
-    zend_long start_vim_x,
+    zend_long im_h,
+    zend_long im_w,
+    zend_long channels,
+
+    zend_long filter_h,
+    zend_long filter_w,
     zend_long stride_h,
     zend_long stride_w,
     
-    zend_long reverse,
-    php_rindow_openblas_buffer_t* images,
-    zend_long filter_h,
-    zend_long filter_w,
-    zend_long channels,
-    
-    zend_long channel_step,
-    zend_long filter_h_step,
-    zend_long filter_w_step,
-    zend_long vim_h,
-    zend_long vim_w,
-    
     php_rindow_openblas_buffer_t* cols,
+    zend_long out_h,
+    zend_long out_w,
+
+    zend_long start_h,
+    zend_long start_w,
+    zend_long end_h,
+    zend_long end_w
+
+    zend_long batch_pos,
     zend_long out_pos,
-    zend_long out_cell_step,
-    zend_long out_filter_step,
-    zend_long out_channel_step
     )
 {
     zend_long batch;
@@ -2897,9 +2910,28 @@ static int im2d_stride(
     zend_long y;
     zend_long stride_h_pos;
     zend_long stride_w_pos;
+    zend_long start_vim_y;
+    zend_long start_vim_x;
     zend_long vim_y;
     zend_long vim_x;
+    zend_long stride_h_step;
+    zend_long stride_w_step;
+    zend_long batch_step;
+    zend_long out_cell_step;
 
+    start_vim_y = start_h*stride_h;
+    start_vim_x = start_w*stride_w;
+    if(channels_first) {
+        // stride parameters
+        stride_w_step = stride_w;
+        stride_h_step = im_w*stride_h;
+    } else {
+        // stride parameters
+        stride_w_step = channels*stride_w;
+        stride_h_step = channels*im_w*stride_h;
+    }
+    batch_step = channels*im_w*im_h;
+    out_cell_step = filter_h*filter_w*channels;
     for(batch=0; batch<batches;batch++) {
         stride_h_pos = batch_pos+(start_h*stride_h_step);
         vim_y = start_vim_y;
@@ -2911,24 +2943,22 @@ static int im2d_stride(
                 rc = im2d_copyCell(
                     reverse,
                     images,
-                    stride_w_pos,
+                    im_h,
+                    im_w,
+                    channels,
+
                     filter_h,
                     filter_w,
-                    
-                    channels,
-                    channel_step,
-                    filter_h_step,
-                    filter_w_step,
+                    stride_h,
+                    stride_w,
+                    stride_w_pos,
+
                     vim_y,
-                    
                     vim_x,
-                    vim_h,
-                    vim_w,
                     cols,
                     out_pos,
-                    
-                    out_filter_step,
-                    out_channel_step
+                    out_h,
+                    out_w
                 );
                 if(rc) {
                     return rc;
@@ -3001,21 +3031,6 @@ static PHP_METHOD(Math, im2col2d)
     zend_long start_w;
     zend_long end_h;
     zend_long end_w;
-    zend_long stride_h_step;
-    zend_long stride_w_step;
-    zend_long batch_step;
-    zend_long channel_step;
-    zend_long filter_h_step;
-    zend_long filter_w_step;
-    zend_long out_filter_step;
-    zend_long out_channel_step;
-    zend_long out_cell_step;
-    zend_long out_pos;
-    zend_long batch_pos;
-    zend_long start_vim_y;
-    zend_long start_vim_x;
-    zend_long vim_h;
-    zend_long vim_w;
     int rc;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 18, 18)
@@ -3098,76 +3113,31 @@ static PHP_METHOD(Math, im2col2d)
             return;
         }
     }
-    if(channels_first) {
-        // stride parameters
-        stride_w_step = stride_w;
-        stride_h_step = im_w*stride_h;
-        batch_step = channels*im_w*im_h;
-        // copy parameters
-        channel_step = im_h*im_w;
-        filter_w_step = 1;
-        filter_h_step = im_w;
-    } else {
-        // stride parameters
-        stride_w_step = channels*stride_w;
-        stride_h_step = channels*im_w*stride_h;
-        batch_step = channels*im_w*im_h;
-        // copy parameters
-        channel_step = 1;
-        filter_w_step = channels;
-        filter_h_step = filter_w_step*im_w;
-    }
-    if(cols_channels_first) {
-        out_filter_step = 1;
-        out_channel_step = filter_h*filter_w;
-    } else {
-        out_filter_step = channels;
-        out_channel_step = 1;
-    }
-    out_cell_step = filter_h*filter_w*channels;
-    
-    out_pos = cols_offset;
-    batch_pos = 0;
-    
-    start_vim_y = start_h*stride_h;
-    start_vim_x = start_w*stride_w;
-    vim_h = (out_h-1)*stride_h+filter_h;
-    vim_w = (out_w-1)*stride_w+filter_w;
     
     rc = im2d_stride(
-        batches,
-        batch_pos,
-        batch_step,
-        start_h,
-        start_w,
-        
-        end_h,
-        end_w,
-        stride_h_step,
-        stride_w_step,
-        start_vim_y,
-        
-        start_vim_x,
-        stride_h,
-        stride_w,
-        
         reverse,
         images,
+        batches,
+        im_h,
+        im_w,
+        channels,
+
         filter_h,
         filter_w,
-        channels,
-        
-        channel_step,
-        filter_h_step,
-        filter_w_step,
-        vim_h,
-        vim_w,
-        
+        stride_h,
+        stride_w,
+
         cols,
-        out_pos,
-        out_cell_step,
-        out_filter_step,
-        out_channel_step
+        out_h,
+        out_w,
+        
+        start_h,
+        start_w,
+        end_h,
+        end_w,
+        
+        images_offset,
+        cols_offset,
     );
     return;
 }
