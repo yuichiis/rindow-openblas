@@ -2809,7 +2809,7 @@ static inline int im2d_copyCell(
         return -1;
     }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
-                            ((float*)(outdata))[out_channel_pos]
+                            ((float*)(out->data))[out_channel_pos]
                                 = ((float*)(images->data))[channel_pos];
                         } else {
                             ((double*)(out->data))[out_channel_pos]
