@@ -2781,7 +2781,7 @@ static inline int im2d_copyCell(
         zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos minus in clip", 0);
         return -1;
     }
-    if(out->size<=out_channel_pos){
+    if(out_channel_pos>=out->size){
         zend_throw_exception(spl_ce_InvalidArgumentException, "out_pos over in clip", 0);
         return -1;
     }
@@ -2823,7 +2823,7 @@ static inline int im2d_copyCell(
         zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos minus in reverse", 0);
         return -1;
     }
-    if(images->size<=channel_pos){
+    if(channel_pos>=images->size){
         zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos over in reverse", 0);
         return -1;
     }
