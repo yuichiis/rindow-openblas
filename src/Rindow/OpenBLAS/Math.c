@@ -2870,9 +2870,8 @@ static inline int im2d_copyCell(
                                 = ((double*)(out->data))[channel_pos];
                         }
                     }
-*/
-;
                 }
+*/
                 out_channel_pos += out_channel_step;
                 channel_pos += channel_step;
             }
