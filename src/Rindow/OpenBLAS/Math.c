@@ -2748,7 +2748,7 @@ static inline int im2d_copyCell(
     php_rindow_openblas_buffer_t *out,
     zend_long out_pos,
     zend_long out_h,
-    zend_long out_w,
+    zend_long out_w
     )
 {
     zend_long vim_h;
@@ -3137,7 +3137,7 @@ static PHP_METHOD(Math, im2col2d)
         end_w,
         
         images_offset,
-        cols_offset,
+        cols_offset
     );
     return;
 }
