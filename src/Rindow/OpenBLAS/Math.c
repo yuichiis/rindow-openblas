@@ -2730,7 +2730,7 @@ static PHP_METHOD(Math, astype)
 }
 /* }}} */
 
-static inline void im2d_copyCell(
+static inline int im2d_copyCell(
     zend_bool reverse,
     php_rindow_openblas_buffer_t *images,
     zend_long images_pos,
@@ -2773,6 +2773,10 @@ static inline void im2d_copyCell(
             for(c=0; c<channels; c++) {
                 if(yy<0 || yy>=vim_h ||
                        xx<0 || xx>=vim_w) {
+                    if(out_channels_pos<0 ||out_channels_pos>=out->size) {
+                       zend_throw_exception(spl_ce_RuntimeException, "cols data out of range", 0);
+                        return -1;
+                    }
                     if(!reverse) {
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             ((float*)(out->data))[out_channel_pos]
@@ -2783,6 +2787,14 @@ static inline void im2d_copyCell(
                         }
                     }
                 } else {
+                    if(channels_pos<0 ||channels_pos>=images->size) {
+                       zend_throw_exception(spl_ce_RuntimeException, "images data out of range", 0);
+                        return -1;
+                    }
+                    if(out_channels_pos<0 ||out_channels_pos>=out->size) {
+                       zend_throw_exception(spl_ce_RuntimeException, "cols data out of range", 0);
+                        return -1;
+                    }
                     if(!reverse) {
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             ((float*)(out->data))[out_channel_pos]
@@ -2809,10 +2821,11 @@ static inline void im2d_copyCell(
         }
         filter_h_pos += filter_h_step;
     }
+    return 0;
 }
 
 
-static inline void im2d_stride(
+static inline int im2d_stride(
     zend_long batches,
     zend_long batch_pos,
     zend_long batch_step,
@@ -2858,7 +2871,8 @@ static inline void im2d_stride(
             stride_w_pos = stride_h_pos+(start_w*stride_w_step);
             vim_x = start_vim_x;
             for(x=start_w;x<end_w;x++) {
-                im2d_copyCell(
+                int rc;
+                rc = im2d_copyCell(
                     reverse,
                     images,
                     stride_w_pos,
@@ -2876,7 +2890,10 @@ static inline void im2d_stride(
                     out_pos,
                     out_filter_step,
                     out_channel_step
-                );
+                ); 
+                if(rc) {
+                    return rc;
+                }
                 stride_w_pos += stride_w_step;
                 vim_x += stride_w;
                 out_pos += out_cell_step;
