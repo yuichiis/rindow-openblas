@@ -2816,7 +2816,7 @@ static inline int im2d_copyCell(
                             float *out_data = out->data;
                             out_data[out_channel_pos]
                                 = 0;
-                        } else {
+                        } else if(images->dtype== php_rindow_openblas_dtype_float64){
                             double *out_data = out->data;
                         out_data[out_channel_pos]
                                 = 0;
@@ -2845,7 +2845,7 @@ static inline int im2d_copyCell(
                             float *images_data = images->data;
                             out_data[out_channel_pos]
                                 = images_data[channel_pos];
-                        } else {
+                        } else if(images->dtype== php_rindow_openblas_dtype_float64){
                             double *out_data = out->data;
                             double *images_data = images->data;
                             out_data[out_channel_pos]
@@ -2873,7 +2873,7 @@ static inline int im2d_copyCell(
                             float *images_data = images->data;
                             images_data[out_channel_pos]
                                 = out_data[channel_pos];
-                        } else {
+                        } else if(images->dtype== php_rindow_openblas_dtype_float64){
                             double *out_data = out->data;
                             double *images_data = images->data;
                             images_data[out_channel_pos]
