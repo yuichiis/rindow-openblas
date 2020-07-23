@@ -2800,7 +2800,7 @@ static inline int im2d_copyCell(
             out_channel_pos = out_filter_pos;
             xx = x+vim_x;
             for(c=0; c<channels; c++) {
-/*
+
                 if(yy<0 || yy>=vim_h ||
                        xx<0 || xx>=vim_w) {
                     if(!reverse) {
@@ -2813,10 +2813,12 @@ static inline int im2d_copyCell(
         return -1;
     }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
-                            ((float*)(out->data))[out_channel_pos]
+                            float *out_data = out->data;
+                            out_data[out_channel_pos]
                                 = 0;
                         } else {
-                            ((double*)(out->data))[out_channel_pos]
+                            double *out_data = out->data;
+                        out_data[out_channel_pos]
                                 = 0;
                         }
                     }
@@ -2839,11 +2841,15 @@ static inline int im2d_copyCell(
         return -1;
     }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
-                            ((float*)(out->data))[out_channel_pos]
-                                = ((float*)(images->data))[channel_pos];
+                            float *out_data = out->data;
+                            float *image_data = images->data;
+                            out_data[out_channel_pos]
+                                = images_data[channel_pos];
                         } else {
-                            ((double*)(out->data))[out_channel_pos]
-                                = ((double*)(images->data))[channel_pos];
+                            double *out_data = out->data;
+                            double *image_data = images->data;
+                            out_data[out_channel_pos]
+                                = images_data[channel_pos];
                         }
                     } else {
     if(channel_pos<0){
@@ -2863,15 +2869,17 @@ static inline int im2d_copyCell(
         return -1;
     }
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
-                            ((float*)(images->data))[out_channel_pos]
-                                = ((float*)(out->data))[channel_pos];
+                            float *out_data = out->data;
+                            float *image_data = images->data;
+                            images_data[out_channel_pos]
+                                = out_data[channel_pos];
                         } else {
-                            ((double*)(images->data))[out_channel_pos]
-                                = ((double*)(out->data))[channel_pos];
+                            images_data[out_channel_pos]
+                                = out_data[channel_pos];
                         }
                     }
                 }
-*/
+
                 out_channel_pos += out_channel_step;
                 channel_pos += channel_step;
             }
@@ -3121,14 +3129,6 @@ static PHP_METHOD(Math, im2col2d)
             zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch cols buffer size and images shape", 0);
             return;
         } 
-        if(cols_size!=cols->size) {
-            zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch cols buffer size and col_size", 0);
-            return;
-        }
-        if(cols->size) {
-            zend_throw_exception(spl_ce_InvalidArgumentException, "break", 0);
-            return;
-        }
     }
     
     rc = im2d_stride(
