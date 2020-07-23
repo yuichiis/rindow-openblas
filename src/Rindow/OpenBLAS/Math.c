@@ -2773,7 +2773,7 @@ static inline int im2d_copyCell(
             for(c=0; c<channels; c++) {
                 if(yy<0 || yy>=vim_h ||
                        xx<0 || xx>=vim_w) {
-                    if(out_channels_pos<0 ||out_channels_pos>=out->size) {
+                    if(out_channel_pos<0 ||out_channel_pos>=out->size) {
                        zend_throw_exception(spl_ce_RuntimeException, "cols data out of range", 0);
                         return -1;
                     }
@@ -2787,11 +2787,11 @@ static inline int im2d_copyCell(
                         }
                     }
                 } else {
-                    if(channels_pos<0 ||channels_pos>=images->size) {
+                    if(channel_pos<0 ||channel_pos>=images->size) {
                        zend_throw_exception(spl_ce_RuntimeException, "images data out of range", 0);
                         return -1;
                     }
-                    if(out_channels_pos<0 ||out_channels_pos>=out->size) {
+                    if(out_channel_pos<0 ||out_channel_pos>=out->size) {
                        zend_throw_exception(spl_ce_RuntimeException, "cols data out of range", 0);
                         return -1;
                     }
