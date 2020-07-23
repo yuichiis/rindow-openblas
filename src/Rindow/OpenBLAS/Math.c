@@ -3123,6 +3123,11 @@ static PHP_METHOD(Math, im2col2d)
         } 
         if(cols_size!=cols->size) {
             zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch cols buffer size and col_size", 0);
+            return;
+        }
+        if(cols->size) {
+            zend_throw_exception(spl_ce_InvalidArgumentException, "break", 0);
+            return;
         }
     }
     
