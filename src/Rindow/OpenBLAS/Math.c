@@ -2874,6 +2874,8 @@ static inline int im2d_copyCell(
                             images_data[out_channel_pos]
                                 = out_data[channel_pos];
                         } else {
+                            double *out_data = out->data;
+                            double *image_data = images->data;
                             images_data[out_channel_pos]
                                 = out_data[channel_pos];
                         }
