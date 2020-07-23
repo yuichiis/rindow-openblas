@@ -2828,7 +2828,7 @@ static inline int im2d_copyCell(
         zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos minus in forward", 0);
         return -1;
     }
-    if(images->size<=channel_pos){
+    if(channel_pos>=images->size){
         zend_throw_exception(spl_ce_InvalidArgumentException, "images_pos over in forward", 0);
         return -1;
     }
@@ -2871,13 +2871,13 @@ static inline int im2d_copyCell(
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             float *out_data = out->data;
                             float *images_data = images->data;
-                            images_data[out_channel_pos]
-                                = out_data[channel_pos];
+                            images_data[channel_pos]
+                                = out_data[out_channel_pos];
                         } else if(images->dtype== php_rindow_openblas_dtype_float64){
                             double *out_data = out->data;
                             double *images_data = images->data;
-                            images_data[out_channel_pos]
-                                = out_data[channel_pos];
+                            images_data[channel_pos]
+                                = out_data[out_channel_pos];
                         }
                     }
                 }
