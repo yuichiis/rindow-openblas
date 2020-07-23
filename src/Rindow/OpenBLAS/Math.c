@@ -3120,6 +3120,9 @@ static PHP_METHOD(Math, im2col2d)
             channels)!=cols_size) {
             zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch cols buffer size and images shape", 0);
             return;
+        } 
+        if(cols_size!=cols->size) {
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch cols buffer size and col_size", 0);
         }
     }
     
