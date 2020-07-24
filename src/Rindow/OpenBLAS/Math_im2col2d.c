@@ -72,12 +72,13 @@ static inline int im2d_copyCell(
                                 = ((double*)(images->data))[channel_pos];
                         }
                     } else {
+                        // Sum for Back propagation
                         if(images->dtype== php_rindow_openblas_dtype_float32) {
                             ((float*)(images->data))[channel_pos]
-                                = ((float*)(out->data))[out_channel_pos];
+                                += ((float*)(out->data))[out_channel_pos];
                         } else {
                             ((double*)(images->data))[channel_pos]
-                                = ((double*)(out->data))[out_channel_pos];
+                                += ((double*)(out->data))[out_channel_pos];
                         }
                     }
                 }
