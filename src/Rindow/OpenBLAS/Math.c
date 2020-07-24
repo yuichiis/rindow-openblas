@@ -2730,8 +2730,9 @@ static PHP_METHOD(Math, astype)
 }
 /* }}} */
 
-#include "Math_im2col2d.c"
 #include "Math_im2col1d.c"
+#include "Math_im2col2d.c"
+#include "Math_im2col3d.c"
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_sum, 0, 0, 4)
     ZEND_ARG_INFO(0, n)
@@ -2987,6 +2988,26 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_astype, 0, 0, 8)
     ZEND_ARG_INFO(0, incY)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_im2col1d, 0, 0, 15)
+    ZEND_ARG_INFO(0, reverse)
+    ZEND_ARG_OBJ_INFO(0, images_obj, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, images_offset)
+    ZEND_ARG_INFO(0, images_size)
+    ZEND_ARG_INFO(0, batches)
+
+    ZEND_ARG_INFO(0, im_w)
+    ZEND_ARG_INFO(0, channels)
+    ZEND_ARG_INFO(0, filter_w)
+    ZEND_ARG_INFO(0, stride_w)
+    ZEND_ARG_INFO(0, padding)
+
+    ZEND_ARG_INFO(0, channels_first)
+    ZEND_ARG_INFO(0, cols_channels_first)
+    ZEND_ARG_OBJ_INFO(0, cols_obj,Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, cols_offset)
+    ZEND_ARG_INFO(0, cols_size)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_im2col2d, 0, 0, 18)
     ZEND_ARG_INFO(0, reverse)
     ZEND_ARG_OBJ_INFO(0, images_obj, Rindow\\OpenBLAS\\Buffer, 0)
@@ -3011,23 +3032,31 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_im2col2d, 0, 0, 18)
     ZEND_ARG_INFO(0, cols_size)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_im2col1d, 0, 0, 18)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_im2col3d, 0, 0, 21)
     ZEND_ARG_INFO(0, reverse)
     ZEND_ARG_OBJ_INFO(0, images_obj, Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, images_offset)
     ZEND_ARG_INFO(0, images_size)
     ZEND_ARG_INFO(0, batches)
 
+    ZEND_ARG_INFO(0, im_d)
+    ZEND_ARG_INFO(0, im_h)
     ZEND_ARG_INFO(0, im_w)
     ZEND_ARG_INFO(0, channels)
-    ZEND_ARG_INFO(0, filter_w)
-    ZEND_ARG_INFO(0, stride_w)
-    ZEND_ARG_INFO(0, padding)
+    ZEND_ARG_INFO(0, filter_d)
 
+    ZEND_ARG_INFO(0, filter_h)
+    ZEND_ARG_INFO(0, filter_w)
+    ZEND_ARG_INFO(0, stride_d)
+    ZEND_ARG_INFO(0, stride_h)
+    ZEND_ARG_INFO(0, stride_w)
+
+    ZEND_ARG_INFO(0, padding)
     ZEND_ARG_INFO(0, channels_first)
     ZEND_ARG_INFO(0, cols_channels_first)
     ZEND_ARG_OBJ_INFO(0, cols_obj,Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, cols_offset)
+
     ZEND_ARG_INFO(0, cols_size)
 ZEND_END_ARG_INFO()
 
@@ -3061,8 +3090,9 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, reduceSum,      ai_Math_reduceSum,      ZEND_ACC_PUBLIC)
     PHP_ME(Math, reduceMax,      ai_Math_reduceMax,      ZEND_ACC_PUBLIC)
     PHP_ME(Math, astype,         ai_Math_astype,         ZEND_ACC_PUBLIC)
-    PHP_ME(Math, im2col2d,         ai_Math_im2col2d,         ZEND_ACC_PUBLIC)
     PHP_ME(Math, im2col1d,         ai_Math_im2col1d,         ZEND_ACC_PUBLIC)
+    PHP_ME(Math, im2col2d,         ai_Math_im2col2d,         ZEND_ACC_PUBLIC)
+    PHP_ME(Math, im2col3d,         ai_Math_im2col3d,         ZEND_ACC_PUBLIC)
     PHP_FE_END
     /* clang-format on */
 };
