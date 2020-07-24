@@ -159,7 +159,7 @@ static inline int im3d_stride(
     for(batch=0; batch<batches;batch++) {
         stride_d_pos = batch_pos+(start_d*stride_d_step);
         vim_z = start_vim_z;
-        for(z=start_d;y<end_d;z++){
+        for(z=start_d;z<end_d;z++){
             stride_h_pos = stride_d_pos+(start_h*stride_h_step);
             vim_y = start_vim_y;
             for(y=start_h;y<end_h;y++){
@@ -381,9 +381,9 @@ static PHP_METHOD(Math, im2col3d)
     }
     if(channels_first) {
         // stride parameters
-        stride_d_step = stride_d;
         stride_w_step = stride_w;
         stride_h_step = im_w*stride_h;
+        stride_d_step = im_w*im_h*stride_d;
         batch_step = channels*im_w*im_h*im_d;
         // copy parameters
         channel_step = im_d*im_h*im_w;
@@ -412,7 +412,7 @@ static PHP_METHOD(Math, im2col3d)
     out_cell_step = filter_d*filter_h*filter_w*channels;
     
     out_pos = cols_offset;
-    batch_pos = 0;
+    batch_pos = images_offset;
     
     start_vim_z = start_d*stride_d;
     start_vim_y = start_h*stride_h;
