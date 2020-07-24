@@ -294,7 +294,7 @@ static PHP_METHOD(Math, im2col1d)
     out_cell_step = filter_w*channels;
     
     out_pos = cols_offset;
-    batch_pos = 0;
+    batch_pos = images_offset;
     
     start_vim_x = start_w*stride_w;
     vim_w = (out_w-1)*stride_w+filter_w;
