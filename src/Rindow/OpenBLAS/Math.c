@@ -40,6 +40,38 @@ static double d_max(zend_long n,double *x,zend_long incX)
     return a;
 }
 
+static zend_long s_argmax(zend_long n,float *x,zend_long incX)
+{
+    zend_long i;
+    zend_long idx;
+    float a;
+    idx = 0;
+    a = x[0];
+    for(i=1;i<n;i++) {
+        if(a<x[i*incX]) {
+            idx = i;
+            a = x[i*incX];
+        }
+    }
+    return idx;
+}
+
+static zend_long d_argmax(zend_long n,double *x,zend_long incX)
+{
+    zend_long i;
+    zend_long idx;
+    double a;
+    idx = 0;
+    a = x[0];
+    for(i=1;i<n;i++) {
+        if(a<x[i*incX]) {
+            idx = i;
+            a = x[i*incX];
+        }
+    }
+    return idx;
+}
+
 static float s_sum(zend_long n,float *x,zend_long incX)
 {
     zend_long i;
@@ -2647,6 +2679,116 @@ static PHP_METHOD(Math, reduceMax)
 /* }}} */
 
 /*
+   X(m) := argmax( A(m,n) )
+
+   Method Rindow\OpenBLAS\Math::
+    public function reduceMax(
+        bool $trans,
+        int $m,
+        int $n,
+        Buffer $A, int $offsetA, int $ldA,
+        Buffer $X, int $offsetX, int $incX ) : void
+ {{{ */
+static PHP_METHOD(Math, reduceArgMax)
+{
+    php_rindow_openblas_buffer_t* bufferA;
+    php_rindow_openblas_buffer_t* bufferX;
+    zend_bool trans;
+    zend_long m;
+    zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    zend_long rows,cols;
+
+    //if (zend_parse_parameters(ZEND_NUM_ARGS(), "bllOllOll",
+    //        &broadcast,
+    //        &m,
+    //        &n,
+    //        &x,php_rindow_openblas_buffer_ce,&offsetX,&incX,
+    //        &a,php_rindow_openblas_buffer_ce,&offsetA,&ldA) == FAILURE) {
+    //    zend_throw_exception(spl_ce_InvalidArgumentException, "Invalid Arguments", 0);
+    //    return;
+    //}
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 9, 9)
+        Z_PARAM_BOOL(trans)
+        Z_PARAM_LONG(m)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
+        Z_PARAM_OBJECT_OF_CLASS(x,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        return;
+    }
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    // Check Buffer X
+    bufferX = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(x);
+    if(!trans) {
+        rows = m; cols = n;
+    } else {
+        rows = n; cols = m;
+    }
+
+    // Check Buffer A
+    bufferA = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    // Check Buffer X
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,rows,offsetX,incX)) {
+        return;
+    }
+
+    switch (bufferA->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            {
+                zend_long value;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                zend_long j,incAj,incAi;
+                if(!trans) { incAj = ldA; incAi = 1;}
+                else       { incAj = 1;   incAi = ldA;}
+                for(j=0; j<rows; j++) {
+                    value = s_argmax(cols,&a[j*incAj],incAi);
+                    rindow_openblas_math_set_integer(bufferX->dtype, bufferX->data, offsetX, incX, j, value);
+                }
+            }
+            break;
+        case php_rindow_openblas_dtype_float64:
+            {
+                zend_long value;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                zend_long j,incAj,incAi;
+                if(!trans) { incAj = ldA; incAi = 1;}
+                else       { incAj = 1;   incAi = ldA;}
+                for(j=0; j<rows; j++) {
+                    value = d_argmax(cols,&a[j*incAj],incAi);
+                    rindow_openblas_math_set_integer(bufferX->dtype, bufferX->data, offsetX, incX, j, value);
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of A.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/*
    Y := cast<dtype> X
 
    Method Rindow\OpenBLAS\Math::
@@ -2977,6 +3119,18 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_reduceMax, 0, 0, 9)
     ZEND_ARG_INFO(0, incY)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_reduceArgMax, 0, 0, 9)
+    ZEND_ARG_INFO(0, trans)
+    ZEND_ARG_INFO(0, m)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_OBJ_INFO(0, y, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetY)
+    ZEND_ARG_INFO(0, incY)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_astype, 0, 0, 8)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_INFO(0, dtype)
@@ -3089,6 +3243,7 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, equal,          ai_Math_equal,          ZEND_ACC_PUBLIC)
     PHP_ME(Math, reduceSum,      ai_Math_reduceSum,      ZEND_ACC_PUBLIC)
     PHP_ME(Math, reduceMax,      ai_Math_reduceMax,      ZEND_ACC_PUBLIC)
+    PHP_ME(Math, reduceArgMax,      ai_Math_reduceArgMax,      ZEND_ACC_PUBLIC)
     PHP_ME(Math, astype,         ai_Math_astype,         ZEND_ACC_PUBLIC)
     PHP_ME(Math, im2col1d,         ai_Math_im2col1d,         ZEND_ACC_PUBLIC)
     PHP_ME(Math, im2col2d,         ai_Math_im2col2d,         ZEND_ACC_PUBLIC)
