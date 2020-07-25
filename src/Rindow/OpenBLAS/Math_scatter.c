@@ -167,7 +167,7 @@ static PHP_METHOD(Math, scatterAxis0)
                         zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
                         return;
                     }
-                    memcpy(&(a[selector*selectSizeA], y), copySize);
+                    memcpy(&(a[selector*selectSizeA]),y,  copySize);
                 }
             }
             break;
