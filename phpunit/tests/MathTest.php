@@ -4252,7 +4252,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4273,7 +4273,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4293,7 +4293,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4313,7 +4313,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4333,7 +4333,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4350,7 +4350,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4367,7 +4367,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4384,7 +4384,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4401,7 +4401,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4418,7 +4418,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis0(
+        $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4460,7 +4460,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis1(
+        $math->scatterAxis1(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4478,7 +4478,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis1(
+        $math->scatterAxis1(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4496,7 +4496,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis1(
+        $math->scatterAxis1(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
@@ -4514,7 +4514,7 @@ class Test extends TestCase
             $XX,$offX,$incX,
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
-        $this->math->scatterAxis1(
+        $math->scatterAxis1(
             $m,$n,$k,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
