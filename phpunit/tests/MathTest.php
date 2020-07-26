@@ -5105,7 +5105,7 @@ class Test extends TestCase
         );
         $this->assertEquals(
             [[[[1],[2],[3]],
-              [[3],[4],[5]]]],
+              [[2],[3],[4]]]],
             $cols->toArray());
     }
     
