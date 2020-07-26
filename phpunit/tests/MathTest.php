@@ -5083,7 +5083,7 @@ class Test extends TestCase
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
-        $cols = $cols->buffer();
+        $cols_buff = $cols->buffer();
         $cols_offset = $cols->offset();
         $cols_size = $cols->size();
         $math->im2col1d(
@@ -5099,7 +5099,7 @@ class Test extends TestCase
             $padding=false,
             $channels_first=false,
             $cols_channels_first=false,
-            $cols,
+            $cols_buff,
             $cols_offset,
             $cols_size
         );
@@ -5153,7 +5153,7 @@ class Test extends TestCase
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
-        $cols = $cols->buffer();
+        $cols_buff = $cols->buffer();
         $cols_offset = $cols->offset();
         $cols_size = $cols->size();
         $math->im2col2d(
@@ -5172,7 +5172,7 @@ class Test extends TestCase
             $padding,
             $channels_first,
             $cols_channels_first,
-            $cols,
+            $cols_buff,
             $cols_offset,
             $cols_size
         );
@@ -5250,7 +5250,7 @@ class Test extends TestCase
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
-        $cols = $cols->buffer();
+        $cols_buff = $cols->buffer();
         $cols_offset = $cols->offset();
         $cols_size = $cols->size();
         $math->im2col3d(
@@ -5272,7 +5272,7 @@ class Test extends TestCase
             $padding,
             $channels_first,
             $cols_channels_first,
-            $cols,
+            $cols_buff,
             $cols_offset,
             $cols_size
         );
