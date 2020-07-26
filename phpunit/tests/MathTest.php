@@ -4222,7 +4222,7 @@ class Test extends TestCase
         if($Y->ndim()!=1)
             $n = $Y->shape()[1];
         else
-            $n = $Y->shape()[0];
+            $n = 1;
             
         $k = $X->size();
         $AA = $A->buffer();
