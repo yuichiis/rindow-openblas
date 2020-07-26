@@ -5077,8 +5077,8 @@ class Test extends TestCase
         $mo = new MatrixOperator();
         $math = $this->getMath($mo);
 
-        $A = $mo->array([1,2,3,4]);
-        $X = $mo->zeros([1,2,3,1],NDArray::float32);
+        $images = $mo->array([1,2,3,4]);
+        $cols = $mo->zeros([1,2,3,1],NDArray::float32);
 
         $images_offset = $images->offset();
         $images_size = $images->size();
