@@ -4219,7 +4219,11 @@ class Test extends TestCase
         $X,$Y,$numClass,$A)
     {
         $m = $numClass;
-        $n = $Y->shape()[1];
+        if($Y->ndim()!=1)
+            $n = $Y->shape()[1];
+        else
+            $n = $Y->shape()[0];
+            
         $k = $X->size();
         $AA = $A->buffer();
         $offA = $A->offset();
@@ -4461,7 +4465,7 @@ class Test extends TestCase
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
         $math->scatterAxis1(
-            $m,$n,$k,
+            $m,$n,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
             $YY,$offY,$incY);
@@ -4479,7 +4483,7 @@ class Test extends TestCase
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
         $math->scatterAxis1(
-            $m,$n,$k,
+            $m,$n,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
             $YY,$offY,$incY);
@@ -4497,7 +4501,7 @@ class Test extends TestCase
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
         $math->scatterAxis1(
-            $m,$n,$k,
+            $m,$n,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
             $YY,$offY,$incY);
@@ -4515,7 +4519,7 @@ class Test extends TestCase
             $YY,$offY,$incY] = $this->translate_scatterAxis1(
         $X,$Y,$numClass,$A);
         $math->scatterAxis1(
-            $m,$n,$k,
+            $m,$n,
             $AA,$offA,$ldA,
             $XX,$offX,$incX,
             $YY,$offY,$incY);
