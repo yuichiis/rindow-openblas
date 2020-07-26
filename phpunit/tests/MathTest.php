@@ -4220,7 +4220,7 @@ class Test extends TestCase
     {
         $m = $numClass;
         $n = $Y->shape()[1];
-        $k = $X->size()
+        $k = $X->size();
         $AA = $A->buffer();
         $offA = $A->offset();
         $ldA = $n;
