@@ -5080,16 +5080,6 @@ class Test extends TestCase
         $A = $mo->array([1,2,3,4]);
         $X = $mo->zeros([1,2,3,1],NDArray::float32);
 
-        $reverse,
-        $batches,
-        $in_w,
-        $channels,
-        $filter_w,
-        $stride_w,
-        $padding,
-        $channels_first,
-        $cols_channels_first,
-
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
