@@ -5128,7 +5128,8 @@ class Test extends TestCase
         $channels_first = null;
         $cols_channels_first=null;
         $cols = null;
-        
+        $out_h = 2;
+        $out_w = 2;
         $images = $mo->arange(
             $batches*
             $im_h*$im_w*
@@ -5219,6 +5220,9 @@ class Test extends TestCase
         $channels_first = null;
         $cols_channels_first=null;
         $cols = null;
+        $out_d = 2;
+        $out_h = 2;
+        $out_w = 2;
 
         $images = $mo->arange(
             $batches*
