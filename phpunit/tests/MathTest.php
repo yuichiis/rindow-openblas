@@ -5083,9 +5083,9 @@ class Test extends TestCase
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
-        $out = $cols->buffer();
-        $out_offset = $cols->offset();
-        $out_size = $cols->size();
+        $cols = $cols->buffer();
+        $cols_offset = $cols->offset();
+        $cols_size = $cols->size();
         $math->im2col1d(
             $reverse=false,
             $images_buff,
@@ -5099,9 +5099,9 @@ class Test extends TestCase
             $padding=false,
             $channels_first=false,
             $cols_channels_first=false,
-            $out,
-            $out_offset,
-            $out_size
+            $cols,
+            $cols_offset,
+            $cols_size
         );
         $this->assertEquals(
             [[[[1],[2],[3]],
@@ -5153,9 +5153,9 @@ class Test extends TestCase
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
-        $out = $cols->buffer();
-        $out_offset = $cols->offset();
-        $out_size = $cols->size();
+        $cols = $cols->buffer();
+        $cols_offset = $cols->offset();
+        $cols_size = $cols->size();
         $math->im2col2d(
             $reverse,
             $images,
@@ -5250,9 +5250,9 @@ class Test extends TestCase
         $images_offset = $images->offset();
         $images_size = $images->size();
         $images_buff = $images->buffer();
-        $out = $cols->buffer();
-        $out_offset = $cols->offset();
-        $out_size = $cols->size();
+        $cols = $cols->buffer();
+        $cols_offset = $cols->offset();
+        $cols_size = $cols->size();
         $math->im2col3d(
             $reverse,
             $images,
