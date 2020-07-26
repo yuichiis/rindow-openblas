@@ -5036,4 +5036,254 @@ class Test extends TestCase
         $math->astype($n,$dtype,$XX,$offX,$incX,$YY,$offY,$incY);
         $this->assertEquals([-1,0,1,2,3],$Y->toArray());
     }
+
+    public function testreduceMaxSameSizeNormal()
+    {
+        if($this->checkSkip('reduceMax')){return;}
+
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([[1,2,3],[4,5,6]]);
+        $X = $mo->array([0,0]);
+        [$trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX] =
+            $this->translate_reduceSum($A,$axis=1,$X);
+
+        $math->reduceMax($trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
+        $this->assertEquals([3,6],$X->toArray());
+    }
+
+    public function testreduceArgMaxSameSizeNormal()
+    {
+        if($this->checkSkip('reduceArgMax')){return;}
+
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([[1,2,3],[4,5,6]]);
+        $X = $mo->array([0,0],NDArray::float32);
+        [$trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX] =
+            $this->translate_reduceSum($A,$axis=1,$X);
+
+        $math->reduceArgMax($trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
+        $this->assertEquals([2,2],$X->toArray());
+    }
+    
+    
+    public function testIm2col1dNormal()
+    {
+        if($this->checkSkip('im2col1d')){return;}
+
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([1,2,3,4]);
+        $X = $mo->zeros([1,2,3,1],NDArray::float32);
+
+        $reverse,
+        $batches,
+        $in_w,
+        $channels,
+        $filter_w,
+        $stride_w,
+        $padding,
+        $channels_first,
+        $cols_channels_first,
+
+        $images_offset = $images->offset();
+        $images_size = $images->size();
+        $images_buff = $images->buffer();
+        $out = $cols->buffer();
+        $out_offset = $cols->offset();
+        $out_size = $cols->size();
+        $math->im2col1d(
+            $reverse=false,
+            $images_buff,
+            $images_offset,
+            $images_size,
+            $batches=1,
+            $in_w=4,
+            $channels=1,
+            $filter_w=3,
+            $stride_w=1,
+            $padding=false,
+            $channels_first=false,
+            $cols_channels_first=false,
+            $out,
+            $out_offset,
+            $out_size
+        );
+        $this->assertEquals(
+            [[[[1],[2],[3]],
+              [[3],[4],[5]]]],
+            $X->toArray());
+    }
+    
+    public function testIm2col2dNormal()
+    {
+        if($this->checkSkip('im2col2d')){return;}
+
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $batches = 1;
+        $im_h = 4;
+        $im_w = 4;
+        $channels = 3;
+        $kernel_h = 3;
+        $kernel_w = 3;
+        $stride_h = 1;
+        $stride_w = 1;
+        $padding = null;
+        $channels_first = null;
+        $cols_channels_first=null;
+        $cols = null;
+        
+        $images = $mo->arange(
+            $batches*
+            $im_h*$im_w*
+            $channels,
+            null,null,
+            NDArray::float32
+        )->reshape([
+            $batches,
+            $im_h,
+            $im_w,
+            $channels
+        ]);
+        $cols = $mo->zeros(
+            [
+                $batches,
+                $out_h,$out_w,
+                $kernel_h,$kernel_w,
+                $channels,
+            ]);
+        $images_offset = $images->offset();
+        $images_size = $images->size();
+        $images_buff = $images->buffer();
+        $out = $cols->buffer();
+        $out_offset = $cols->offset();
+        $out_size = $cols->size();
+        $math->im2col2d(
+            $reverse,
+            $images,
+            $images_offset,
+            $images_size,
+            $batches,
+            $im_h,
+            $im_w,
+            $channels,
+            $filter_h,
+            $filter_w,
+            $stride_h,
+            $stride_w,
+            $padding,
+            $channels_first,
+            $cols_channels_first,
+            $cols,
+            $cols_offset,
+            $cols_size
+        );
+        $this->assertEquals(
+        [[
+          [
+           [[[0,1,2],[3,4,5],[6,7,8]],
+            [[12,13,14],[15,16,17],[18,19,20]],
+            [[24,25,26],[27,28,29],[30,31,32]],],
+           [[[3,4,5],[6,7,8],[9,10,11]],
+            [[15,16,17],[18,19,20],[21,22,23]],
+            [[27,28,29],[30,31,32],[33,34,35]],],
+          ],
+          [
+           [[[12,13,14],[15,16,17],[18,19,20]],
+            [[24,25,26],[27,28,29],[30,31,32]],
+            [[36,37,38],[39,40,41],[42,43,44]],],
+           [[[15,16,17],[18,19,20],[21,22,23]],
+            [[27,28,29],[30,31,32],[33,34,35]],
+            [[39,40,41],[42,43,44],[45,46,47]],],
+          ],
+        ]],
+        $cols->toArray()
+        );
+    }
+
+    public function testIm2col3dNormal()
+    {
+        if($this->checkSkip('im2col3d')){return;}
+
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $batches = 1;
+        $im_d = 4;
+        $im_h = 4;
+        $im_w = 4;
+        $channels = 3;
+        $kernel_d = 3;
+        $kernel_h = 3;
+        $kernel_w = 3;
+        $stride_d = 1;
+        $stride_h = 1;
+        $stride_w = 1;
+        $padding = null;
+        $channels_first = null;
+        $cols_channels_first=null;
+        $cols = null;
+
+        $images = $mo->arange(
+            $batches*
+            $im_d*$im_h*$im_w*
+            $channels,
+            null,null,
+            NDArray::float32
+        )->reshape([
+            $batches,
+            $im_d,
+            $im_h,
+            $im_w,
+            $channels
+        ]);
+        
+        $cols = $mo->zeros(
+            [
+                $batches,
+                $out_d,$out_h,$out_w,
+                $kernel_d,$kernel_h,$kernel_w,
+                $channels,
+            ]);
+        $images_offset = $images->offset();
+        $images_size = $images->size();
+        $images_buff = $images->buffer();
+        $out = $cols->buffer();
+        $out_offset = $cols->offset();
+        $out_size = $cols->size();
+        $math->im2col3d(
+            $reverse,
+            $images,
+            $images_offset,
+            $images_size,
+            $batches,
+            $im_d,
+            $im_h,
+            $im_w,
+            $channels,
+            $filter_d,
+            $filter_h,
+            $filter_w,
+            $stride_d,
+            $stride_h,
+            $stride_w,
+            $padding,
+            $channels_first,
+            $cols_channels_first,
+            $cols,
+            $cols_offset,
+            $cols_size
+        );
+        $this->assertNotEquals(
+            $cols->toArray(),
+            $mo->zerosLike($cols)
+            );
+    }
+    
 }
