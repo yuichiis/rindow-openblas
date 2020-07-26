@@ -5106,7 +5106,7 @@ class Test extends TestCase
         $this->assertEquals(
             [[[[1],[2],[3]],
               [[3],[4],[5]]]],
-            $X->toArray());
+            $cols->toArray());
     }
     
     public function testIm2col2dNormal()
@@ -5116,6 +5116,7 @@ class Test extends TestCase
         $mo = new MatrixOperator();
         $math = $this->getMath($mo);
 
+        $reverse = false;
         $batches = 1;
         $im_h = 4;
         $im_w = 4;
@@ -5205,6 +5206,7 @@ class Test extends TestCase
         $mo = new MatrixOperator();
         $math = $this->getMath($mo);
 
+        $reverse = false;
         $batches = 1;
         $im_d = 4;
         $im_h = 4;
