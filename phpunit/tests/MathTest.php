@@ -5158,7 +5158,7 @@ class Test extends TestCase
         $cols_size = $cols->size();
         $math->im2col2d(
             $reverse,
-            $images,
+            $images_buff,
             $images_offset,
             $images_size,
             $batches,
@@ -5255,7 +5255,7 @@ class Test extends TestCase
         $cols_size = $cols->size();
         $math->im2col3d(
             $reverse,
-            $images,
+            $images_buff,
             $images_offset,
             $images_size,
             $batches,
