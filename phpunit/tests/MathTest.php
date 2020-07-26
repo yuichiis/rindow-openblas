@@ -4215,6 +4215,317 @@ class Test extends TestCase
         $this->expectExceptionMessage('Vector specification too large for bufferY');
         $math->selectAxis1($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX,$YY,$offY,$incY);
     }
+    protected function translate_scatterAxis0(
+        $X,$Y,$numClass,$A)
+    {
+        $m = $numClass;
+        $n = $Y->shape()[1];
+        $k = $X->size()
+        $AA = $A->buffer();
+        $offA = $A->offset();
+        $ldA = $n;
+        $XX = $X->buffer();
+        $offX = $X->offset();
+        $YY = $Y->buffer();
+        $offY = $Y->offset();
+        $ldY = $n;
+        return([
+            $m,
+            $n,
+            $k,
+            $AA,$offA,$ldA,
+            $XX,$offX,1,
+            $YY,$offY,$ldY
+            ]);
+    }
+    
+    public function testScatterAxis0()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+        // float32
+        $numClass = 4;
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([[1,2,3],[7,8,9]],NDArray::float32);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+            
+        $this->assertEquals(
+           [[1,2,3],
+            [0,0,0],
+            [7,8,9],
+            [0,0,0]],
+            $A->toArray()
+        );
+        // float64
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([[1,2,3],[7,8,9]],NDArray::float64);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [[1,2,3],
+            [0,0,0],
+            [7,8,9],
+            [0,0,0]],
+            $A->toArray()
+        );
+        // int64
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([[1,2,3],[7,8,9]],NDArray::int64);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [[1,2,3],
+            [0,0,0],
+            [7,8,9],
+            [0,0,0]],
+            $A->toArray()
+        );
+        // uint8
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([[1,2,3],[7,8,9]],NDArray::uint8);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [[1,2,3],
+            [0,0,0],
+            [7,8,9],
+            [0,0,0]],
+            $A->toArray()
+        );
+        // float32
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([1,3],NDArray::float32);
+        $A = $mo->zeros([4],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [1,0,3,0],
+            $A->toArray()
+        );
+        // int32
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([1,3],NDArray::int32);
+        $A = $mo->zeros([4],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [1,0,3,0],
+            $A->toArray()
+        );
+        // float64
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([1,3],NDArray::float64);
+        $A = $mo->zeros([4],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [1,0,3,0],
+            $A->toArray()
+        );
+        // int64
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([1,3],NDArray::int64);
+        $A = $mo->zeros([4],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [1,0,3,0],
+            $A->toArray()
+        );
+        // uint8
+        $X = $mo->array([0,2],NDArray::int64);
+        $Y = $mo->array([252,254],NDArray::uint8);
+        $A = $mo->zeros([4],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(
+           [252,0,254,0],
+            $A->toArray()
+        );
+        // x=uint8
+        $X = $mo->array([0,255],NDArray::uint8);
+        $Y = $mo->array([252,254],NDArray::uint8);
+        $A = $mo->zeros([4],$Y->dtype());
+        [$m,$n,$k,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY] = $this->translate_scatterAxis0(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis0(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$ldY);
+        $this->assertEquals(252,$A[0]);
+        $this->assertEquals(254,$A[255]);
+    }
+
+    protected function translate_scatterAxis1(
+        $X,$Y,$numClass,$A)
+    {
+        $m = $X->shape()[0];
+        $n = $numClass;
+        $AA = $A->buffer();
+        $offA = $A->offset();
+        $ldA = $n;
+        $XX = $X->buffer();
+        $offX = $X->offset();
+        $YY = $Y->buffer();
+        $offY = $Y->offset();
+        return([
+            $m,
+            $n,
+            $AA,$offA,$ldA,
+            $XX,$offX,1,
+            $YY,$offY,1
+            ]);
+    }
+
+    public function testScatterAxis1()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+        $numClass = 3;
+        $X = $mo->array([0,1,2,0],NDArray::int32);
+        $Y = $mo->array([1,5,9,10],NDArray::float32);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY] = $this->translate_scatterAxis1(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis1(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY);
+        $this->assertEquals(
+           [[1,0,0],
+            [0,5,0],
+            [0,0,9],
+            [10,0,0]],
+            $A->toArray());
+
+        $X = $mo->array([0,1,2,0],NDArray::int64);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY] = $this->translate_scatterAxis1(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis1(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY);
+        $this->assertEquals(
+           [[1,0,0],
+            [0,5,0],
+            [0,0,9],
+            [10,0,0]],
+            $A->toArray());
+
+        $X = $mo->array([0,1,2,0],NDArray::float32);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY] = $this->translate_scatterAxis1(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis1(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY);
+        $this->assertEquals(
+           [[1,0,0],
+            [0,5,0],
+            [0,0,9],
+            [10,0,0]],
+            $A->toArray());
+
+        $X = $mo->array([0,1,2,0],NDArray::float64);
+        $A = $mo->zeros([4,3],$Y->dtype());
+        [$m,$n,$AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY] = $this->translate_scatterAxis1(
+        $X,$Y,$numClass,$A);
+        $this->math->scatterAxis1(
+            $m,$n,$k,
+            $AA,$offA,$ldA,
+            $XX,$offX,$incX,
+            $YY,$offY,$incY);
+        $this->assertEquals(
+           [[1,0,0],
+            [0,5,0],
+            [0,0,9],
+            [10,0,0]],
+            $A->toArray());
+    }
 
     public function testupdateAddOnehotNormal()
     {
