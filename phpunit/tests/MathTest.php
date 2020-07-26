@@ -4417,11 +4417,11 @@ class Test extends TestCase
         // x=uint8
         $X = $mo->array([0,255],NDArray::uint8);
         $Y = $mo->array([252,254],NDArray::uint8);
-        $A = $mo->zeros([4],$Y->dtype());
+        $A = $mo->zeros([256],$Y->dtype());
         [$m,$n,$k,$AA,$offA,$ldA,
             $XX,$offX,$incX,
             $YY,$offY,$ldY] = $this->translate_scatterAxis0(
-        $X,$Y,$numClass,$A);
+        $X,$Y,$numClass=256,$A);
         $math->scatterAxis0(
             $m,$n,$k,
             $AA,$offA,$ldA,
