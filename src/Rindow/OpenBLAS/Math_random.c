@@ -43,14 +43,14 @@ static PHP_METHOD(Math, randomUniform)
         return;
     }
 
-    if(php_rindow_openblas_dtype_is_float(bufferX)) {
+    if(php_rindow_openblas_dtype_is_float(bufferX->dtype)) {
         if(php_rindow_openblas_val2float(low_val,&low_float,"low must be float or int")) {
             return;
         }
         if(php_rindow_openblas_val2float(high_val,&high_float,"high must be float or int")) {
             return;
         }
-    } else if(php_rindow_openblas_dtype_is_int(bufferX)) {
+    } else if(php_rindow_openblas_dtype_is_int(bufferX->dtype)) {
         if(php_rindow_openblas_val2int(low_val,&low_int,"low must be float or int")) {
             return;
         }
