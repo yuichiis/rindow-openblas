@@ -64,8 +64,10 @@ static PHP_METHOD(Math, randomUniform)
     }
     
     php_mt_srand(seed);
+    
 
     switch(bufferX->dtype) {
+        
         case php_rindow_openblas_dtype_float32:
             {
                 float *x = &(((float *)bufferX->data)[offsetX]);
@@ -73,7 +75,7 @@ static PHP_METHOD(Math, randomUniform)
                 for(i=0; i<n; i++,x+=incX) {
                     //*x = (float)PHP_MT_RAND_MAX;
                     
-                    *x =/* (float)low_float+*/(float)php_mt_rand()/(float)PHP_MT_RAND_MAX/**((float)high_float-(float)low_float)*/;
+                    *x =/* (float)low_float+*/(float)php_mt_rand()/(float)PHP_MT_RAND_MAX*2/**((float)high_float-(float)low_float)*/;
                     
                 }
             }
