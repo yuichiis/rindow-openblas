@@ -75,7 +75,7 @@ static PHP_METHOD(Math, randomUniform)
                 for(i=0; i<n; i++,x+=incX) {
                     //*x = (float)PHP_MT_RAND_MAX;
                     
-                    *x =/* (float)low_float+*/(float)php_mt_rand()/(float)PHP_INT_MAX*2/**((float)high_float-(float)low_float)*/;
+                    *x =/* (float)low_float+*/(float)php_mt_rand()/(float)PHP_INT_MAX/**((float)high_float-(float)low_float)*/;
                     
                 }
             }
