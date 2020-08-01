@@ -73,10 +73,7 @@ static PHP_METHOD(Math, randomUniform)
                 float *x = &(((float *)bufferX->data)[offsetX]);
                 zend_long i;
                 for(i=0; i<n; i++,x+=incX) {
-                    //*x = (float)PHP_MT_RAND_MAX;
-                    
                     *x =(float)low_float+(float)php_mt_rand()/(float)PHP_MT_RAND_MAX/2.0*((float)high_float-(float)low_float);
-                    
                 }
             }
             break;
@@ -85,7 +82,7 @@ static PHP_METHOD(Math, randomUniform)
                 double *x = &(((double *)bufferX->data)[offsetX]);
                 zend_long i;
                 for(i=0; i<n; i++,x+=incX) {
-                    *x = (double)low_float+(double)php_mt_rand()*((double)high_float-(double)low_float+1.0)/(1.0+(double)PHP_MT_RAND_MAX);
+                    *x =(double)low_float+(double)php_mt_rand()/(double)PHP_MT_RAND_MAX/2.0*((double)high_float-(double)low_float);
                 }
             }
             break;
