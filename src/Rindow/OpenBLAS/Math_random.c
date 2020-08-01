@@ -2,7 +2,7 @@
    X(i) := rand(seed)
 
    Method Rindow\OpenBLAS\Math::
-    public function randomUniformFloat(
+    public function randomUniform(
         int $n,
         Buffer $X, int $offsetX, int $incX,
         float $low,
