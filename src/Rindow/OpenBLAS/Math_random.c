@@ -10,7 +10,6 @@
         int $seed
         ) : void
  {{{ */
-#include <ext/standard/php_rand.h>
 
 static PHP_METHOD(Math, randomUniform)
 {
