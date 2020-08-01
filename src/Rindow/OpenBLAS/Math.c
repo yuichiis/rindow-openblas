@@ -2973,7 +2973,7 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_im2col3d, 0, 0, 21)
     ZEND_ARG_INFO(0, cols_size)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_greater, 0, 0, 7)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_randomUniform, 0, 0, 7)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_OBJ_INFO(0, x, Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, offsetX)
