@@ -244,7 +244,7 @@ static PHP_METHOD(Math, sum)
             }
             break;
         default:
-            zend_throw_exception(spl_ce_InvalidArgumentException, , 0);
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
             return;
     }
     RETURN_DOUBLE(result);
