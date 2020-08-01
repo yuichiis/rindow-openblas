@@ -3,6 +3,7 @@
 #include <Zend/zend_exceptions.h>
 #include <ext/spl/spl_iterators.h>
 #include <ext/spl/spl_exceptions.h>
+#include <ext/standard/php_rand.h>
 #include <cblas.h>
 #include <stdint.h>
 #include <Rindow/OpenBLAS/Buffer.h>
