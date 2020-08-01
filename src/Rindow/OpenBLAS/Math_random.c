@@ -68,11 +68,13 @@ static PHP_METHOD(Math, randomUniform)
     switch(bufferX->dtype) {
         case php_rindow_openblas_dtype_float32:
             {
-                php_mt_rand_range(low_int,high_int);
                 float *x = &(((float *)bufferX->data)[offsetX]);
                 zend_long i;
                 for(i=0; i<n; i++,x+=incX) {
+                    *x = (float)low_float;
+                    /*
                     *x = (float)low_float+(float)php_mt_rand()*((float)high_float-(float)low_float+1.0)/(1.0+(float)PHP_MT_RAND_MAX);
+                    */
                 }
             }
             break;
