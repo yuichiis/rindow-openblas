@@ -72,10 +72,6 @@ static PHP_METHOD(Math, randomUniform)
                 float *x = &(((float *)bufferX->data)[offsetX]);
                 zend_long i;
                 for(i=0; i<n; i++,x+=incX) {
-                    最小値 + (int)( rand() * (最大値 - 最小値 + 1.0) / (1.0 + RAND_MAX) )
-                    
-                    
-                    
                     *x = (float)low_float+(float)php_mt_rand()*((float)high_float-(float)low_float+1.0)/(1.0+(float)PHP_MT_RAND_MAX);
                 }
             }
