@@ -2983,6 +2983,16 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_randomUniform, 0, 0, 7)
     ZEND_ARG_INFO(0, seed)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_randomNormal, 0, 0, 7)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, mean)
+    ZEND_ARG_INFO(0, scale)
+    ZEND_ARG_INFO(0, seed)
+ZEND_END_ARG_INFO()
+
 /* {{{ Rindow\OpenBLAS\Blas function entries */
 static zend_function_entry php_rindow_openblas_math_me[] = {
     /* clang-format off */
@@ -3020,6 +3030,7 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, im2col2d,         ai_Math_im2col2d,         ZEND_ACC_PUBLIC)
     PHP_ME(Math, im2col3d,         ai_Math_im2col3d,         ZEND_ACC_PUBLIC)
     PHP_ME(Math, randomUniform,         ai_Math_randomUniform,         ZEND_ACC_PUBLIC)
+    PHP_ME(Math, randomNormal,         ai_Math_randomNormal,         ZEND_ACC_PUBLIC)
     PHP_FE_END
     /* clang-format on */
 };
