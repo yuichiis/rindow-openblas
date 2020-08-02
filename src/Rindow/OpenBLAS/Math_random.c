@@ -17,7 +17,7 @@ static inline float php_rindow_rand_normal_float(
 {
     float x,y;
     x=(float)(php_mt_rand_range(1,PHP_MT_RAND_MAX-1))/(float)PHP_MT_RAND_MAX;
-    x=(float)(php_mt_rand_range(1,PHP_MT_RAND_MAX-1))/(float)PHP_MT_RAND_MAX;
+    y=(float)(php_mt_rand_range(1,PHP_MT_RAND_MAX-1))/(float)PHP_MT_RAND_MAX;
     
     return sqrtf(-2*logf(x))*cosf(2*M_PI*y)*scale+mean;
 }
