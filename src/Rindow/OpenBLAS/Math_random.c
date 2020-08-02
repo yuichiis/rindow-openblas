@@ -229,6 +229,8 @@ static PHP_METHOD(Math, randomSequence)
     zend_long incX;
     zend_long seed;
     int64_t *data;
+    zend_long i;
+    
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 6, 6)
         Z_PARAM_LONG(n)
