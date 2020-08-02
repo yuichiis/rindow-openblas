@@ -207,3 +207,66 @@ static PHP_METHOD(Math, randomNormal)
     }
 }
 /* }}} */
+/*
+   X(i) := rand(seed)
+
+   Method Rindow\OpenBLAS\Math::
+    public function randomSequence(
+        int $n,
+        int $size,
+        Buffer $X, int $offsetX, int $incX
+        int $seed
+        ) : void
+ {{{ */
+
+static PHP_METHOD(Math, randomSequence)
+{
+    php_rindow_openblas_buffer_t* bufferX;
+    zend_long n;
+    zend_long size;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    zend_long seed;
+    int64_t *data;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 6, 6)
+        Z_PARAM_LONG(n)
+        Z_PARAM_LONG(size)
+        Z_PARAM_OBJECT_OF_CLASS(x,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+        Z_PARAM_LONG(seed)
+    ZEND_PARSE_PARAMETERS_END();
+
+    // Check Buffer X
+    bufferX = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,n,offsetX,incX)) {
+        return;
+    }
+    if(n<size||size<1) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "size must be smaller then n or equal.", 0);
+        return;
+    }
+    if(bufferX->dtype!=php_rindow_openblas_dtype_int64) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "dtype must be int64.", 0);
+        return;
+    }
+
+    php_mt_srand(seed);
+    
+    data = (int64_t*)(bufferX->data);
+    for(i=0;i<n;i++) {
+        data[i] = i;
+    }
+    
+    for(i=0;i<size;i++) {
+        zend_long tmp;
+        idx = php_mt_rand_range(i,$n-1);
+        tmp = data[i];
+        data[i] = data[idx];
+        data[idx] = tmp;
+    }
+}
+/* }}} */
