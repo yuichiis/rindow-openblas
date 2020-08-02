@@ -259,15 +259,15 @@ static PHP_METHOD(Math, randomSequence)
     
     data = (int64_t*)(bufferX->data);
     for(i=0;i<n;i++) {
-        data[i] = i;
+        data[i+offsetX*incX] = i;
     }
     
     for(i=0;i<size;i++) {
         zend_long tmp,idx;
         idx = php_mt_rand_range(i,n-1);
-        tmp = data[i];
-        data[i] = data[idx];
-        data[idx] = tmp;
+        tmp = data[i+offsetX*incX];
+        data[i+offsetX*incX] = data[idx+offsetX*incX];
+        data[idx+offsetX*incX] = tmp;
     }
 }
 /* }}} */
