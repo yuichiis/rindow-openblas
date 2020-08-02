@@ -262,8 +262,8 @@ static PHP_METHOD(Math, randomSequence)
     }
     
     for(i=0;i<size;i++) {
-        zend_long tmp;
-        idx = php_mt_rand_range(i,$n-1);
+        zend_long tmp,idx;
+        idx = php_mt_rand_range(i,n-1);
         tmp = data[i];
         data[i] = data[idx];
         data[idx] = tmp;
