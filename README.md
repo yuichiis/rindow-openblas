@@ -44,7 +44,7 @@ $ sudo apt install pkg-config
 $ sudo apt install libopenblas-dev
 $ sudo apt install php7.4-dev
 ```
- use the latest version of openblas, download the source code from [the site](https://github.com/xianyi/OpenBLAS/releases), build it, and set the installation location of openblas in PKG_CONFIG_PATH
+ If you want to use the latest version of openblas, download the source code from [the site](https://github.com/xianyi/OpenBLAS/releases), build it, and set the installation location of openblas in PKG_CONFIG_PATH
 
 ### Build
 Run the target php version of phpize and build.
