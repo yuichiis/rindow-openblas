@@ -107,7 +107,7 @@ Anaconda3>cmake --build . --config Release
 ```
 
 
-Build extension for Windows
+Build the extension for Windows
 ---------------------------
 
 Please refer to the following URL for details.
