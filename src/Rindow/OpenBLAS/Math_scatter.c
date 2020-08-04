@@ -165,7 +165,7 @@ static PHP_METHOD(Math, scatterAxis0)
             }
             break;
         default:
-            if(!php_rindow_openblas_dtype_is_int(bufferA->dtype) {
+            if(!php_rindow_openblas_dtype_is_int(bufferA->dtype)) {
                 if(!php_rindow_openblas_dtype_is_bool(bufferA->dtype)||addMode){
                     zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
                     return;
