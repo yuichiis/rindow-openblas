@@ -3,6 +3,7 @@
 
    Method Rindow\OpenBLAS\Math::
     public function scatterAxis0(
+        int $addMode,
         int $m,
         int $n,
         int $k,
@@ -15,6 +16,7 @@ static PHP_METHOD(Math, scatterAxis0)
     php_rindow_openblas_buffer_t* bufferA;
     php_rindow_openblas_buffer_t* bufferX;
     php_rindow_openblas_buffer_t* bufferY;
+    zend_bool addMode;
     zend_long m;
     zend_long n;
     zend_long k;
@@ -28,7 +30,8 @@ static PHP_METHOD(Math, scatterAxis0)
     zend_long offsetY;
     zend_long ldY;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 12, 12)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 13, 13)
+        Z_PARAM_BOOL(addMode)
         Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
         Z_PARAM_LONG(k)
@@ -104,11 +107,22 @@ static PHP_METHOD(Math, scatterAxis0)
                         return;
                     }
                     if(n==1) {
-                        a[selector*ldA] = *y;
+                        if(addMode){
+                            a[selector*ldA] += *y;
+                        }else{
+                            a[selector*ldA] = *y;
+                        }
                     } else {
-                        cblas_scopy((blasint)n,
+                        if(addMode){
+                            cblas_saxpy((blasint)n,
+                            1.0,
+                            y,(blasint)1,
+                            &(a[selector*ldA]), (blasint)1);
+                        } else {
+                            cblas_scopy((blasint)n,
                             y, (blasint)1,
                             &(a[selector*ldA]), (blasint)1);
+                        }
                     }
                 }
             }
@@ -116,7 +130,7 @@ static PHP_METHOD(Math, scatterAxis0)
         case php_rindow_openblas_dtype_float64:
             {
                 double *a = &(((double *)bufferA->data)[offsetA]);
-                double *y = &(((double *)bufferY->data)[offsetX]);
+                double *y = &(((double *)bufferY->data)[offsetY]);
                 zend_long i,selector;
                 for(i=0; i<k; i++,y+=ldY) {
                     if(rindow_openblas_math_get_integer(
@@ -130,20 +144,32 @@ static PHP_METHOD(Math, scatterAxis0)
                         return;
                     }
                     if(n==1) {
-                        a[selector*ldA] = *y;
+                        if(addMode){
+                            a[selector*ldA] += *y;
+                        } else {
+                            a[selector*ldA] = *y;
+                        }
                     } else {
-                        cblas_dcopy((blasint)n,
+                        if(addMode){
+                            cblas_daxpy((blasint)n,
+                            1.0,
+                            y,(blasint)1,
+                            &(a[selector*ldA]), (blasint)1);
+                        } else {
+                            cblas_dcopy((blasint)n,
                             y, (blasint)1,
                             &(a[selector*ldA]), (blasint)1);
+                        }
                     }
                 }
             }
             break;
         default:
-            if(!php_rindow_openblas_dtype_is_int(bufferA->dtype)&&
-                !php_rindow_openblas_dtype_is_bool(bufferA->dtype)) {
-                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
-                return;
+            if(!php_rindow_openblas_dtype_is_int(bufferA->dtype) {
+                if(!php_rindow_openblas_dtype_is_bool(bufferA->dtype)||addMode){
+                    zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+                    return;
+                }
             }
             {
                 int valueSize;
@@ -167,7 +193,11 @@ static PHP_METHOD(Math, scatterAxis0)
                         zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
                         return;
                     }
-                    memcpy(&(a[selector*selectSizeA]),y,  copySize);
+                    if(addMode){
+                        php_rindow_openblas_math_add(n,bufferA->dtype,y,1,&(a[selector*selectSizeA]),1);
+                    } else {
+                        memcpy(&(a[selector*selectSizeA]),y,  copySize);
+                    }
                 }
             }
             break;
@@ -179,6 +209,7 @@ static PHP_METHOD(Math, scatterAxis0)
 
    Method Rindow\OpenBLAS\Math::
     public function scatterArxis1(
+        bool $addMode,
         int $m,
         int $n,
         Buffer $A, int $offsetA, int $ldA,
@@ -190,6 +221,7 @@ static PHP_METHOD(Math, scatterAxis1)
     php_rindow_openblas_buffer_t* bufferA;
     php_rindow_openblas_buffer_t* bufferX;
     php_rindow_openblas_buffer_t* bufferY;
+    zend_bool addMode;
     zend_long m;
     zend_long n;
     zval* a=NULL;
@@ -211,7 +243,8 @@ static PHP_METHOD(Math, scatterAxis1)
     //    zend_throw_exception(spl_ce_InvalidArgumentException, "Invalid Arguments", 0);
     //    return;
     //}
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 11, 11)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 12, 12)
+        Z_PARAM_BOOL(addMode)
         Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
         Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
@@ -281,7 +314,11 @@ static PHP_METHOD(Math, scatterAxis1)
                         zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
                         return;
                     }
-                    a[i*ldA+selector] = y[i*incY];
+                    if(addMode){
+                        a[i*ldA+selector] += y[i*incY];
+                    } else {
+                        a[i*ldA+selector] = y[i*incY];
+                    }
                 }
             }
             break;
@@ -301,7 +338,11 @@ static PHP_METHOD(Math, scatterAxis1)
                         zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
                         return;
                     }
-                    a[i*ldA+selector] = y[i*incY];
+                    if(addMode){
+                        a[i*ldA+selector] += y[i*incY];
+                    } else {
+                        a[i*ldA+selector] = y[i*incY];
+                    }
                 }
             }
             break;
