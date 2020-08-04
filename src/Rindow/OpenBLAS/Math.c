@@ -164,6 +164,64 @@ int php_rindow_openblas_val2float(
 	return 0;
 }
 
+#define PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(data_type) { \
+    data_type  *pDataX; \
+    data_type  *pDataY; \
+    pDataX = (data_type *)values; \
+    pDataY = (data_type *)target; \
+    for (i=0; i<n; i++) { \
+        *pDataY += *pDataX; \
+        pDataX+=incValue; \
+        pDataY+=incTarget; \
+    } \
+}
+int php_rindow_openblas_math_add(
+    zend_long n,
+    zend_long dtype,
+    void* values,
+    zend_long incValue,
+    void* target,
+    zend_long incTarget
+    ) 
+{
+    switch (buffer->dtype) {
+        zend_long i;
+        case php_rindow_openblas_dtype_float32:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(float)
+            break;
+        case php_rindow_openblas_dtype_float64:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(double)
+            break;
+        case php_rindow_openblas_dtype_int8:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(int8_t)
+            break;
+        case php_rindow_openblas_dtype_uint8:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(uint8_t)
+            break;
+        case php_rindow_openblas_dtype_int16:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(int16_t)
+            break;
+        case php_rindow_openblas_dtype_uint16:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(uint16_t)
+            break;
+        case php_rindow_openblas_dtype_int32:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(int32_t)
+            break;
+        case php_rindow_openblas_dtype_uint32:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(uint32_t)
+            break;
+        case php_rindow_openblas_dtype_int64:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(int64_t)
+            break;
+        case php_rindow_openblas_dtype_uint64:
+            PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(uint64_t)
+            break;
+        default:
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
+            return -1;
+    }
+    return 0;
+}
 /* Method Rindow\OpenBLAS\Math::
     public function sum(
         int $n,
