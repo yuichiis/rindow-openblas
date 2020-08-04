@@ -3,13 +3,14 @@
 
    Method Rindow\OpenBLAS\Math::
     public function scatterAxis0(
-        int $addMode,
         int $m,
         int $n,
         int $k,
         Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        Buffer $Y, int $offsetY, int $ldY ) : void
+        Buffer $Y, int $offsetY, int $ldY,
+        int $addMode
+        ) : void
  {{{ */
 static PHP_METHOD(Math, scatterAxis0)
 {
@@ -31,7 +32,6 @@ static PHP_METHOD(Math, scatterAxis0)
     zend_long ldY;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 13, 13)
-        Z_PARAM_BOOL(addMode)
         Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
         Z_PARAM_LONG(k)
@@ -44,6 +44,7 @@ static PHP_METHOD(Math, scatterAxis0)
         Z_PARAM_OBJECT_OF_CLASS(y,php_rindow_openblas_buffer_ce)
         Z_PARAM_LONG(offsetY)
         Z_PARAM_LONG(ldY)
+        Z_PARAM_BOOL(addMode)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
@@ -209,12 +210,13 @@ static PHP_METHOD(Math, scatterAxis0)
 
    Method Rindow\OpenBLAS\Math::
     public function scatterArxis1(
-        bool $addMode,
         int $m,
         int $n,
         Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        Buffer $Y, int $offsetY, int $incY ) : void
+        Buffer $Y, int $offsetY, int $incY,
+        bool $addMode
+        ) : void
  {{{ */
 static PHP_METHOD(Math, scatterAxis1)
 {
@@ -244,7 +246,6 @@ static PHP_METHOD(Math, scatterAxis1)
     //    return;
     //}
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 12, 12)
-        Z_PARAM_BOOL(addMode)
         Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
         Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
@@ -256,6 +257,7 @@ static PHP_METHOD(Math, scatterAxis1)
         Z_PARAM_OBJECT_OF_CLASS(y,php_rindow_openblas_buffer_ce)
         Z_PARAM_LONG(offsetY)
         Z_PARAM_LONG(incY)
+        Z_PARAM_BOOL(addMode)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
