@@ -184,7 +184,7 @@ int php_rindow_openblas_math_add(
     zend_long incTarget
     ) 
 {
-    switch (buffer->dtype) {
+    switch (dtype) {
         zend_long i;
         case php_rindow_openblas_dtype_float32:
             PHP_RINDOW_OPENBLAS_MATH_ADD_TEMPLATE(float)
