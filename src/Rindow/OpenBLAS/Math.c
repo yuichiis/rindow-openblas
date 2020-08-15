@@ -1712,10 +1712,6 @@ static PHP_METHOD(Math, tanh)
                 for(i=0;i<n;i++) {
                     float t;
                     t = x[i*incX];
-                    if(t<=0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
-                        return;
-                    }
                     x[i*incX] = tanhf(t);
                 }
             }
@@ -1726,10 +1722,6 @@ static PHP_METHOD(Math, tanh)
                 for(i=0;i<n;i++) {
                     double t;
                     t = x[i*incX];
-                    if(t<=0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
-                        return;
-                    }
                     x[i*incX] = tanh(t);
                 }
             }
