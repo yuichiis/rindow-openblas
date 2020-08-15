@@ -1667,6 +1667,79 @@ static PHP_METHOD(Math, log)
     }
 }
 /* }}} */
+/*
+   X := tanh(X)
+
+   Method Rindow\OpenBLAS\Math::
+    public function tanh(
+        int $n,
+        Buffer $X, int $offsetX, int $incX) : void
+ {{{ */
+static PHP_METHOD(Math, tanh)
+{
+    php_rindow_openblas_buffer_t* buffer;
+    zend_long n;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    zend_long i;
+
+    //if (zend_parse_parameters(ZEND_NUM_ARGS(), "lOll",
+    //        &n,&x,php_rindow_openblas_buffer_ce,&offsetX,&incX) == FAILURE) {
+    //    zend_throw_exception(spl_ce_InvalidArgumentException, "Invalid Arguments", 0);
+    //    return;
+    //}
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT_OF_CLASS(x,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    buffer = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        return;
+    }
+    switch (buffer->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            {
+                float *x = &(((float *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    float t;
+                    t = x[i*incX];
+                    if(t<=0.0) {
+                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
+                        return;
+                    }
+                    x[i*incX] = tanhf(t);
+                }
+            }
+            break;
+        case php_rindow_openblas_dtype_float64:
+            {
+                double *x = &(((double *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    double t;
+                    t = x[i*incX];
+                    if(t<=0.0) {
+                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
+                        return;
+                    }
+                    x[i*incX] = tanh(t);
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
 
 /*
    X := 0
@@ -2817,6 +2890,13 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_log, 0, 0, 4)
     ZEND_ARG_INFO(0, incX)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_tanh, 0, 0, 4)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_zeros, 0, 0, 4)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_OBJ_INFO(0, x, Rindow\\OpenBLAS\\Buffer, 0)
@@ -2824,7 +2904,7 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_zeros, 0, 0, 4)
     ZEND_ARG_INFO(0, incX)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_selectAxis0, 0, 0, 12)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_selectAxis0, 0, 0, 13)
     ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_INFO(0, k)
@@ -2837,9 +2917,10 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_selectAxis0, 0, 0, 12)
     ZEND_ARG_OBJ_INFO(0, y, Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, offsetY)
     ZEND_ARG_INFO(0, ldY)
+    ZEND_ARG_INFO(0, addMode)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_selectAxis1, 0, 0, 11)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_selectAxis1, 0, 0, 12)
     ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
@@ -2851,9 +2932,10 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_selectAxis1, 0, 0, 11)
     ZEND_ARG_OBJ_INFO(0, y, Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, offsetY)
     ZEND_ARG_INFO(0, incY)
+    ZEND_ARG_INFO(0, addMode)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis0, 0, 0, 12)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis0, 0, 0, 13)
     ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_INFO(0, k)
@@ -2866,9 +2948,10 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis0, 0, 0, 12)
     ZEND_ARG_OBJ_INFO(0, y, Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, offsetY)
     ZEND_ARG_INFO(0, ldY)
+    ZEND_ARG_INFO(0, addMode)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis1, 0, 0, 11)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis1, 0, 0, 12)
     ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
@@ -2880,6 +2963,7 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis1, 0, 0, 11)
     ZEND_ARG_OBJ_INFO(0, y, Rindow\\OpenBLAS\\Buffer, 0)
     ZEND_ARG_INFO(0, offsetY)
     ZEND_ARG_INFO(0, incY)
+    ZEND_ARG_INFO(0, addMode)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_updateAddOnehot, 0, 0, 9)
@@ -3081,6 +3165,7 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, pow,            ai_Math_pow,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, exp,            ai_Math_exp,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, log,            ai_Math_log,            ZEND_ACC_PUBLIC)
+    PHP_ME(Math, tanh,            ai_Math_tanh,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, zeros,          ai_Math_zeros,          ZEND_ACC_PUBLIC)
     PHP_ME(Math, selectAxis0,    ai_Math_selectAxis0,    ZEND_ACC_PUBLIC)
     PHP_ME(Math, selectAxis1,    ai_Math_selectAxis1,    ZEND_ACC_PUBLIC)
