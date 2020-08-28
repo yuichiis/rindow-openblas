@@ -98,12 +98,12 @@ static PHP_METHOD(Math, slice)
 
     if(startAxis0>=m||
         sizeAxis0+startAxis0>m){
-        zend_throw_exception(spl_ce_InvalidArgumentException, "Axis0 range is too large for source array.");
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Axis0 range is too large for source array.",0);
         return;
     }
     if(startAxis1>=n||
         sizeAxis1+startAxis1>n){
-        zend_throw_exception(spl_ce_InvalidArgumentException, "Axis1 range is too large for source array.");
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Axis1 range is too large for source array.",0);
         return;
     }
     if(bufferA->dtype != bufferY->dtype) {
