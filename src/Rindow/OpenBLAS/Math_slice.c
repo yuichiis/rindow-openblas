@@ -19,7 +19,7 @@ static PHP_METHOD(Math, slice)
 {
     php_rindow_openblas_buffer_t* bufferA;
     php_rindow_openblas_buffer_t* bufferY;
-    zend_long reverse,
+    zend_long reverse;
     zend_long m;
     zend_long n;
     zend_long k;
