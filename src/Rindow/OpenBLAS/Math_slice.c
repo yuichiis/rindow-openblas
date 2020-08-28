@@ -128,8 +128,8 @@ static PHP_METHOD(Math, slice)
                         a, (blasint)incA);
                 }
             } else if(bufferA->dtype==php_rindow_openblas_dtype_float64){
-                double *a = &(((float *)bufferA->data)[pa]);
-                double *y = &(((float *)bufferY->data)[py]);
+                double *a = &(((double *)bufferA->data)[pa]);
+                double *y = &(((double *)bufferY->data)[py]);
                 if(!reverse) {
                     cblas_dcopy((blasint)k,
                         a, (blasint)incA,
