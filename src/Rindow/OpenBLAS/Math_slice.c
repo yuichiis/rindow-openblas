@@ -29,11 +29,11 @@ static PHP_METHOD(Math, slice)
     zval* objy=NULL;
     zend_long offsetY;
     zend_long incY;
-    zend_long startAxis0,
-    zend_long sizeAxis0,
-    zend_long startAxis1,
-    zend_long sizeAxis1
-    zend_long i,j;
+    zend_long startAxis0;
+    zend_long sizeAxis0;
+    zend_long startAxis1;
+    zend_long sizeAxis1;
+    zend_long i;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 14, 14)
         Z_PARAM_BOOL(reverse)
@@ -111,6 +111,8 @@ static PHP_METHOD(Math, slice)
     }
     for(i=0;i<sizeAxis0;i++) {
         for(j=0;j<sizeAxis1;j++){
+            zend_long pa;
+            zend_long py;
             pa = (i+startAxis0)*n*k*incA+(j+startAxis1)*k*incA+offsetA;
             py = i*sizeAxis1*k+j*k*incY+offsetY;
             if(bufferA->dtype==php_rindow_openblas_dtype_float32){
