@@ -2724,6 +2724,7 @@ static PHP_METHOD(Math, astype)
 
 #include "Math_select.c"
 #include "Math_scatter.c"
+#include "Math_slice.c"
 #include "Math_im2col1d.c"
 #include "Math_im2col2d.c"
 #include "Math_im2col3d.c"
@@ -2958,6 +2959,24 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis1, 0, 0, 12)
     ZEND_ARG_INFO(0, addMode)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_slice, 0, 0, 14)
+    ZEND_ARG_INFO(0, reverse)
+    ZEND_ARG_INFO(0, m)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_INFO(0, k)
+    ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, incA)
+    ZEND_ARG_OBJ_INFO(0, y, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetY)
+    ZEND_ARG_INFO(0, incY)
+    ZEND_ARG_INFO(0, startAxis0)
+    ZEND_ARG_INFO(0, sizeAxis0)
+    ZEND_ARG_INFO(0, startAxis1)
+    ZEND_ARG_INFO(0, sizeAxis1)
+ZEND_END_ARG_INFO()
+
+
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_updateAddOnehot, 0, 0, 9)
     ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
@@ -3163,6 +3182,7 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, selectAxis1,    ai_Math_selectAxis1,    ZEND_ACC_PUBLIC)
     PHP_ME(Math, scatterAxis0,    ai_Math_scatterAxis0,    ZEND_ACC_PUBLIC)
     PHP_ME(Math, scatterAxis1,    ai_Math_scatterAxis1,    ZEND_ACC_PUBLIC)
+    PHP_ME(Math, slice,       ai_Math_slice,      ZEND_ACC_PUBLIC)
     PHP_ME(Math, updateAddOnehot,ai_Math_updateAddOnehot,ZEND_ACC_PUBLIC)
     PHP_ME(Math, softmax,        ai_Math_softmax,        ZEND_ACC_PUBLIC)
     PHP_ME(Math, equal,          ai_Math_equal,          ZEND_ACC_PUBLIC)
