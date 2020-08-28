@@ -79,7 +79,7 @@ static PHP_METHOD(Math, slice)
         zend_throw_exception(spl_ce_InvalidArgumentException, "Argument startAxis1 must be greater than or equal 0.", 0);
         return;
     }
-    if(sizeAxis1=<0){
+    if(sizeAxis1<=0){
         zend_throw_exception(spl_ce_InvalidArgumentException, "Argument sizeAxis1 must be greater than 0.", 0);
         return;
     }
