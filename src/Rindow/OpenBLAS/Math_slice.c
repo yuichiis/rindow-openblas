@@ -34,6 +34,7 @@ static PHP_METHOD(Math, slice)
     zend_long startAxis1;
     zend_long sizeAxis1;
     zend_long i;
+    zend_long j;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 14, 14)
         Z_PARAM_BOOL(reverse)
