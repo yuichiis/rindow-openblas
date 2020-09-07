@@ -4,6 +4,7 @@
    Method Rindow\OpenBLAS\Math::
     public function slice(
         bool $reverse,
+        bool $addMode,
         int $m,
         int $n,
         int $k,
@@ -20,6 +21,7 @@ static PHP_METHOD(Math, slice)
     php_rindow_openblas_buffer_t* bufferA;
     php_rindow_openblas_buffer_t* bufferY;
     zend_bool reverse;
+    zend_bool addMode;
     zend_long m;
     zend_long n;
     zend_long k;
@@ -36,19 +38,20 @@ static PHP_METHOD(Math, slice)
     zend_long i;
     zend_long j;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 14, 14)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 15, 15)
         Z_PARAM_BOOL(reverse)
+        Z_PARAM_BOOL(addMode)
         Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
         Z_PARAM_LONG(k)
-        Z_PARAM_OBJECT_OF_CLASS(obja,php_rindow_openblas_buffer_ce)
 
+        Z_PARAM_OBJECT_OF_CLASS(obja,php_rindow_openblas_buffer_ce)
         Z_PARAM_LONG(offsetA)
         Z_PARAM_LONG(incA)
         Z_PARAM_OBJECT_OF_CLASS(objy,php_rindow_openblas_buffer_ce)
         Z_PARAM_LONG(offsetY)
-        Z_PARAM_LONG(incY)
 
+        Z_PARAM_LONG(incY)
         Z_PARAM_LONG(startAxis0)
         Z_PARAM_LONG(sizeAxis0)
         Z_PARAM_LONG(startAxis1)
@@ -120,13 +123,27 @@ static PHP_METHOD(Math, slice)
                 float *a = &(((float *)bufferA->data)[pa]);
                 float *y = &(((float *)bufferY->data)[py]);
                 if(!reverse) {
-                    cblas_scopy((blasint)k,
-                        a, (blasint)incA,
-                        y, (blasint)incY);
+                    if(!addMode) {
+                        cblas_scopy((blasint)k,
+                            a, (blasint)incA,
+                            y, (blasint)incY);
+                    } else {
+                        cblas_saxpy((blasint)k,
+                            1.0,
+                            a, (blasint)incA,
+                            y, (blasint)incY);
+                    }
                 } else {
-                    cblas_scopy((blasint)k,
-                        y, (blasint)incY,
-                        a, (blasint)incA);
+                    if(!addMode) {
+                        cblas_scopy((blasint)k,
+                            y, (blasint)incY,
+                            a, (blasint)incA);
+                    } else {
+                        cblas_saxpy((blasint)k,
+                            1.0,
+                            y, (blasint)incY,
+                            a, (blasint)incA);
+                    }
                 }
             } else if(bufferA->dtype==php_rindow_openblas_dtype_float64){
                 double *a = &(((double *)bufferA->data)[pa]);

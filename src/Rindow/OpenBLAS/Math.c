@@ -182,7 +182,7 @@ int php_rindow_openblas_math_add(
     zend_long incValue,
     void* target,
     zend_long incTarget
-    ) 
+    )
 {
     switch (dtype) {
         zend_long i;
@@ -2959,8 +2959,9 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_scatterAxis1, 0, 0, 12)
     ZEND_ARG_INFO(0, addMode)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_slice, 0, 0, 14)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_slice, 0, 0, 15)
     ZEND_ARG_INFO(0, reverse)
+    ZEND_ARG_INFO(0, addMode)
     ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_INFO(0, k)
