@@ -42,6 +42,7 @@ Then install the php development environment according to the target php version
 $ sudo apt install build-essential autoconf automake libtool bison re2c
 $ sudo apt install pkg-config
 $ sudo apt install libopenblas-dev
+$ sudo apt install liblapacke-dev
 $ sudo apt install php7.4-dev
 ```
  If you want to use the latest version of openblas, download the source code from [the site](https://github.com/xianyi/OpenBLAS/releases), build it, and set the installation location of openblas in PKG_CONFIG_PATH
@@ -140,7 +141,7 @@ C:\php-sdk>phpsdk-vc15-x64.bat
 ```shell
 $ cd /path/to/here
 $ /path/to/php-devel-pack-7.x.x-Win32-VC15-x64/phpize.bat
-$ configure --enable-rindow_openblas --with-prefix=/path/to/php-installation-path --with-openblas=/path/to/OpenBLAS-libray-built-directory
+$ configure --enable-rindow_openblas --with-prefix=/path/to/php-installation-path --with-openblas=/path/to/OpenBLAS-libray-built-directory --with-flang=/path/to/miniconda3-directory/Library
 $ nmake
 $ nmake test
 ```
