@@ -17,6 +17,12 @@
 
 #include "php_rindow_openblas.h"
 
+#ifndef MAX
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef MIN
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+#endif
 
 static zend_object_handlers rindow_openblas_lapack_object_handlers;
 
