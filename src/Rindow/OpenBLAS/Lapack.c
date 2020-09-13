@@ -160,7 +160,7 @@ lapack_int LAPACKE_dgesvd( int matrix_layout, char jobu, char jobvt,
 
     // Check Buffer S
     bufferS = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(objS);
-    if( offsetS+min(m,n) > bufferS->size) {
+    if( offsetS+MIN(m,n) > bufferS->size) {
         zend_throw_exception(spl_ce_InvalidArgumentException, "BufferS size is too small", 0);
         return;
     }
@@ -181,7 +181,7 @@ lapack_int LAPACKE_dgesvd( int matrix_layout, char jobu, char jobvt,
 
     // Check Buffer SuperB
     bufferSuperB = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(objSuperB);
-    if( offsetSuperB+min(m,n)-1 > bufferSuperB->size) {
+    if( offsetSuperB+MIN(m,n)-1 > bufferSuperB->size) {
         zend_throw_exception(spl_ce_InvalidArgumentException, "bufferSuperB size is too small", 0);
         return;
     }
