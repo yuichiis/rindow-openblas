@@ -2973,8 +2973,9 @@ static PHP_METHOD(Math, fill)
         char *value = &(((char *)(bufferV->data))[offsetV*value_size]);
         char *x = &(((char *)(bufferX->data))[offsetX*value_size]);
         zend_long i;
-        for(i=0;i<n;i++) {
-            memcpy(&(x[i*incX*value_size]),value,value_size);
+        size_t step = incX*value_size;
+        for(i=0;i<n;i++,x+=step) {
+            memcpy(x,value,value_size);
         }
     }
 }
