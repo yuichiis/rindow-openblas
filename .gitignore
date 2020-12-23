@@ -39,3 +39,5 @@ tests/*/*.exp
 tests/*/*.log
 tests/*/*.sh
 x64
+pkgwork/
+*.deb
