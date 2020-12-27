@@ -9,7 +9,6 @@ if (PHP_RINDOW_OPENBLAS != 'no') {
   var PHP_RINDOW_OPENBLAS_CFLAGS="\
     /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 \
     /I" + configure_module_dirname + " \
-    /I" + configure_module_dirname + "/include \
   ";
   if(CHECK_HEADER_ADD_INCLUDE("cblas.h", "rindow_openblas", PHP_OPENBLAS + '/build/build/generated')) {
     PHP_RINDOW_OPENBLAS_CFLAGS = PHP_RINDOW_OPENBLAS_CFLAGS + "\
@@ -22,6 +21,13 @@ if (PHP_RINDOW_OPENBLAS != 'no') {
     ";
   } else {
     ERROR("NOT FOUND: OpenBLAS header files. Please set --with-openblas=/some/directory/path");
+  }
+  if(CHECK_HEADER_ADD_INCLUDE("Interop/Polite/Math/Matrix.h", "rindow_openblas", configure_module_dirname + '/vendor/interop-phpobjects/polite-math/include')) {
+    PHP_RINDOW_OPENBLAS_CFLAGS = PHP_RINDOW_OPENBLAS_CFLAGS + "\
+        /I" + configure_module_dirname + "/vendor/interop-phpobjects/polite-math/include \
+    ";
+  } else {
+      ERROR("NOT FOUND: LinearBuffer interface header files. Please execute \"composer update\" on development directory.");
   }
 
 	// Condense whitespace in CFLAGS
