@@ -36,7 +36,11 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
   PHP_EVAL_INCLINE($LIBBLAS_CFLAGS)
 
   dnl # PHP_ADD_INCLUDE($RINDOW_OPENBLAS_DIR/include)
-  PHP_ADD_INCLUDE(PHP_EXT_SRCDIR(rindow_openblas)[/vendor/interop-phpobjects/polite-math/include])
+  if test -f "$RINDOW_OPENBLAS_DIR/vendor/interop-phpobjects/polite-math/include/Interop/Polite/Math/Matrix.h" ; then
+    PHP_ADD_INCLUDE(PHP_EXT_SRCDIR(rindow_openblas)[/vendor/interop-phpobjects/polite-math/include])
+  else
+    AC_MSG_ERROR(Interop/Polite/Math/Matrix.h not found. Please type "composer update")
+  fi
 
   PHP_SUBST(RINDOW_OPENBLAS_SHARED_LIBADD)
 
