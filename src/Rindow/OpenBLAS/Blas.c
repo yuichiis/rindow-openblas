@@ -1149,7 +1149,620 @@ static PHP_METHOD(Blas, gemm)
 }
 /* }}} */
 
+/* Method Rindow\OpenBLAS\Blas::
+    public function symm(
+        int $order,
+        int $side,
+        int $uplo,
+        int $m,
+        int $n,
+        float $alpha,
+        Buffer $A, int $offsetA, int $ldA,
+        Buffer $B, int $offsetB, int $ldB,
+        float $beta,
+        Buffer $C, int $offsetC, int $ldC ) : void
+ {{{ */
+static PHP_METHOD(Blas, symm)
+{
+    php_rindow_openblas_buffer_t* bufferA;
+    php_rindow_openblas_buffer_t* bufferB;
+    php_rindow_openblas_buffer_t* bufferC;
+    zend_long order;
+    zend_long side;
+    zend_long uplo;
+    zend_long m;
+    zend_long n;
+    double alpha;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
+    zval* b=NULL;
+    zend_long offsetB;
+    zend_long ldB;
+    double beta;
+    zval* c=NULL;
+    zend_long offsetC;
+    zend_long ldC;
 
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 16, 16)
+        Z_PARAM_LONG(order)
+        Z_PARAM_LONG(side)
+        Z_PARAM_LONG(uplo)
+        Z_PARAM_LONG(m)
+        Z_PARAM_LONG(n)
+        Z_PARAM_DOUBLE(alpha)
+        Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
+        Z_PARAM_OBJECT_OF_CLASS(b,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetB)
+        Z_PARAM_LONG(ldB)
+        Z_PARAM_DOUBLE(beta)
+        Z_PARAM_OBJECT_OF_CLASS(c,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetC)
+        Z_PARAM_LONG(ldC)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        return;
+    }
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    // Check Buffer A
+    bufferA = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(a);
+    {
+        zend_long rows;
+        if(side==CblasLeft) {
+            rows = m;
+        } else if(side==CblasRight) {
+            rows = n;
+        } else {
+            zend_throw_exception(spl_ce_RuntimeException, "unknown side mode for bufferA.", 0);
+            return;
+        }
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,rows,offsetA,ldA)) {
+            return;
+        }
+    }
+
+    // Check Buffer B
+    bufferB = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(b);
+    {
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,m,n,offsetB,ldB)) {
+            return;
+        }
+    }
+
+    // Check Buffer C
+    bufferC = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(c);
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,m,n,offsetC,ldC)) {
+        return;
+    }
+
+    // Check Buffer A and B and C
+    if(bufferA->dtype!=bufferB->dtype || bufferB->dtype!=bufferC->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and B and C", 0);
+        return;
+    }
+
+    switch (bufferA->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            cblas_ssymm(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_SIDE)side,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (blasint)m,(blasint)n,
+                (float)alpha,
+                &(((float *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((float *)bufferB->data)[offsetB]), (blasint)ldB,
+                (float)beta,
+                &(((float *)bufferC->data)[offsetC]), (blasint)ldC);
+            break;
+        case php_rindow_openblas_dtype_float64:
+            cblas_dsymm(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_SIDE)side,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (blasint)m,(blasint)n,
+                (double)alpha,
+                &(((double *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((double *)bufferB->data)[offsetB]), (blasint)ldB,
+                (double)beta,
+                &(((double *)bufferC->data)[offsetC]), (blasint)ldC);
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Blas::
+    public function syrk(
+        int $order,
+        int $uplo,
+        int $trans,
+        int $n,
+        int $k,
+        float $alpha,
+        Buffer $A, int $offsetA, int $ldA,
+        float $beta,
+        Buffer $C, int $offsetC, int $ldC ) : void
+ {{{ */
+static PHP_METHOD(Blas, syrk)
+{
+    php_rindow_openblas_buffer_t* bufferA;
+    php_rindow_openblas_buffer_t* bufferC;
+    zend_long order;
+    zend_long uplo;
+    zend_long trans;
+    zend_long n;
+    zend_long k;
+    double alpha;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
+    double beta;
+    zval* c=NULL;
+    zend_long offsetC;
+    zend_long ldC;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 13, 13)
+        Z_PARAM_LONG(order)
+        Z_PARAM_LONG(uplo)
+        Z_PARAM_LONG(trans)
+        Z_PARAM_LONG(n)
+        Z_PARAM_LONG(k)
+        Z_PARAM_DOUBLE(alpha)
+        Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
+        Z_PARAM_DOUBLE(beta)
+        Z_PARAM_OBJECT_OF_CLASS(c,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetC)
+        Z_PARAM_LONG(ldC)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_K, k)) {
+        return;
+    }
+    // Check Buffer A
+    bufferA = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(a);
+    {
+        zend_long rows,cols;
+        if(trans==CblasNoTrans || trans==CblasConjNoTrans) {
+            rows = n; cols = k;
+        } else if(trans==CblasTrans || trans==CblasConjTrans) {
+            rows = k; cols = n;
+        } else {
+            zend_throw_exception(spl_ce_RuntimeException, "unknown transpose mode for bufferA.", 0);
+            return;
+        }
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,cols,offsetA,ldA)) {
+            return;
+        }
+    }
+
+    // Check Buffer C
+    bufferC = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(c);
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,n,n,offsetC,ldC)) {
+        return;
+    }
+
+    // Check Buffer A and C
+    if(bufferA->dtype!=bufferC->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and C", 0);
+        return;
+    }
+
+    switch (bufferA->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            cblas_ssyrk(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (blasint)n,(blasint)k,
+                (float)alpha,
+                &(((float *)bufferA->data)[offsetA]), (blasint)ldA,
+                (float)beta,
+                &(((float *)bufferC->data)[offsetC]), (blasint)ldC);
+            break;
+        case php_rindow_openblas_dtype_float64:
+            cblas_dsyrk(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (blasint)n,(blasint)k,
+                (double)alpha,
+                &(((double *)bufferA->data)[offsetA]), (blasint)ldA,
+                (double)beta,
+                &(((double *)bufferC->data)[offsetC]), (blasint)ldC);
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Blas::
+    public function syr2k(
+        int $order,
+        int $uplo,
+        int $trans,
+        int $n,
+        int $k,
+        float $alpha,
+        Buffer $A, int $offsetA, int $ldA,
+        Buffer $B, int $offsetB, int $ldB,
+        float $beta,
+        Buffer $C, int $offsetC, int $ldC ) : void
+ {{{ */
+static PHP_METHOD(Blas, syr2k)
+{
+    php_rindow_openblas_buffer_t* bufferA;
+    php_rindow_openblas_buffer_t* bufferB;
+    php_rindow_openblas_buffer_t* bufferC;
+    zend_long order;
+    zend_long uplo;
+    zend_long trans;
+    zend_long n;
+    zend_long k;
+    double alpha;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
+    zval* b=NULL;
+    zend_long offsetB;
+    zend_long ldB;
+    double beta;
+    zval* c=NULL;
+    zend_long offsetC;
+    zend_long ldC;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 16, 16)
+        Z_PARAM_LONG(order)
+        Z_PARAM_LONG(uplo)
+        Z_PARAM_LONG(trans)
+        Z_PARAM_LONG(n)
+        Z_PARAM_LONG(k)
+        Z_PARAM_DOUBLE(alpha)
+        Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
+        Z_PARAM_OBJECT_OF_CLASS(b,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetB)
+        Z_PARAM_LONG(ldB)
+        Z_PARAM_DOUBLE(beta)
+        Z_PARAM_OBJECT_OF_CLASS(c,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetC)
+        Z_PARAM_LONG(ldC)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_M, k)) {
+        return;
+    }
+    // Check Buffer A and B
+    bufferA = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(a);
+    bufferB = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(b);
+    {
+        zend_long rows,cols;
+        if(trans==CblasNoTrans || trans==CblasConjNoTrans) {
+            rows = n; cols = k;
+        } else if(trans==CblasTrans || trans==CblasConjTrans) {
+            rows = k; cols = n;
+        } else {
+            zend_throw_exception(spl_ce_RuntimeException, "unknown transpose mode for bufferA.", 0);
+            return;
+        }
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,cols,offsetA,ldA)) {
+            return;
+        }
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,rows,cols,offsetB,ldB)) {
+            return;
+        }
+    }
+
+    // Check Buffer C
+    bufferC = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(c);
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,n,n,offsetC,ldC)) {
+        return;
+    }
+
+    // Check Buffer A and B and C
+    if(bufferA->dtype!=bufferB->dtype || bufferB->dtype!=bufferC->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and B and C", 0);
+        return;
+    }
+
+    switch (bufferA->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            cblas_ssyr2k(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (blasint)n,(blasint)k,
+                (float)alpha,
+                &(((float *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((float *)bufferB->data)[offsetB]), (blasint)ldB,
+                (float)beta,
+                &(((float *)bufferC->data)[offsetC]), (blasint)ldC);
+            break;
+        case php_rindow_openblas_dtype_float64:
+            cblas_dsyr2k(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (blasint)n,(blasint)k,
+                (double)alpha,
+                &(((double *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((double *)bufferB->data)[offsetB]), (blasint)ldB,
+                (double)beta,
+                &(((double *)bufferC->data)[offsetC]), (blasint)ldC);
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Blas::
+    public function trmm(
+        int $order,
+        int $side,
+        int $uplo,
+        int $trans,
+        int $diag,
+        int $m,
+        int $n,
+        float $alpha,
+        Buffer $A, int $offsetA, int $ldA,
+        Buffer $B, int $offsetB, int $ldB) : void
+ {{{ */
+static PHP_METHOD(Blas, trmm)
+{
+    php_rindow_openblas_buffer_t* bufferA;
+    php_rindow_openblas_buffer_t* bufferB;
+    zend_long order;
+    zend_long side;
+    zend_long uplo;
+    zend_long trans;
+    zend_long diag;
+    zend_long m;
+    zend_long n;
+    double alpha;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
+    zval* b=NULL;
+    zend_long offsetB;
+    zend_long ldB;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 14, 14)
+        Z_PARAM_LONG(order)
+        Z_PARAM_LONG(side)
+        Z_PARAM_LONG(uplo)
+        Z_PARAM_LONG(trans)
+        Z_PARAM_LONG(diag)
+        Z_PARAM_LONG(m)
+        Z_PARAM_LONG(n)
+        Z_PARAM_DOUBLE(alpha)
+        Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
+        Z_PARAM_OBJECT_OF_CLASS(b,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetB)
+        Z_PARAM_LONG(ldB)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        return;
+    }
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    // Check Buffer A
+    bufferA = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(a);
+    {
+        zend_long sizeA;
+        if(side==CblasLeft) {
+            sizeA = m;
+        } else if(side==CblasRight) {
+            sizeA = n;
+        } else {
+            zend_throw_exception(spl_ce_RuntimeException, "unknown transpose mode for bufferA.", 0);
+            return;
+        }
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,sizeA,sizeA,offsetA,ldA)) {
+            return;
+        }
+    }
+    bufferB = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(b);
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,m,n,offsetB,ldB)) {
+        return;
+    }
+
+    // Check Buffer A and B
+    if(bufferA->dtype!=bufferB->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and B", 0);
+        return;
+    }
+
+    switch (bufferA->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            cblas_strmm(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_SIDE)side,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (OPENBLAS_CONST enum CBLAS_DIAG)diag,
+                (blasint)m,(blasint)n,
+                (float)alpha,
+                &(((float *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((float *)bufferB->data)[offsetB]), (blasint)ldB);
+            break;
+        case php_rindow_openblas_dtype_float64:
+            cblas_dtrmm(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_SIDE)side,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (OPENBLAS_CONST enum CBLAS_DIAG)diag,
+                (blasint)m,(blasint)n,
+                (double)alpha,
+                &(((double *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((double *)bufferB->data)[offsetB]), (blasint)ldB);
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Blas::
+    public function trsm(
+        int $order,
+        int $side,
+        int $uplo,
+        int $trans,
+        int $diag,
+        int $m,
+        int $n,
+        float $alpha,
+        Buffer $A, int $offsetA, int $ldA,
+        Buffer $B, int $offsetB, int $ldB) : void
+ {{{ */
+static PHP_METHOD(Blas, trsm)
+{
+    php_rindow_openblas_buffer_t* bufferA;
+    php_rindow_openblas_buffer_t* bufferB;
+    zend_long order;
+    zend_long side;
+    zend_long uplo;
+    zend_long trans;
+    zend_long diag;
+    zend_long m;
+    zend_long n;
+    double alpha;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
+    zval* b=NULL;
+    zend_long offsetB;
+    zend_long ldB;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 14, 14)
+        Z_PARAM_LONG(order)
+        Z_PARAM_LONG(side)
+        Z_PARAM_LONG(uplo)
+        Z_PARAM_LONG(trans)
+        Z_PARAM_LONG(diag)
+        Z_PARAM_LONG(m)
+        Z_PARAM_LONG(n)
+        Z_PARAM_DOUBLE(alpha)
+        Z_PARAM_OBJECT_OF_CLASS(a,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
+        Z_PARAM_OBJECT_OF_CLASS(b,php_rindow_openblas_buffer_ce)
+        Z_PARAM_LONG(offsetB)
+        Z_PARAM_LONG(ldB)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        return;
+    }
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    // Check Buffer A
+    bufferA = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(a);
+    {
+        zend_long sizeA;
+        if(side==CblasLeft) {
+            sizeA = m;
+        } else if(side==CblasRight) {
+            sizeA = n;
+        } else {
+            zend_throw_exception(spl_ce_RuntimeException, "unknown transpose mode for bufferA.", 0);
+            return;
+        }
+        if(php_rindow_openblas_assert_matrix_buffer_spec(
+            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,sizeA,sizeA,offsetA,ldA)) {
+            return;
+        }
+    }
+    bufferB = Z_RINDOW_OPENBLAS_BUFFER_OBJ_P(b);
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,m,n,offsetB,ldB)) {
+        return;
+    }
+
+    // Check Buffer A and B
+    if(bufferA->dtype!=bufferB->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and B", 0);
+        return;
+    }
+
+    switch (bufferA->dtype) {
+        case php_rindow_openblas_dtype_float32:
+            cblas_strsm(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_SIDE)side,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (OPENBLAS_CONST enum CBLAS_DIAG)diag,
+                (blasint)m,(blasint)n,
+                (float)alpha,
+                &(((float *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((float *)bufferB->data)[offsetB]), (blasint)ldB);
+            break;
+        case php_rindow_openblas_dtype_float64:
+            cblas_dtrsm(
+                (OPENBLAS_CONST enum CBLAS_ORDER)order,
+                (OPENBLAS_CONST enum CBLAS_SIDE)side,
+                (OPENBLAS_CONST enum CBLAS_UPLO)uplo,
+                (OPENBLAS_CONST enum CBLAS_TRANSPOSE)trans,
+                (OPENBLAS_CONST enum CBLAS_DIAG)diag,
+                (blasint)m,(blasint)n,
+                (double)alpha,
+                &(((double *)bufferA->data)[offsetA]), (blasint)ldA,
+                &(((double *)bufferB->data)[offsetB]), (blasint)ldB);
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Blas_scal, 0, 0, 5)
     ZEND_ARG_INFO(0, n)
@@ -1293,6 +1906,94 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Blas_gemm, 0, 0, 17)
     ZEND_ARG_INFO(0, ldC)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Blas_symm, 0, 0, 16)
+    ZEND_ARG_INFO(0, order)
+    ZEND_ARG_INFO(0, side)
+    ZEND_ARG_INFO(0, uplo)
+    ZEND_ARG_INFO(0, m)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_INFO(0, alpha)
+    ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
+    ZEND_ARG_OBJ_INFO(0, b, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetB)
+    ZEND_ARG_INFO(0, ldB)
+    ZEND_ARG_INFO(0, beta)
+    ZEND_ARG_OBJ_INFO(0, c, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetC)
+    ZEND_ARG_INFO(0, ldC)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Blas_syrk, 0, 0, 13)
+    ZEND_ARG_INFO(0, order)
+    ZEND_ARG_INFO(0, uplo)
+    ZEND_ARG_INFO(0, trans)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_INFO(0, k)
+    ZEND_ARG_INFO(0, alpha)
+    ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
+    ZEND_ARG_INFO(0, beta)
+    ZEND_ARG_OBJ_INFO(0, c, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetC)
+    ZEND_ARG_INFO(0, ldC)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Blas_syr2k, 0, 0, 16)
+    ZEND_ARG_INFO(0, order)
+    ZEND_ARG_INFO(0, uplo)
+    ZEND_ARG_INFO(0, trans)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_INFO(0, k)
+    ZEND_ARG_INFO(0, alpha)
+    ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
+    ZEND_ARG_OBJ_INFO(0, b, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetB)
+    ZEND_ARG_INFO(0, ldB)
+    ZEND_ARG_INFO(0, beta)
+    ZEND_ARG_OBJ_INFO(0, c, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetC)
+    ZEND_ARG_INFO(0, ldC)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Blas_trmm, 0, 0, 14)
+    ZEND_ARG_INFO(0, order)
+    ZEND_ARG_INFO(0, side)
+    ZEND_ARG_INFO(0, uplo)
+    ZEND_ARG_INFO(0, trans)
+    ZEND_ARG_INFO(0, diag)
+    ZEND_ARG_INFO(0, m)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_INFO(0, alpha)
+    ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
+    ZEND_ARG_OBJ_INFO(0, b, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetB)
+    ZEND_ARG_INFO(0, ldB)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Blas_trsm, 0, 0, 14)
+    ZEND_ARG_INFO(0, order)
+    ZEND_ARG_INFO(0, side)
+    ZEND_ARG_INFO(0, uplo)
+    ZEND_ARG_INFO(0, trans)
+    ZEND_ARG_INFO(0, diag)
+    ZEND_ARG_INFO(0, m)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_INFO(0, alpha)
+    ZEND_ARG_OBJ_INFO(0, a, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
+    ZEND_ARG_OBJ_INFO(0, b, Rindow\\OpenBLAS\\Buffer, 0)
+    ZEND_ARG_INFO(0, offsetB)
+    ZEND_ARG_INFO(0, ldB)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(ai_Blas_void, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
@@ -1318,6 +2019,11 @@ static zend_function_entry php_rindow_openblas_blas_me[] = {
     PHP_ME(Blas, swap,  ai_Blas_swap,  ZEND_ACC_PUBLIC)
     PHP_ME(Blas, gemv,  ai_Blas_gemv,  ZEND_ACC_PUBLIC)
     PHP_ME(Blas, gemm,  ai_Blas_gemm,  ZEND_ACC_PUBLIC)
+    PHP_ME(Blas, symm,  ai_Blas_symm,  ZEND_ACC_PUBLIC)
+    PHP_ME(Blas, syrk,  ai_Blas_syrk,  ZEND_ACC_PUBLIC)
+    PHP_ME(Blas, syr2k, ai_Blas_syr2k, ZEND_ACC_PUBLIC)
+    PHP_ME(Blas, trmm,  ai_Blas_trmm,  ZEND_ACC_PUBLIC)
+    PHP_ME(Blas, trsm,  ai_Blas_trsm,  ZEND_ACC_PUBLIC)
     PHP_FE_END
     /* clang-format on */
 };
