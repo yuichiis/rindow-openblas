@@ -35,7 +35,8 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
   PHP_EVAL_LIBLINE($LIBBLAS_LIBDIR, RINDOW_OPENBLAS_SHARED_LIBADD)
   PHP_EVAL_INCLINE($LIBBLAS_CFLAGS)
 
-  PHP_ADD_INCLUDE($RINDOW_OPENBLAS_DIR/vendor/interop-phpobjects/polite-math/include)
+  dnl # PHP_ADD_INCLUDE($RINDOW_OPENBLAS_DIR/include)
+  PHP_ADD_INCLUDE(PHP_EXT_SRCDIR(rindow_openblas)[/vendor/interop-phpobjects/polite-math/include])
 
   PHP_SUBST(RINDOW_OPENBLAS_SHARED_LIBADD)
 
