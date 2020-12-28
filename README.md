@@ -68,6 +68,7 @@ Run the target php version of phpize and build.
 ```shell
 $ git clone https://github.com/rindow/rindow-openblas
 $ cd rindow_openblas
+$ composer update
 $ phpize7.4
 $ ./configure --enable-rindow_openblas --with-php-config=php-config7.4
 $ make clean
