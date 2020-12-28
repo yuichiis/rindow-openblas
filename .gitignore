@@ -40,3 +40,4 @@ x64
 pkgwork/
 *.deb
 composer.lock
+vendor/
