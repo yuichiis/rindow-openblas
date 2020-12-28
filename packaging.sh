@@ -14,11 +14,19 @@ fi
 PHP_VERSION=$1
 PKG_WORK=pkgwork
 EXTENSION_DIR=`$PHP_CONFIG --extension-dir`
-INI_DIR=`$PHP_CONFIG --ini-dir`
+if [ `echo $PHP_VERSION | awk -F. '{printf "%2d%02d%02d", $1,$2,$3}'` -lt "070400" ]
+then
+        INI_DIR=/etc/php/$PHP_VERSION/cli/conf.d
+else
+        INI_DIR=`$PHP_CONFIG --ini-dir`
+fi
 RINDOW_OPENBLAS_VERSION=`fgrep "# define PHP_RINDOW_OPENBLAS_VERSION" php_rindow_openblas.h | cut -d " " -f 4 | cut -d "\"" -f 2`
 . /etc/os-release
 OS_VERSION=$ID$VERSION_ID
-echo $ID
+echo EXTENSION_DIR=$EXTENSION_DIR
+echo INI_DIR=$INI_DIR
+echo RINDOW_OPENBLAS_VERSION=$RINDOW_OPENBLAS_VERSION
+echo OS_VERSION=$OS_VERSION
 rm -rf $PKG_WORK
 mkdir -p $PKG_WORK$EXTENSION_DIR
 mkdir -p $PKG_WORK$INI_DIR
@@ -26,7 +34,7 @@ mkdir -p $PKG_WORK/DEBIAN
 cp modules/rindow_openblas.so $PKG_WORK$EXTENSION_DIR/.
 chmod 744 $PKG_WORK$EXTENSION_DIR/rindow_openblas.so
 cp conf/20-rindow_openblas.ini $PKG_WORK$INI_DIR/.
-chmod 744 $PKG_WORK$INI_DIR/20-rindow_openblas.ini 
+chmod 744 $PKG_WORK$INI_DIR/20-rindow_openblas.ini
 sed -e s/%PHP_RINDOW_OPENBLAS_VERSION%/$RINDOW_OPENBLAS_VERSION/ debian/control | \
 sed -e s/%OS_VERSION%/$OS_VERSION/ | \
 sed -e s/%PHP_VERSION%/$PHP_VERSION/ > $PKG_WORK/DEBIAN/control
