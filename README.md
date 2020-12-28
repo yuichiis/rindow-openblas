@@ -41,7 +41,7 @@ TMP>set PATH=%PATH%;\path\to\OpenBLAS\bin
 For Ubuntu, use the apt command to install the deb file.
 
 ```shell
-$ sudo apt install rindow-openblas-php7.X_X.X.X-ubuntuXX.XX_amd64.deb
+$ sudo apt install ./rindow-openblas-php7.X_X.X.X-X+ubuntuXX.XX_amd64.deb
 ```
 
 How to build from source code on Linux
