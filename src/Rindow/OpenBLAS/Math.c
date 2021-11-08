@@ -21,7 +21,9 @@ static float s_max(zend_long n,float *x,zend_long incX)
     float a;
     a = x[0];
     for(i=1;i<n;i++) {
-        if(a<x[i*incX]) {
+        // if NaN set NaN
+        // Compatible with reduce_max of tensorflow 2.6
+        if(!(a>=x[i*incX])) {
             a = x[i*incX];
         }
     }
@@ -624,10 +626,12 @@ static PHP_METHOD(Math, reciprocal)
                 for(i=0;i<n;i++) {
                     float t;
                     t = (float)alpha * x[i*incX] + (float)beta;
-                    if(t==0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for INFINITY values
+                    //if(t==0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = 1 / t;
                 }
             }
@@ -638,10 +642,12 @@ static PHP_METHOD(Math, reciprocal)
                 for(i=0;i<n;i++) {
                     double t;
                     t = (double)alpha * x[i*incX] + (double)beta;
-                    if(t==0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for INFINITY values
+                    //if(t==0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = 1 / t;
                 }
             }
@@ -660,25 +666,25 @@ static PHP_METHOD(Math, reciprocal)
    Method Rindow\OpenBLAS\Math::
     public function maximum(
         int $n,
-        float $alpha,
-        Buffer $X, int $offsetX, int $incX) : void
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
  {{{ */
 static PHP_METHOD(Math, maximum)
 {
     php_interop_polite_math_matrix_linear_buffer_t* buffer;
     zend_long n;
-    double alpha;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
+    double alpha;
     zend_long i;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
         Z_PARAM_LONG(n)
-        Z_PARAM_DOUBLE(alpha)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
@@ -697,9 +703,17 @@ static PHP_METHOD(Math, maximum)
         case php_interop_polite_math_matrix_dtype_float32:
             {
                 float *x = &(((float *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    if((float)alpha > x[i*incX]) {
+                if(isnan(alpha)) {
+                    for(i=0;i<n;i++) {
                         x[i*incX] = (float)alpha;
+                    }
+                } else {
+                    for(i=0;i<n;i++) {
+                        // *** CAUTION ***
+                        // if NaN then don't set alpha
+                        if(x[i*incX] < (float)alpha) {
+                            x[i*incX] = (float)alpha;
+                        }
                     }
                 }
             }
@@ -707,9 +721,17 @@ static PHP_METHOD(Math, maximum)
         case php_interop_polite_math_matrix_dtype_float64:
             {
                 double *x = &(((double *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    if((double)alpha > x[i*incX]) {
+                if(isnan(alpha)) {
+                    for(i=0;i<n;i++) {
                         x[i*incX] = (double)alpha;
+                    }
+                } else {
+                    for(i=0;i<n;i++) {
+                        // *** CAUTION ***
+                        // if NaN then don't set alpha
+                        if(x[i*incX] < (double)alpha) {
+                            x[i*incX] = (double)alpha;
+                        }
                     }
                 }
             }
@@ -728,25 +750,25 @@ static PHP_METHOD(Math, maximum)
    Method Rindow\OpenBLAS\Math::
     public function minimum(
         int $n,
-        float $alpha,
-        Buffer $X, int $offsetX, int $incX) : void
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
  {{{ */
 static PHP_METHOD(Math, minimum)
 {
     php_interop_polite_math_matrix_linear_buffer_t* buffer;
     zend_long n;
-    double alpha;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
+    double alpha;
     zend_long i;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
         Z_PARAM_LONG(n)
-        Z_PARAM_DOUBLE(alpha)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
@@ -765,9 +787,17 @@ static PHP_METHOD(Math, minimum)
         case php_interop_polite_math_matrix_dtype_float32:
             {
                 float *x = &(((float *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    if((float)alpha < x[i*incX]) {
+                if(isnan(alpha)) {
+                    for(i=0;i<n;i++) {
                         x[i*incX] = (float)alpha;
+                    }
+                } else {
+                    for(i=0;i<n;i++) {
+                        // *** CAUTION ***
+                        // if NaN don't set alpha
+                        if(x[i*incX] > (float)alpha) {
+                            x[i*incX] = (float)alpha;
+                        }
                     }
                 }
             }
@@ -775,9 +805,17 @@ static PHP_METHOD(Math, minimum)
         case php_interop_polite_math_matrix_dtype_float64:
             {
                 double *x = &(((double *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    if((double)alpha < x[i*incX]) {
+                if(isnan(alpha)) {
+                    for(i=0;i<n;i++) {
                         x[i*incX] = (double)alpha;
+                    }
+                } else {
+                    for(i=0;i<n;i++) {
+                        // *** CAUTION ***
+                        // if NaN don't set alpha
+                        if(x[i*incX] > (double)alpha) {
+                            x[i*incX] = (double)alpha;
+                        }
                     }
                 }
             }
@@ -791,31 +829,31 @@ static PHP_METHOD(Math, minimum)
 
 
 /*
-      X := 1  (X > a)
-      X := 0  (X <= a)
+      X := 1  (X >= a)
+      X := 0  (X <  a)
 
    Method Rindow\OpenBLAS\Math::
     public function greater(
         int $n,
-        float $alpha,
-        Buffer $X, int $offsetX, int $incX) : void
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
  {{{ */
 static PHP_METHOD(Math, greater)
 {
     php_interop_polite_math_matrix_linear_buffer_t* buffer;
     zend_long n;
-    double alpha;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
+    double alpha;
     zend_long i;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
         Z_PARAM_LONG(n)
-        Z_PARAM_DOUBLE(alpha)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
@@ -835,6 +873,9 @@ static PHP_METHOD(Math, greater)
             {
                 float *x = &(((float *)buffer->data)[offsetX]);
                 for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 0.0
                     if(x[i*incX] > (float)alpha) {
                         x[i*incX] = 1.0;
                     } else {
@@ -847,6 +888,9 @@ static PHP_METHOD(Math, greater)
             {
                 double *x = &(((double *)buffer->data)[offsetX]);
                 for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 0.0
                     if(x[i*incX] > (double)alpha) {
                         x[i*incX] = 1.0;
                     } else {
@@ -863,31 +907,31 @@ static PHP_METHOD(Math, greater)
 /* }}} */
 
 /*
-        X := 1  (X < a)
-        X := 0  (X >= a)
+      X := 1  (X >= a)
+      X := 0  (X <  a)
 
    Method Rindow\OpenBLAS\Math::
-    public function less(
+    public function greaterEqual(
         int $n,
-        float $alpha,
-        Buffer $X, int $offsetX, int $incX) : void
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
  {{{ */
-static PHP_METHOD(Math, less)
+static PHP_METHOD(Math, greaterEqual)
 {
     php_interop_polite_math_matrix_linear_buffer_t* buffer;
     zend_long n;
-    double alpha;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
+    double alpha;
     zend_long i;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
         Z_PARAM_LONG(n)
-        Z_PARAM_DOUBLE(alpha)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
@@ -907,6 +951,87 @@ static PHP_METHOD(Math, less)
             {
                 float *x = &(((float *)buffer->data)[offsetX]);
                 for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 1.0
+                    if(x[i*incX] >= (float)alpha) {
+                        x[i*incX] = 1.0;
+                    } else {
+                        x[i*incX] = 0.0;
+                    }
+                }
+            }
+            break;
+        case php_interop_polite_math_matrix_dtype_float64:
+            {
+                double *x = &(((double *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 1.0
+                    if(x[i*incX] >= (double)alpha) {
+                        x[i*incX] = 1.0;
+                    } else {
+                        x[i*incX] = 0.0;
+                    }
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/*
+        X := 1  (X <  a)
+        X := 0  (X >= a)
+
+   Method Rindow\OpenBLAS\Math::
+    public function less(
+        int $n,
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
+ {{{ */
+static PHP_METHOD(Math, less)
+{
+    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    zend_long n;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    double alpha;
+    zend_long i;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        return;
+    }
+    switch (buffer->dtype) {
+        case php_interop_polite_math_matrix_dtype_float32:
+            {
+                float *x = &(((float *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 0.0
                     if(x[i*incX] < (float)alpha) {
                         x[i*incX] = 1.0;
                     } else {
@@ -919,7 +1044,88 @@ static PHP_METHOD(Math, less)
             {
                 double *x = &(((double *)buffer->data)[offsetX]);
                 for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 0.0
                     if(x[i*incX] < (double)alpha) {
+                        x[i*incX] = 1.0;
+                    } else {
+                        x[i*incX] = 0.0;
+                    }
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/*
+        X := 1  (X <= a)
+        X := 0  (X >  a)
+
+   Method Rindow\OpenBLAS\Math::
+    public function lessEqual(
+        int $n,
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
+ {{{ */
+static PHP_METHOD(Math, lessEqual)
+{
+    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    zend_long n;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    double alpha;
+    zend_long i;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        return;
+    }
+    switch (buffer->dtype) {
+        case php_interop_polite_math_matrix_dtype_float32:
+            {
+                float *x = &(((float *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 1.0
+                    if(x[i*incX] <= (float)alpha) {
+                        x[i*incX] = 1.0;
+                    } else {
+                        x[i*incX] = 0.0;
+                    }
+                }
+            }
+            break;
+        case php_interop_polite_math_matrix_dtype_float64:
+            {
+                double *x = &(((double *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    // *** CAUTION ***
+                    // if NaN set 0.0
+                    // if equal set 1.0
+                    if(x[i*incX] <= (double)alpha) {
                         x[i*incX] = 1.0;
                     } else {
                         x[i*incX] = 0.0;
@@ -1379,10 +1585,12 @@ static PHP_METHOD(Math, sqrt)
                 for(i=0;i<n;i++) {
                     float t;
                     t = x[i*incX];
-                    if(t<0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(t<0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = sqrtf(t);
                 }
             }
@@ -1393,10 +1601,12 @@ static PHP_METHOD(Math, sqrt)
                 for(i=0;i<n;i++) {
                     double t;
                     t = x[i*incX];
-                    if(t<0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(t<0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = sqrt(t);
                 }
             }
@@ -1456,15 +1666,19 @@ static PHP_METHOD(Math, rsqrt)
                 float *x = &(((float *)buffer->data)[offsetX]);
                 for(i=0;i<n;i++) {
                     float t;
-                    if(x[i*incX]<0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(x[i*incX]<0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
+                    //    return;
+                    //}
                     t = (float)alpha * sqrtf(x[i*incX]) + (float)beta;
-                    if(t==0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(t==0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = 1 / t;
                 }
             }
@@ -1474,15 +1688,19 @@ static PHP_METHOD(Math, rsqrt)
                 double *x = &(((double *)buffer->data)[offsetX]);
                 for(i=0;i<n;i++) {
                     double t;
-                    if(x[i*incX]<0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(x[i*incX]<0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Invalid value in sqrt.", 0);
+                    //    return;
+                    //}
                     t = (double)alpha * sqrt(x[i*incX]) + (double)beta;
-                    if(t==0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(t==0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = 1 / t;
                 }
             }
@@ -1500,25 +1718,25 @@ static PHP_METHOD(Math, rsqrt)
    Method Rindow\OpenBLAS\Math::
     public function pow(
         int $n,
-        float $alpha,
-        Buffer $X, int $offsetX, int $incX) : void
+        Buffer $X, int $offsetX, int $incX,
+        float $alpha) : void
  {{{ */
 static PHP_METHOD(Math, pow)
 {
     php_interop_polite_math_matrix_linear_buffer_t* buffer;
     zend_long n;
-    double alpha;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
+    double alpha;
     zend_long i;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
         Z_PARAM_LONG(n)
-        Z_PARAM_DOUBLE(alpha)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
+        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
@@ -1660,10 +1878,12 @@ static PHP_METHOD(Math, log)
                 for(i=0;i<n;i++) {
                     float t;
                     t = x[i*incX];
-                    if(t<=0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(t<=0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = logf(t);
                 }
             }
@@ -1674,10 +1894,12 @@ static PHP_METHOD(Math, log)
                 for(i=0;i<n;i++) {
                     double t;
                     t = x[i*incX];
-                    if(t<=0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(t<=0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Invalid value in log.", 0);
+                    //    return;
+                    //}
                     x[i*incX] = log(t);
                 }
             }
@@ -2156,10 +2378,12 @@ static PHP_METHOD(Math, softmax)
                         sum_exp += t;
                         a[j] = t;
                     }
-                    if(sum_exp==0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(sum_exp==0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
+                    //    return;
+                    //}
                     for(j=0;j<n;j++) {
                         a[j] = a[j] / sum_exp;
                     }
@@ -2179,10 +2403,12 @@ static PHP_METHOD(Math, softmax)
                         sum_exp += t;
                         a[j] = t;
                     }
-                    if(sum_exp==0.0) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
-                        return;
-                    }
+                    // *** CAUTION ***
+                    // disable checking for NaN and INFINITY values
+                    //if(sum_exp==0.0) {
+                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
+                    //    return;
+                    //}
                     for(j=0;j<n;j++) {
                         a[j] = a[j] / sum_exp;
                     }
@@ -2825,34 +3051,50 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_maximum, 0, 0, 5)
     ZEND_ARG_INFO(0, n)
-    ZEND_ARG_INFO(0, alpha)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_minimum, 0, 0, 5)
     ZEND_ARG_INFO(0, n)
-    ZEND_ARG_INFO(0, alpha)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_greater, 0, 0, 5)
     ZEND_ARG_INFO(0, n)
-    ZEND_ARG_INFO(0, alpha)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_greaterEqual, 0, 0, 5)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_less, 0, 0, 5)
     ZEND_ARG_INFO(0, n)
-    ZEND_ARG_INFO(0, alpha)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_lessEqual, 0, 0, 5)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_multiply, 0, 0, 9)
@@ -2917,10 +3159,10 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_pow, 0, 0, 5)
     ZEND_ARG_INFO(0, n)
-    ZEND_ARG_INFO(0, alpha)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
+    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_exp, 0, 0, 4)
@@ -3239,7 +3481,9 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, maximum,        ai_Math_maximum,        ZEND_ACC_PUBLIC)
     PHP_ME(Math, minimum,        ai_Math_minimum,        ZEND_ACC_PUBLIC)
     PHP_ME(Math, greater,        ai_Math_greater,        ZEND_ACC_PUBLIC)
+    PHP_ME(Math, greaterEqual,   ai_Math_greaterEqual,   ZEND_ACC_PUBLIC)
     PHP_ME(Math, less,           ai_Math_less,           ZEND_ACC_PUBLIC)
+    PHP_ME(Math, lessEqual,      ai_Math_lessEqual,      ZEND_ACC_PUBLIC)
     PHP_ME(Math, multiply,       ai_Math_multiply,       ZEND_ACC_PUBLIC)
     PHP_ME(Math, add,            ai_Math_add,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, duplicate,      ai_Math_duplicate,      ZEND_ACC_PUBLIC)
