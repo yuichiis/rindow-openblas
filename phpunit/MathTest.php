@@ -638,6 +638,89 @@ class Test extends TestCase
        ];
    }
 
+   public function translate_searchsorted(
+       NDArray $A,
+       NDArray $X,
+       bool $right=null,
+       $dtype=null,
+       NDArray $Y=null
+       ) : array
+   {
+       if($A->ndim()!=1) {
+           throw new InvalidArgumentException('A must be 1D NDArray.');
+       }
+       if($right===null) {
+           $right = false;
+       }
+       if($dtype===null) {
+           $dtype = NDArray::uint32;
+       }
+       if($Y===null) {
+           $Y = $this->alloc($X->shape(),$dtype);
+       }
+       $dtype = $Y->dtype();
+       if($dtype!=NDArray::uint32&&$dtype!=NDArray::int32&&
+           $dtype!=NDArray::uint64&&$dtype!=NDArray::int64) {
+           throw new InvalidArgumentException('dtype of Y must be int32 or int64');
+       }
+       if($X->shape()!=$Y->shape()) {
+           $shapeError = '('.implode(',',$X->shape()).'),('.implode(',',$Y->shape()).')';
+           throw new InvalidArgumentException("Unmatch shape of dimension: ".$shapeError);
+       }
+       $m = $A->size();
+       $AA = $A->buffer();
+       $offA = $A->offset();
+       $n = $X->size();
+       $XX = $X->buffer();
+       $offX = $X->offset();
+       $YY = $Y->buffer();
+       $offY = $Y->offset();
+
+       return [
+           $m,
+           $AA,$offA,1,
+           $n,
+           $XX,$offX,1,
+           $right,
+           $YY,$offY,1
+       ];
+   }
+
+   public function translate_cumsum(
+       NDArray $X,
+       bool $exclusive=null,
+       bool $reverse=null,
+       NDArray $Y=null
+       ) : array
+   {
+       if($exclusive===null) {
+           $exclusive = false;
+       }
+       if($reverse===null) {
+           $reverse = false;
+       }
+       if($Y===null) {
+           $Y = $this->alloc($X->shape(),$X->dtype());
+       }
+       if($X->shape()!=$Y->shape()) {
+           $shapeError = '('.implode(',',$X->shape()).'),('.implode(',',$Y->shape()).')';
+           throw new InvalidArgumentException("Unmatch shape of dimension: ".$shapeError);
+       }
+       $n = $X->size();
+       $XX = $X->buffer();
+       $offX = $X->offset();
+       $YY = $Y->buffer();
+       $offY = $Y->offset();
+
+       return [
+           $n,
+           $XX,$offX,1,
+           $exclusive,
+           $reverse,
+           $YY,$offY,1
+       ];
+   }
+
    public function testSumNormal()
    {
        $mo = new MatrixOperator();
@@ -3529,6 +3612,682 @@ class Test extends TestCase
         $this->expectExceptionMessage('Vector specification too large for bufferX');
         $math->log($N,$XX,$offX,$incX);
     }
+
+    public function testnan2numNormal()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([NAN,2,4,NAN]);
+        [$N,$XX,$offX,$incX,$alpha] =
+            $this->translate_maximum($X,0.0);
+        $math->nan2num($N,$XX,$offX,$incX,$alpha);
+        $this->assertEquals([0,2,4,0],$X->toArray());
+
+        $X = $mo->array([NAN,2,4,NAN]);
+        [$N,$XX,$offX,$incX,$alpha] =
+            $this->translate_maximum($X,1.0);
+        $math->nan2num($N,$XX,$offX,$incX,$alpha);
+        $this->assertEquals([1,2,4,1],$X->toArray());
+    }
+
+    public function testisnanNormal()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([NAN,2,4,NAN]);
+        [$N,$XX,$offX,$incX] =
+            $this->translate_square($X);
+
+        $math->isnan($N,$XX,$offX,$incX);
+
+        $this->assertEquals([1,0,0,1],$X->toArray());
+    }
+
+    public function testsearchsortedNormal()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->assertEquals([0,1,1,3],$Y->toArray());
+
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,true,$YY,$offsetY,$incY);
+        $this->assertEquals([0,1,2,3],$Y->toArray());
+    }
+
+    public function testsearchsortedMinusM()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $m = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument m must be greater than 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusOffsetA()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $offsetA = -1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusIncA()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $incA = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument incA must be greater than 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedIllegalBufferA()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $AA = new \stdClass();
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('A must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferAwithSize()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $AA = $mo->array([1,2])->buffer();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferA');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferAwithOffsetA()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $offsetA = 1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferA');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferAwithIncA()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $incA = 2;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferA');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusN()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $n = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument n must be greater than 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusOffsetX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $offsetX = -1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusIncX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $incX = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument incX must be greater than 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedIllegalBufferX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $XX = new \stdClass();
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferXwithSize()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $XX = $mo->array([1,2])->buffer();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferXwithOffsetX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $offsetX = 1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferXwithIncX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $incX = 2;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusOffsetY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $offsetY = -1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedMinusIncY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $incY = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument incY must be greater than 0.');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedIllegalBufferY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $YY = new \stdClass();
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferYwithSize()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $YY = $mo->array([1,2])->buffer();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferY');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferYwithOffsetY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $offsetX = 1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedOverflowBufferYwithIncY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4]);
+        $X = $mo->array([-1,1,2,5]);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $incY = 2;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferY');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+    public function testsearchsortedUnmatchDataType()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->array([0,2,4],NDArray::float32);
+        $X = $mo->array([-1,1,2,5],NDArray::float64);
+        $Y = $mo->zeros([4],NDArray::int32);
+        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unmatch data type for A and X');
+        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+    }
+
+//=========================================================================
+
+    public function testcumsumNormal()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+        $this->assertEquals([1,3,6],$Y->toArray());
+
+        $math->cumsum($n,$XX,$offsetX,$incX,true,$reverse,$YY,$offsetY,$incY);
+        $this->assertEquals([0,1,3],$Y->toArray());
+
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,true,$YY,$offsetY,$incY);
+        $this->assertEquals([6,3,1],$Y->toArray());
+
+        $math->cumsum($n,$XX,$offsetX,$incX,true,true,$YY,$offsetY,$incY);
+        $this->assertEquals([3,1,0],$Y->toArray());
+
+        $X = $mo->array([1,NAN,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+        $this->assertEquals(1,$Y[0]);
+        $this->assertTrue(is_nan($Y[1]));
+        $this->assertTrue(is_nan($Y[2]));
+
+        $math->cumsum($n,$XX,$offsetX,$incX,true,$reverse,$YY,$offsetY,$incY);
+        $this->assertEquals(0,$Y[0]);
+        $this->assertEquals(1,$Y[1]);
+        $this->assertTrue(is_nan($Y[2]));
+
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,true,$YY,$offsetY,$incY);
+        $this->assertTrue(is_nan($Y[0]));
+        $this->assertTrue(is_nan($Y[1]));
+        $this->assertEquals(1,$Y[2]);
+    }
+
+    public function testcumsumMinusN()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $n = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument n must be greater than 0.');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumMinusOffsetX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $offsetX = -1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumMinusIncX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $incX = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument incX must be greater than 0.');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumIllegalBufferX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $XX = new \stdClass();
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumOverflowBufferXwithSize()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $XX = $mo->array([1,2])->buffer();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumOverflowBufferXwithOffsetX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $offsetX = 1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumOverflowBufferXwithIncX()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $incX = 2;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumMinusOffsetY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $offsetY = -1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumMinusIncY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $incY = 0;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Argument incY must be greater than 0.');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumIllegalBufferY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $YY = new \stdClass();
+        $this->expectException(TypeError::class);
+        $this->expectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumOverflowBufferYwithSize()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $YY = $mo->array([1,2])->buffer();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferY');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumOverflowBufferYwithOffsetY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $offsetX = 1;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferX');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumOverflowBufferYwithIncY()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float32);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $incY = 2;
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferY');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+    public function testcumsumUnmatchDataType()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([1,2,3]);
+        $Y = $mo->zeros([3],NDArray::float64);
+        [$n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY] =
+            $this->translate_cumsum($X,false,false,$Y);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unmatch data type for X and Y');
+        $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
+    }
+
+//=========================================================================
 
     public function testzerosNormal()
     {

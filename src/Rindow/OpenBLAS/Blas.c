@@ -112,7 +112,7 @@ static PHP_METHOD(Blas, scal)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        "X", buffer,n,offsetX,incX)) {
         return;
     }
     switch (buffer->dtype) {
@@ -170,7 +170,7 @@ static PHP_METHOD(Blas, axpy)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
 
@@ -180,7 +180,7 @@ static PHP_METHOD(Blas, axpy)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,n,offsetY,incY)) {
+        "Y", bufferY,n,offsetY,incY)) {
         return;
     }
 
@@ -247,7 +247,7 @@ static PHP_METHOD(Blas, dot)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
 
@@ -257,7 +257,7 @@ static PHP_METHOD(Blas, dot)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,n,offsetY,incY)) {
+        "Y", bufferY,n,offsetY,incY)) {
         return;
     }
 
@@ -317,7 +317,7 @@ static PHP_METHOD(Blas, asum)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        "X", buffer,n,offsetX,incX)) {
         return;
     }
     switch (buffer->dtype) {
@@ -365,7 +365,7 @@ static PHP_METHOD(Blas, iamax)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        "X", buffer,n,offsetX,incX)) {
         return;
     }
     switch (buffer->dtype) {
@@ -414,7 +414,7 @@ static PHP_METHOD(Blas, iamin)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        "X", buffer,n,offsetX,incX)) {
         return;
     }
     switch (buffer->dtype) {
@@ -471,7 +471,7 @@ static PHP_METHOD(Blas, copy)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
 
@@ -481,7 +481,7 @@ static PHP_METHOD(Blas, copy)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,n,offsetY,incY)) {
+        "Y", bufferY,n,offsetY,incY)) {
         return;
     }
 
@@ -553,7 +553,7 @@ static PHP_METHOD(Blas, nrm2)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, buffer,n,offsetX,incX)) {
+        "X", buffer,n,offsetX,incX)) {
         return;
     }
     switch (buffer->dtype) {
@@ -611,7 +611,7 @@ static PHP_METHOD(Blas, rotg)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferA,1,offsetA,1)) {
+        "X", bufferA,1,offsetA,1)) {
         return;
     }
 
@@ -621,7 +621,7 @@ static PHP_METHOD(Blas, rotg)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferB,1,offsetB,1)) {
+        "Y", bufferB,1,offsetB,1)) {
         return;
     }
 
@@ -631,7 +631,7 @@ static PHP_METHOD(Blas, rotg)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferC,1,offsetC,1)) {
+        "X", bufferC,1,offsetC,1)) {
         return;
     }
 
@@ -641,7 +641,7 @@ static PHP_METHOD(Blas, rotg)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferS,1,offsetS,1)) {
+        "Y", bufferS,1,offsetS,1)) {
         return;
     }
 
@@ -728,7 +728,7 @@ static PHP_METHOD(Blas, rot)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
 
@@ -738,7 +738,7 @@ static PHP_METHOD(Blas, rot)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,n,offsetY,incY)) {
+        "Y", bufferY,n,offsetY,incY)) {
         return;
     }
 
@@ -748,7 +748,7 @@ static PHP_METHOD(Blas, rot)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferC,1,offsetC,1)) {
+        "X", bufferC,1,offsetC,1)) {
         return;
     }
 
@@ -758,7 +758,7 @@ static PHP_METHOD(Blas, rot)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferS,1,offsetS,1)) {
+        "Y", bufferS,1,offsetS,1)) {
         return;
     }
 
@@ -831,7 +831,7 @@ static PHP_METHOD(Blas, swap)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
 
@@ -841,7 +841,7 @@ static PHP_METHOD(Blas, swap)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,n,offsetY,incY)) {
+        "Y", bufferY,n,offsetY,incY)) {
         return;
     }
 
@@ -962,11 +962,11 @@ static PHP_METHOD(Blas, gemv)
             return;
         }
         if(php_rindow_openblas_assert_vector_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_X, bufferX,cols,offsetX,incX)) {
+            "X", bufferX,cols,offsetX,incX)) {
             return;
         }
         if(php_rindow_openblas_assert_vector_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,rows,offsetY,incY)) {
+            "Y", bufferY,rows,offsetY,incY)) {
             return;
         }
     }

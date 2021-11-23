@@ -69,7 +69,7 @@ extern int php_rindow_openblas_assert_shape_parameter(
 #define PHP_RINDOW_OPENBLAS_ASSERT_X 0
 #define PHP_RINDOW_OPENBLAS_ASSERT_Y 1
 extern int php_rindow_openblas_assert_vector_buffer_spec(
-    int name,php_interop_polite_math_matrix_linear_buffer_t *buffer,
+    char* name,php_interop_polite_math_matrix_linear_buffer_t *buffer,
     zend_long n, zend_long offset, zend_long inc);
 #define PHP_RINDOW_OPENBLAS_ASSERT_A 0
 #define PHP_RINDOW_OPENBLAS_ASSERT_B 2

@@ -98,37 +98,29 @@ int php_rindow_openblas_assert_shape_parameter(
 }
 
 int php_rindow_openblas_assert_vector_buffer_spec(
-    int name,php_interop_polite_math_matrix_linear_buffer_t *buffer,
+    char* name,php_interop_polite_math_matrix_linear_buffer_t *buffer,
     zend_long n, zend_long offset, zend_long inc)
 {
-    static const char *message[2][4] = {
-        {
-            "uninitialized array",
-            "Argument offsetX must be greater than equals 0.",
-            "Argument incX must be greater than 0.",
-            "Vector specification too large for bufferX."
-        },
-        {
-            "uninitialized array",
-            "Argument offsetY must be greater than equals 0.",
-            "Argument incY must be greater than 0.",
-            "Vector specification too large for bufferY."
-        },
+    static const char *message[4] = {
+        "buffer%s is not initialized",
+        "Argument offset%s must be greater than equals 0.",
+        "Argument inc%s must be greater than 0.",
+        "Vector specification too large for buffer%s."
     };
     if(buffer->data==NULL) {
-        zend_throw_exception(spl_ce_DomainException, message[name][0], 0);
+        zend_throw_exception_ex(spl_ce_DomainException, 0, message[0],name);
         return -1;
     }
     if(offset<0) {
-        zend_throw_exception(spl_ce_RuntimeException, message[name][1], 0);
+        zend_throw_exception_ex(spl_ce_RuntimeException, 0, message[1],name);
         return -1;
     }
     if(inc<1) {
-        zend_throw_exception(spl_ce_RuntimeException, message[name][2], 0);
+        zend_throw_exception_ex(spl_ce_RuntimeException, 0, message[2],name);
         return -1;
     }
     if(offset+(n-1)*inc >= buffer->size) {
-        zend_throw_exception(spl_ce_RuntimeException, message[name][3], 0);
+        zend_throw_exception_ex(spl_ce_RuntimeException, 0, message[3],name);
         return -1;
     }
 
