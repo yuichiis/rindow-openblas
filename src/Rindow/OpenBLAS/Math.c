@@ -1910,6 +1910,7 @@ static PHP_METHOD(Math, log)
     }
 }
 /* }}} */
+
 /*
    X := tanh(X)
 
@@ -1964,6 +1965,198 @@ static PHP_METHOD(Math, tanh)
                     double t;
                     t = x[i*incX];
                     x[i*incX] = tanh(t);
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/*
+   X := sin(X)
+
+   Method Rindow\OpenBLAS\Math::
+    public function sin(
+        int $n,
+        Buffer $X, int $offsetX, int $incX) : void
+ {{{ */
+static PHP_METHOD(Math, sin)
+{
+    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    zend_long n;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    zend_long i;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        "X", buffer,n,offsetX,incX)) {
+        return;
+    }
+    switch (buffer->dtype) {
+        case php_interop_polite_math_matrix_dtype_float32:
+            {
+                float *x = &(((float *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    float t;
+                    t = x[i*incX];
+                    x[i*incX] = sinf(t);
+                }
+            }
+            break;
+        case php_interop_polite_math_matrix_dtype_float64:
+            {
+                double *x = &(((double *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    double t;
+                    t = x[i*incX];
+                    x[i*incX] = sin(t);
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/*
+   X := cos(X)
+
+   Method Rindow\OpenBLAS\Math::
+    public function cos(
+        int $n,
+        Buffer $X, int $offsetX, int $incX) : void
+ {{{ */
+static PHP_METHOD(Math, cos)
+{
+    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    zend_long n;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    zend_long i;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        "X", buffer,n,offsetX,incX)) {
+        return;
+    }
+    switch (buffer->dtype) {
+        case php_interop_polite_math_matrix_dtype_float32:
+            {
+                float *x = &(((float *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    float t;
+                    t = x[i*incX];
+                    x[i*incX] = cosf(t);
+                }
+            }
+            break;
+        case php_interop_polite_math_matrix_dtype_float64:
+            {
+                double *x = &(((double *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    double t;
+                    t = x[i*incX];
+                    x[i*incX] = cos(t);
+                }
+            }
+            break;
+        default:
+            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            return;
+    }
+}
+/* }}} */
+
+/*
+   X := tan(X)
+
+   Method Rindow\OpenBLAS\Math::
+    public function tan(
+        int $n,
+        Buffer $X, int $offsetX, int $incX) : void
+ {{{ */
+static PHP_METHOD(Math, tan)
+{
+    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    zend_long n;
+    zval* x=NULL;
+    zend_long offsetX;
+    zend_long incX;
+    zend_long i;
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 4, 4)
+        Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetX)
+        Z_PARAM_LONG(incX)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if(php_rindow_openblas_assert_shape_parameter(
+        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        return;
+    }
+    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_vector_buffer_spec(
+        "X", buffer,n,offsetX,incX)) {
+        return;
+    }
+    switch (buffer->dtype) {
+        case php_interop_polite_math_matrix_dtype_float32:
+            {
+                float *x = &(((float *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    float t;
+                    t = x[i*incX];
+                    x[i*incX] = tanf(t);
+                }
+            }
+            break;
+        case php_interop_polite_math_matrix_dtype_float64:
+            {
+                double *x = &(((double *)buffer->data)[offsetX]);
+                for(i=0;i<n;i++) {
+                    double t;
+                    t = x[i*incX];
+                    x[i*incX] = tan(t);
                 }
             }
             break;
@@ -2774,7 +2967,8 @@ static PHP_METHOD(Math, matrixcopy)
         int $heightShift,
         int $widthShift,
         bool $verticalFlip,
-        bool $horizontalFlip
+        bool $horizontalFlip,
+        bool $rgbFlip
     ) : void
  {{{ */
 static PHP_METHOD(Math, imagecopy)
@@ -2791,12 +2985,13 @@ static PHP_METHOD(Math, imagecopy)
     zend_long widthShift;
     zend_bool verticalFlip;
     zend_bool horizontalFlip;
+    zend_bool rgbFlip;
     php_interop_polite_math_matrix_linear_buffer_t* bufferA;
     php_interop_polite_math_matrix_linear_buffer_t* bufferB;
     zend_long ldC,ldY,ldX;
     zend_long directionY,directionX,biasY,biasX;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 12, 12)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 13, 13)
         Z_PARAM_LONG(height)
         Z_PARAM_LONG(width)
         Z_PARAM_LONG(channels)
@@ -2811,6 +3006,7 @@ static PHP_METHOD(Math, imagecopy)
 
         Z_PARAM_BOOL(verticalFlip)
         Z_PARAM_BOOL(horizontalFlip)
+        Z_PARAM_BOOL(rgbFlip)
     ZEND_PARSE_PARAMETERS_END();
 
     if(height<1) {
@@ -2891,8 +3087,9 @@ static PHP_METHOD(Math, imagecopy)
                             } else if(sx>=width) {
                                 sx = width-1;
                             }
+                            zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
                             b[y*ldY+x*ldX+c*ldC] =
-                                a[sy*ldY+sx*ldX+c*ldC];
+                                a[sy*ldY+sx*ldX+srcc*ldC];
                         }
                     }
                 }
@@ -2917,8 +3114,36 @@ static PHP_METHOD(Math, imagecopy)
                             } else if(sx>=width) {
                                 sx = width-1;
                             }
+                            zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
                             b[y*ldY+x*ldX+c*ldC] =
-                                a[sy*ldY+sx*ldX+c*ldC];
+                                a[sy*ldY+sx*ldX+srcc*ldC];
+                        }
+                    }
+                }
+            }
+            break;
+        case php_interop_polite_math_matrix_dtype_uint8:
+            {
+                uint8_t *a = &(((uint8_t *)bufferA->data)[offsetA]);
+                uint8_t *b = &(((uint8_t *)bufferB->data)[offsetB]);
+                for(zend_long y=0;y<height;y++) {
+                    for(zend_long x=0;x<width;x++) {
+                        for(zend_long c=0;c<channels;c++) {
+                            zend_long sy = y*directionY+biasY;
+                            zend_long sx = x*directionX+biasX;
+                            if(sy<0) {
+                                sy = 0;
+                            } else if(sy>=height) {
+                                sy = height-1;
+                            }
+                            if(sx<0) {
+                                sx = 0;
+                            } else if(sx>=width) {
+                                sx = width-1;
+                            }
+                            zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
+                            b[y*ldY+x*ldX+c*ldC] =
+                                a[sy*ldY+sx*ldX+srcc*ldC];
                         }
                     }
                 }
@@ -3614,6 +3839,27 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_tanh, 0, 0, 4)
     ZEND_ARG_INFO(0, incX)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_sin, 0, 0, 4)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_cos, 0, 0, 4)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_tan, 0, 0, 4)
+    ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetX)
+    ZEND_ARG_INFO(0, incX)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_zeros, 0, 0, 4)
     ZEND_ARG_INFO(0, n)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
@@ -3766,7 +4012,7 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_matrixcopy, 0, 0, 10)
     ZEND_ARG_INFO(0, ldB)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_imagecopy, 0, 0, 12)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_imagecopy, 0, 0, 13)
     ZEND_ARG_INFO(0, height)
     ZEND_ARG_INFO(0, width)
     ZEND_ARG_INFO(0, channels)
@@ -3779,6 +4025,7 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_imagecopy, 0, 0, 12)
     ZEND_ARG_INFO(0, widthShift)
     ZEND_ARG_INFO(0, verticalFlip)
     ZEND_ARG_INFO(0, horizontalFlip)
+    ZEND_ARG_INFO(0, rgbFlip)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_fill, 0, 0, 6)
@@ -3964,6 +4211,9 @@ static zend_function_entry php_rindow_openblas_math_me[] = {
     PHP_ME(Math, exp,            ai_Math_exp,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, log,            ai_Math_log,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, tanh,           ai_Math_tanh,           ZEND_ACC_PUBLIC)
+    PHP_ME(Math, sin,            ai_Math_sin,            ZEND_ACC_PUBLIC)
+    PHP_ME(Math, cos,            ai_Math_cos,            ZEND_ACC_PUBLIC)
+    PHP_ME(Math, tan,            ai_Math_tan,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, zeros,          ai_Math_zeros,          ZEND_ACC_PUBLIC)
     PHP_ME(Math, gather,         ai_Math_gather,         ZEND_ACC_PUBLIC)
     PHP_ME(Math, reduceGather,   ai_Math_reduceGather,   ZEND_ACC_PUBLIC)
