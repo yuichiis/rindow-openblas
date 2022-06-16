@@ -306,7 +306,7 @@ static PHP_METHOD(Math, sum)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -395,7 +395,7 @@ static PHP_METHOD(Math, imax)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -466,7 +466,7 @@ static PHP_METHOD(Math, imin)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -542,7 +542,7 @@ static PHP_METHOD(Math, increment)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -608,7 +608,7 @@ static PHP_METHOD(Math, reciprocal)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -660,59 +660,88 @@ static PHP_METHOD(Math, reciprocal)
 /* }}} */
 
 /*
-   X := X  (X > a)
-   X := a  (X <= a)
+    A[m,n] := A[m,n] (A[m,n] >  X[n])
+    A[m,n] := X[n]   (A[m,n] <= X[n])
 
    Method Rindow\OpenBLAS\Math::
     public function maximum(
+        int $m,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        float $alpha) : void
+        ) : void
  {{{ */
 static PHP_METHOD(Math, maximum)
 {
-    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferA;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferX;
+    zend_long m;
     zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
-    double alpha;
-    zend_long i;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 8, 8)
+        Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
-        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "m", m)) {
         return;
     }
-    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
-    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+    if(php_rindow_openblas_assert_shape_parameter(
+        "n", n)) {
+        return;
+    }
+    bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_buffer_type(bufferA,"a")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        "A", bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(bufferX,"x")) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", buffer,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
-    switch (buffer->dtype) {
+    // Check Buffer X and A
+    if(bufferA->dtype!=bufferX->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and X", 0);
+        return;
+    }
+    switch (bufferA->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:
             {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                if(isnan(alpha)) {
-                    for(i=0;i<n;i++) {
-                        x[i*incX] = (float)alpha;
-                    }
-                } else {
-                    for(i=0;i<n;i++) {
-                        // *** CAUTION ***
-                        // if NaN then don't set alpha
-                        if(x[i*incX] < (float)alpha) {
-                            x[i*incX] = (float)alpha;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                float *x = &(((float *)bufferX->data)[offsetX]);
+                float value;
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        value = x[j*incX];
+                        if(isnan(value)) {
+                            a[i*ldA+j] = value;
+                        } else {
+                            // *** CAUTION ***
+                            // if NaN then don't set alpha
+                            if(a[i*ldA+j] < value) {
+                                a[i*ldA+j] = value;
+                            }
                         }
                     }
                 }
@@ -720,17 +749,20 @@ static PHP_METHOD(Math, maximum)
             break;
         case php_interop_polite_math_matrix_dtype_float64:
             {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                if(isnan(alpha)) {
-                    for(i=0;i<n;i++) {
-                        x[i*incX] = (double)alpha;
-                    }
-                } else {
-                    for(i=0;i<n;i++) {
-                        // *** CAUTION ***
-                        // if NaN then don't set alpha
-                        if(x[i*incX] < (double)alpha) {
-                            x[i*incX] = (double)alpha;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                double *x = &(((double *)bufferX->data)[offsetX]);
+                double value;
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        value = x[j*incX];
+                        if(isnan(value)) {
+                            a[i*ldA+j] = value;
+                        } else {
+                            // *** CAUTION ***
+                            // if NaN then don't set alpha
+                            if(a[i*ldA+j] < value) {
+                                a[i*ldA+j] = value;
+                            }
                         }
                     }
                 }
@@ -743,60 +775,90 @@ static PHP_METHOD(Math, maximum)
 }
 /* }}} */
 
+
 /*
-    X := X  (X < a)
-    X := a  (X >= a)
+    A[m,n] := A[m,n] (A[m,n] <  X[n])
+    A[m,n] := X[n]   (A[m,n] >= X[n])
 
    Method Rindow\OpenBLAS\Math::
     public function minimum(
+        int $m,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        float $alpha) : void
+        ) : void
  {{{ */
 static PHP_METHOD(Math, minimum)
 {
-    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferA;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferX;
+    zend_long m;
     zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
-    double alpha;
-    zend_long i;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 8, 8)
+        Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
-        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "m", m)) {
         return;
     }
-    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
-    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+    if(php_rindow_openblas_assert_shape_parameter(
+        "n", n)) {
+        return;
+    }
+    bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_buffer_type(bufferA,"a")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        "A", bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(bufferX,"x")) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", buffer,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
-    switch (buffer->dtype) {
+    // Check Buffer X and A
+    if(bufferA->dtype!=bufferX->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and X", 0);
+        return;
+    }
+    switch (bufferA->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:
             {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                if(isnan(alpha)) {
-                    for(i=0;i<n;i++) {
-                        x[i*incX] = (float)alpha;
-                    }
-                } else {
-                    for(i=0;i<n;i++) {
-                        // *** CAUTION ***
-                        // if NaN don't set alpha
-                        if(x[i*incX] > (float)alpha) {
-                            x[i*incX] = (float)alpha;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                float *x = &(((float *)bufferX->data)[offsetX]);
+                float value;
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        value = x[j*incX];
+                        if(isnan(value)) {
+                            a[i*ldA+j] = value;
+                        } else {
+                            // *** CAUTION ***
+                            // if NaN then don't set alpha
+                            if(a[i*ldA+j] > value) {
+                                a[i*ldA+j] = value;
+                            }
                         }
                     }
                 }
@@ -804,17 +866,20 @@ static PHP_METHOD(Math, minimum)
             break;
         case php_interop_polite_math_matrix_dtype_float64:
             {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                if(isnan(alpha)) {
-                    for(i=0;i<n;i++) {
-                        x[i*incX] = (double)alpha;
-                    }
-                } else {
-                    for(i=0;i<n;i++) {
-                        // *** CAUTION ***
-                        // if NaN don't set alpha
-                        if(x[i*incX] > (double)alpha) {
-                            x[i*incX] = (double)alpha;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                double *x = &(((double *)bufferX->data)[offsetX]);
+                double value;
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        value = x[j*incX];
+                        if(isnan(value)) {
+                            a[i*ldA+j] = value;
+                        } else {
+                            // *** CAUTION ***
+                            // if NaN then don't set alpha
+                            if(a[i*ldA+j] > value) {
+                                a[i*ldA+j] = value;
+                            }
                         }
                     }
                 }
@@ -827,74 +892,105 @@ static PHP_METHOD(Math, minimum)
 }
 /* }}} */
 
-
 /*
-      X := 1  (X >= a)
-      X := 0  (X <  a)
+    A[m,n] := 1 (A[m,n] >  X[n])
+    A[m,n] := 0 (A[m,n] <= X[n])
 
    Method Rindow\OpenBLAS\Math::
     public function greater(
+        int $m,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        float $alpha) : void
+        ) : void
  {{{ */
 static PHP_METHOD(Math, greater)
 {
-    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferA;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferX;
+    zend_long m;
     zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
-    double alpha;
-    zend_long i;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 8, 8)
+        Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
-        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "m", m)) {
         return;
     }
-    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
-    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+    if(php_rindow_openblas_assert_shape_parameter(
+        "n", n)) {
+        return;
+    }
+    bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_buffer_type(bufferA,"a")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        "A", bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(bufferX,"x")) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", buffer,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
-    switch (buffer->dtype) {
+    // Check Buffer X and A
+    if(bufferA->dtype!=bufferX->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and X", 0);
+        return;
+    }
+    switch (bufferA->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:
             {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 0.0
-                    if(x[i*incX] > (float)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                float *x = &(((float *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 0.0
+                        if(a[i*ldA+j] > x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
             break;
         case php_interop_polite_math_matrix_dtype_float64:
             {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 0.0
-                    if(x[i*incX] > (double)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                double *x = &(((double *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 0.0
+                        if(a[i*ldA+j] > x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
@@ -907,72 +1003,104 @@ static PHP_METHOD(Math, greater)
 /* }}} */
 
 /*
-      X := 1  (X >= a)
-      X := 0  (X <  a)
+    A[m,n] := 1 (A[m,n] >= X[n])
+    A[m,n] := 0 (A[m,n] <  X[n])
 
    Method Rindow\OpenBLAS\Math::
     public function greaterEqual(
+        int $m,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        float $alpha) : void
+        ) : void
  {{{ */
 static PHP_METHOD(Math, greaterEqual)
 {
-    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferA;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferX;
+    zend_long m;
     zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
-    double alpha;
-    zend_long i;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 8, 8)
+        Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
-        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "m", m)) {
         return;
     }
-    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
-    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+    if(php_rindow_openblas_assert_shape_parameter(
+        "n", n)) {
+        return;
+    }
+    bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_buffer_type(bufferA,"a")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        "A", bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(bufferX,"x")) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", buffer,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
-    switch (buffer->dtype) {
+    // Check Buffer X and A
+    if(bufferA->dtype!=bufferX->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and X", 0);
+        return;
+    }
+    switch (bufferA->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:
             {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 1.0
-                    if(x[i*incX] >= (float)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                float *x = &(((float *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 1.0
+                        if(a[i*ldA+j] >= x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
             break;
         case php_interop_polite_math_matrix_dtype_float64:
             {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 1.0
-                    if(x[i*incX] >= (double)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                double *x = &(((double *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 1.0
+                        if(a[i*ldA+j] >= x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
@@ -985,72 +1113,104 @@ static PHP_METHOD(Math, greaterEqual)
 /* }}} */
 
 /*
-        X := 1  (X <  a)
-        X := 0  (X >= a)
+    A[m,n] := 1 (A[m,n] <  X[n])
+    A[m,n] := 0 (A[m,n] >= X[n])
 
    Method Rindow\OpenBLAS\Math::
     public function less(
+        int $m,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        float $alpha) : void
+        ) : void
  {{{ */
 static PHP_METHOD(Math, less)
 {
-    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferA;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferX;
+    zend_long m;
     zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
-    double alpha;
-    zend_long i;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 8, 8)
+        Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
-        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "m", m)) {
         return;
     }
-    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
-    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+    if(php_rindow_openblas_assert_shape_parameter(
+        "n", n)) {
+        return;
+    }
+    bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_buffer_type(bufferA,"a")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        "A", bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(bufferX,"x")) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", buffer,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
-    switch (buffer->dtype) {
+    // Check Buffer X and A
+    if(bufferA->dtype!=bufferX->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and X", 0);
+        return;
+    }
+    switch (bufferA->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:
             {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 0.0
-                    if(x[i*incX] < (float)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                float *x = &(((float *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 0.0
+                        if(a[i*ldA+j] < x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
             break;
         case php_interop_polite_math_matrix_dtype_float64:
             {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 0.0
-                    if(x[i*incX] < (double)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                double *x = &(((double *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 1.0
+                        if(a[i*ldA+j] < x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
@@ -1062,73 +1222,106 @@ static PHP_METHOD(Math, less)
 }
 /* }}} */
 
+
 /*
-        X := 1  (X <= a)
-        X := 0  (X >  a)
+    A[m,n] := 1 (A[m,n] <= X[n])
+    A[m,n] := 0 (A[m,n] >  X[n])
 
    Method Rindow\OpenBLAS\Math::
     public function lessEqual(
+        int $m,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
-        float $alpha) : void
+        ) : void
  {{{ */
 static PHP_METHOD(Math, lessEqual)
 {
-    php_interop_polite_math_matrix_linear_buffer_t* buffer;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferA;
+    php_interop_polite_math_matrix_linear_buffer_t* bufferX;
+    zend_long m;
     zend_long n;
+    zval* a=NULL;
+    zend_long offsetA;
+    zend_long ldA;
     zval* x=NULL;
     zend_long offsetX;
     zend_long incX;
-    double alpha;
-    zend_long i;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 8, 8)
+        Z_PARAM_LONG(m)
         Z_PARAM_LONG(n)
+        Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
+        Z_PARAM_LONG(offsetA)
+        Z_PARAM_LONG(ldA)
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
         Z_PARAM_LONG(incX)
-        Z_PARAM_DOUBLE(alpha)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "m", m)) {
         return;
     }
-    buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
-    if(php_rindow_openblas_assert_buffer_type(buffer,"x")) {
+    if(php_rindow_openblas_assert_shape_parameter(
+        "n", n)) {
+        return;
+    }
+    bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
+    if(php_rindow_openblas_assert_buffer_type(bufferA,"a")) {
+        return;
+    }
+    if(php_rindow_openblas_assert_matrix_buffer_spec(
+        "A", bufferA,m,n,offsetA,ldA)) {
+        return;
+    }
+
+    bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
+    if(php_rindow_openblas_assert_buffer_type(bufferX,"x")) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", buffer,n,offsetX,incX)) {
+        "X", bufferX,n,offsetX,incX)) {
         return;
     }
-    switch (buffer->dtype) {
+    // Check Buffer X and A
+    if(bufferA->dtype!=bufferX->dtype) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "Unmatch data type for A and X", 0);
+        return;
+    }
+    switch (bufferA->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:
             {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 1.0
-                    if(x[i*incX] <= (float)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                float *a = &(((float *)bufferA->data)[offsetA]);
+                float *x = &(((float *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 0.0
+                        if(a[i*ldA+j] <= x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
             break;
         case php_interop_polite_math_matrix_dtype_float64:
             {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                for(i=0;i<n;i++) {
-                    // *** CAUTION ***
-                    // if NaN set 0.0
-                    // if equal set 1.0
-                    if(x[i*incX] <= (double)alpha) {
-                        x[i*incX] = 1.0;
-                    } else {
-                        x[i*incX] = 0.0;
+                double *a = &(((double *)bufferA->data)[offsetA]);
+                double *x = &(((double *)bufferX->data)[offsetX]);
+                for(zend_long i=0;i<m;i++) {
+                    for(zend_long j=0;j<n;j++) {
+                        // *** CAUTION ***
+                        // if NaN set 0.0
+                        // if equal set 1.0
+                        if(a[i*ldA+j] <= x[j*incX]) {
+                            a[i*ldA+j] = 1.0;
+                        } else {
+                            a[i*ldA+j] = 0.0;
+                        }
                     }
                 }
             }
@@ -1139,6 +1332,7 @@ static PHP_METHOD(Math, lessEqual)
     }
 }
 /* }}} */
+
 
 /*
    A(i) := X(i) * A(i)
@@ -1179,11 +1373,11 @@ static PHP_METHOD(Math, multiply)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -1207,7 +1401,7 @@ static PHP_METHOD(Math, multiply)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,m,n,offsetA,ldA)) {
+        "A", bufferA,m,n,offsetA,ldA)) {
         return;
     }
 
@@ -1295,11 +1489,11 @@ static PHP_METHOD(Math, add)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -1323,7 +1517,7 @@ static PHP_METHOD(Math, add)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,m,n,offsetA,ldA)) {
+        "A", bufferA,m,n,offsetA,ldA)) {
         return;
     }
 
@@ -1408,11 +1602,11 @@ static PHP_METHOD(Math, duplicate)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     if(!trans) {
@@ -1436,7 +1630,7 @@ static PHP_METHOD(Math, duplicate)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,m,n,offsetA,ldA)) {
+        "A", bufferA,m,n,offsetA,ldA)) {
         return;
     }
 
@@ -1507,7 +1701,7 @@ static PHP_METHOD(Math, square)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -1567,7 +1761,7 @@ static PHP_METHOD(Math, sqrt)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -1649,7 +1843,7 @@ static PHP_METHOD(Math, rsqrt)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -1740,7 +1934,7 @@ static PHP_METHOD(Math, pow)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -1800,7 +1994,7 @@ static PHP_METHOD(Math, exp)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -1860,7 +2054,7 @@ static PHP_METHOD(Math, log)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -1936,7 +2130,7 @@ static PHP_METHOD(Math, tanh)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -2000,7 +2194,7 @@ static PHP_METHOD(Math, sin)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -2064,7 +2258,7 @@ static PHP_METHOD(Math, cos)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -2128,7 +2322,7 @@ static PHP_METHOD(Math, tan)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -2191,7 +2385,7 @@ static PHP_METHOD(Math, zeros)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -2436,11 +2630,11 @@ static PHP_METHOD(Math, updateAddOnehot)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -2459,7 +2653,7 @@ static PHP_METHOD(Math, updateAddOnehot)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_Y, bufferY,m,n,offsetY,ldY)) {
+        "Y", bufferY,m,n,offsetY,ldY)) {
         return;
     }
 
@@ -2542,11 +2736,11 @@ static PHP_METHOD(Math, softmax)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
@@ -2554,7 +2748,7 @@ static PHP_METHOD(Math, softmax)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_A, buffer,m,n,offsetA,ldA)) {
+        "A", buffer,m,n,offsetA,ldA)) {
         return;
     }
     switch (buffer->dtype) {
@@ -2648,7 +2842,7 @@ static PHP_METHOD(Math, equal)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -2767,7 +2961,7 @@ static PHP_METHOD(Math, astype)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     bufferX = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -2865,11 +3059,11 @@ static PHP_METHOD(Math, matrixcopy)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer A
@@ -2878,7 +3072,7 @@ static PHP_METHOD(Math, matrixcopy)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,m,n,offsetA,ldA)) {
+        "A", bufferA,m,n,offsetA,ldA)) {
         return;
     }
 
@@ -2897,7 +3091,7 @@ static PHP_METHOD(Math, matrixcopy)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,rows,cols,offsetB,ldB)) {
+            "B", bufferB,rows,cols,offsetB,ldB)) {
             return;
         }
     }
@@ -3186,7 +3380,7 @@ static PHP_METHOD(Math, fill)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer V
@@ -3255,7 +3449,7 @@ static PHP_METHOD(Math, nan2num)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -3319,7 +3513,7 @@ static PHP_METHOD(Math, isnan)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -3411,11 +3605,11 @@ static PHP_METHOD(Math, searchsorted)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer A
@@ -3561,7 +3755,7 @@ static PHP_METHOD(Math, cumsum)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
 
@@ -3702,52 +3896,70 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_reciprocal, 0, 0, 6)
     ZEND_ARG_INFO(0, beta)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_maximum, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_maximum, 0, 0, 8)
+    ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
-    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_minimum, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_minimum, 0, 0, 8)
+    ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
-    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_greater, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_greater, 0, 0, 8)
+    ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
-    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_greaterEqual, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_greaterEqual, 0, 0, 8)
+    ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
-    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_less, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_less, 0, 0, 8)
+    ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
-    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(ai_Math_lessEqual, 0, 0, 5)
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_lessEqual, 0, 0, 8)
+    ZEND_ARG_INFO(0, m)
     ZEND_ARG_INFO(0, n)
+    ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
+    ZEND_ARG_INFO(0, offsetA)
+    ZEND_ARG_INFO(0, ldA)
     ZEND_ARG_OBJ_INFO(0, x, Interop\\Polite\\Math\\Matrix\\LinearBuffer, 0)
     ZEND_ARG_INFO(0, offsetX)
     ZEND_ARG_INFO(0, incX)
-    ZEND_ARG_INFO(0, alpha)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(ai_Math_multiply, 0, 0, 9)

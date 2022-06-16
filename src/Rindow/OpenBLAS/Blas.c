@@ -108,7 +108,7 @@ static PHP_METHOD(Blas, scal)
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
@@ -161,7 +161,7 @@ static PHP_METHOD(Blas, axpy)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -238,7 +238,7 @@ static PHP_METHOD(Blas, dot)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -309,7 +309,7 @@ static PHP_METHOD(Blas, asum)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -357,7 +357,7 @@ static PHP_METHOD(Blas, iamax)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -406,7 +406,7 @@ static PHP_METHOD(Blas, iamin)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -462,7 +462,7 @@ static PHP_METHOD(Blas, copy)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -545,7 +545,7 @@ static PHP_METHOD(Blas, nrm2)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     buffer = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(x);
@@ -719,7 +719,7 @@ static PHP_METHOD(Blas, rot)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -822,7 +822,7 @@ static PHP_METHOD(Blas, swap)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer X
@@ -921,11 +921,11 @@ static PHP_METHOD(Blas, gemv)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer A
@@ -934,7 +934,7 @@ static PHP_METHOD(Blas, gemv)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,m,n,offsetA,ldA)) {
+        "A", bufferA,m,n,offsetA,ldA)) {
         return;
     }
 
@@ -1065,15 +1065,15 @@ static PHP_METHOD(Blas, gemm)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_K, k)) {
+        "k", k)) {
         return;
     }
     // Check Buffer A
@@ -1092,7 +1092,7 @@ static PHP_METHOD(Blas, gemm)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,cols,offsetA,ldA)) {
+            "A", bufferA,rows,cols,offsetA,ldA)) {
             return;
         }
     }
@@ -1113,7 +1113,7 @@ static PHP_METHOD(Blas, gemm)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,rows,cols,offsetB,ldB)) {
+            "B", bufferB,rows,cols,offsetB,ldB)) {
             return;
         }
     }
@@ -1124,7 +1124,7 @@ static PHP_METHOD(Blas, gemm)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,m,n,offsetC,ldC)) {
+        "C", bufferC,m,n,offsetC,ldC)) {
         return;
     }
 
@@ -1221,11 +1221,11 @@ static PHP_METHOD(Blas, symm)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer A
@@ -1248,7 +1248,7 @@ static PHP_METHOD(Blas, symm)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,rows,offsetA,ldA)) {
+            "A", bufferA,rows,rows,offsetA,ldA)) {
             return;
         }
     }
@@ -1260,7 +1260,7 @@ static PHP_METHOD(Blas, symm)
     }
     {
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,m,n,offsetB,ldB)) {
+            "B", bufferB,m,n,offsetB,ldB)) {
             return;
         }
     }
@@ -1271,7 +1271,7 @@ static PHP_METHOD(Blas, symm)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,m,n,offsetC,ldC)) {
+        "C", bufferC,m,n,offsetC,ldC)) {
         return;
     }
 
@@ -1360,11 +1360,11 @@ static PHP_METHOD(Blas, syrk)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_K, k)) {
+        "k", k)) {
         return;
     }
     // Check Buffer A
@@ -1383,7 +1383,7 @@ static PHP_METHOD(Blas, syrk)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,cols,offsetA,ldA)) {
+            "A", bufferA,rows,cols,offsetA,ldA)) {
             return;
         }
     }
@@ -1394,7 +1394,7 @@ static PHP_METHOD(Blas, syrk)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,n,n,offsetC,ldC)) {
+        "C", bufferC,n,n,offsetC,ldC)) {
         return;
     }
 
@@ -1489,11 +1489,11 @@ static PHP_METHOD(Blas, syr2k)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, k)) {
+        "k", k)) {
         return;
     }
     // Check Buffer A and B
@@ -1516,11 +1516,11 @@ static PHP_METHOD(Blas, syr2k)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,rows,cols,offsetA,ldA)) {
+            "A", bufferA,rows,cols,offsetA,ldA)) {
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,rows,cols,offsetB,ldB)) {
+            "B", bufferB,rows,cols,offsetB,ldB)) {
             return;
         }
     }
@@ -1531,7 +1531,7 @@ static PHP_METHOD(Blas, syr2k)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_C, bufferC,n,n,offsetC,ldC)) {
+        "C", bufferC,n,n,offsetC,ldC)) {
         return;
     }
 
@@ -1623,11 +1623,11 @@ static PHP_METHOD(Blas, trmm)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer A
@@ -1646,7 +1646,7 @@ static PHP_METHOD(Blas, trmm)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,sizeA,sizeA,offsetA,ldA)) {
+            "A", bufferA,sizeA,sizeA,offsetA,ldA)) {
             return;
         }
     }
@@ -1655,7 +1655,7 @@ static PHP_METHOD(Blas, trmm)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,m,n,offsetB,ldB)) {
+        "B", bufferB,m,n,offsetB,ldB)) {
         return;
     }
 
@@ -1747,11 +1747,11 @@ static PHP_METHOD(Blas, trsm)
     ZEND_PARSE_PARAMETERS_END();
 
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_M, m)) {
+        "m", m)) {
         return;
     }
     if(php_rindow_openblas_assert_shape_parameter(
-        PHP_RINDOW_OPENBLAS_ASSERT_N, n)) {
+        "n", n)) {
         return;
     }
     // Check Buffer A
@@ -1770,7 +1770,7 @@ static PHP_METHOD(Blas, trsm)
             return;
         }
         if(php_rindow_openblas_assert_matrix_buffer_spec(
-            PHP_RINDOW_OPENBLAS_ASSERT_A, bufferA,sizeA,sizeA,offsetA,ldA)) {
+            "A", bufferA,sizeA,sizeA,offsetA,ldA)) {
             return;
         }
     }
@@ -1779,7 +1779,7 @@ static PHP_METHOD(Blas, trsm)
         return;
     }
     if(php_rindow_openblas_assert_matrix_buffer_spec(
-        PHP_RINDOW_OPENBLAS_ASSERT_B, bufferB,m,n,offsetB,ldB)) {
+        "B", bufferB,m,n,offsetB,ldB)) {
         return;
     }
 
