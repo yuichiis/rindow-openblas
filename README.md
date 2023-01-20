@@ -13,7 +13,7 @@ Very useful when you want to do deep learning with PHP!
 Requirements
 ============
 
-- PHP7.2 or PHP7.3 or PHP7.4 or PHP8.0 or PHP8.1
+- PHP7.2 or PHP7.3 or PHP7.4 or PHP8.0 or PHP8.1 or PHP8.2
 - Linux or Windows 10
 - OpenBLAS
 
@@ -47,6 +47,7 @@ $ sudo apt install ./rindow-openblas-phpX.X_X.X.X-X+ubuntuXX.XX_amd64.deb
 How to build from source code on Linux
 ======================================
 You can also build and use from source code.
+(Please change the notation of the php version number according to your environment.)
 
 Install build tools and OpenBLAS libray
 ---------------------------------------
@@ -58,7 +59,7 @@ $ sudo apt install build-essential autoconf automake libtool bison re2c
 $ sudo apt install pkg-config
 $ sudo apt install libopenblas-dev
 $ sudo apt install liblapacke-dev
-$ sudo apt install php7.4-dev
+$ sudo apt install php8.1-dev
 ```
  If you want to use the latest version of openblas, download the source code from [the site](https://github.com/xianyi/OpenBLAS/releases), build it, and set the installation location of openblas in PKG_CONFIG_PATH
 
@@ -67,10 +68,10 @@ Run the target php version of phpize and build.
 
 ```shell
 $ git clone https://github.com/rindow/rindow-openblas
-$ cd rindow_openblas
+$ cd rindow-openblas
 $ composer update
-$ phpize7.4
-$ ./configure --enable-rindow_openblas --with-php-config=php-config7.4
+$ phpize8.1
+$ ./configure --enable-rindow_openblas --with-php-config=php-config8.1
 $ make clean
 $ make
 $ make test
