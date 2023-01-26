@@ -60,10 +60,12 @@ static PHP_METHOD(Blas, __construct)
     const char *conf;
     int verlen;
     conf = openblas_get_config();
-    version = strtrim(OPENBLAS_VERSION,&verlen);
+    //version = strtrim(OPENBLAS_VERSION,&verlen);
+    version = strtrim(" DOMMY TEST ",&verlen);
 
     if(strncmp(version, conf, verlen)!=0) {
         zend_throw_exception_ex(spl_ce_RuntimeException, 0, "Requires %s. But the wrong version of the library is set.",version);
+        return;
     }
 }
 
