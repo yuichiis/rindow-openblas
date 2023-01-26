@@ -36,7 +36,7 @@ static zend_object* php_rindow_openblas_blas_create_object(zend_class_entry* cla
     return intern;
 } /* }}} */
 
-static char *strtrim(const char *str, int *n)
+static const char *strtrim(const char *str, int *n)
 {
     const char *first = str;
     const char *last;
