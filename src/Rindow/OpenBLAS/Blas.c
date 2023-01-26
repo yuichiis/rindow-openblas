@@ -38,8 +38,8 @@ static zend_object* php_rindow_openblas_blas_create_object(zend_class_entry* cla
 
 static char *strtrim(const char *str, int *n)
 {
-    char *first = str;
-    char *last;
+    const char *first = str;
+    const char *last;
 
     for(;isspace((unsigned char)*first);first++);
     if(*first == '\0') {
