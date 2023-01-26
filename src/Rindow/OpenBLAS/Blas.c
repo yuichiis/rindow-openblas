@@ -56,8 +56,8 @@ static const char *strtrim(const char *str, int *n)
 /* Method Rindow\OpenBLAS\Buffer::__construct($size,$dtype) {{{ */
 static PHP_METHOD(Blas, __construct)
 {
-    char *version;
-    char *conf;
+    const char *version;
+    const char *conf;
     int verlen;
     conf = openblas_get_config();
     version = strtrim(OPENBLAS_VERSION,&verlen);
