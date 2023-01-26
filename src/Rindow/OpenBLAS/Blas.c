@@ -41,7 +41,7 @@ static char *strtrim(const char *str, int *n)
     char *first = str;
     char *last;
 
-    for(;isspace((unsigned char)*first);start++);
+    for(;isspace((unsigned char)*first);first++);
     if(*first == '\0') {
         *n = 0;
         return first;
