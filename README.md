@@ -184,6 +184,7 @@ Edit "#define PHP_BUILD_SYSTEM" line in the "/php-devel-pack-xxx/include/main/co
 Change the PHP_BUILD_SYSTEM definition to the same value as in "/php-devel-pack-xxx/include/main/config.pickle.h". If the values are not the same, a warning error will occur during build.
 
 And then Build.
+
 ```shell
 $ nmake clean
 $ nmake
