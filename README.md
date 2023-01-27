@@ -86,7 +86,9 @@ $ sudo make install
 ```
 Add the "extension=rindow_openblas" entry to php.ini or Make the file rindow_openblas.ini.
 
-If you want an easier install, use the following spell instead of "make install" and creating an ini file.```shell
+If you want an easier install, use the following spell instead of "make install" and creating an ini file.
+
+```shell
 $ sh ./packaging.sh 8.1
 $ sudo apt install ./rindow-openblas-php8.1_X.X.X-X+ubuntuXX.XX_amd64.deb
 ```
