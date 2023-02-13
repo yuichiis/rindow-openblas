@@ -7,6 +7,7 @@ ARG_WITH('flang', 'flang support', 'no');
 
 if (PHP_RINDOW_OPENBLAS != 'no') {
   var PHP_RINDOW_OPENBLAS_CFLAGS="\
+    /openmp:experimental \
     /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 \
     /I" + configure_module_dirname + " \
   ";
