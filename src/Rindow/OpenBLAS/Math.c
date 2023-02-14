@@ -288,7 +288,7 @@ int static php_rindow_openblas_math_copy(
     pDataX = (data_type *)source; \
     pDataY = (data_type *)dest; \
     for (i=0; i<n; i++) { \
-        *pDataY += *pDataX; \
+        *pDataY = *pDataX; \
         pDataY+=incDest; \
     } \
 }
@@ -729,7 +729,7 @@ static PHP_METHOD(Math, imax)
                 int maxIndex = 0;
                 zend_long i;
                 #pragma omp for
-                for (i=1; i<n; i++) {
+                for (i=0; i<n; i++) {
                     if(maxValue < pDataX[i*incX] || isnan(maxValue)) {
                         maxValue = pDataX[i*incX];
                         maxIndex = i;
@@ -754,7 +754,7 @@ static PHP_METHOD(Math, imax)
                 int maxIndex = 0;
                 zend_long i;
                 #pragma omp for
-                for (i=1; i<n; i++) {
+                for (i=0; i<n; i++) {
                     if(maxValue < pDataX[i*incX] || isnan(maxValue)) {
                         maxValue = pDataX[i*incX];
                         maxIndex = i;
@@ -822,7 +822,7 @@ static PHP_METHOD(Math, imin)
                 int minIndex = 0;
                 zend_long i;
                 #pragma omp for
-                for (i=1; i<n; i++) {
+                for (i=0; i<n; i++) {
                     if(minValue > pDataX[i*incX]) {
                         minValue = pDataX[i*incX];
                         minIndex = i;
@@ -830,7 +830,7 @@ static PHP_METHOD(Math, imin)
                 }
                 #pragma omp critical
                 {
-                    if(resultMin<minValue) {
+                    if(resultMin>minValue) {
                         resultMin = minValue;
                         resultIdx = minIndex;
                     }
@@ -847,7 +847,7 @@ static PHP_METHOD(Math, imin)
                 int minIndex = 0;
                 zend_long i;
                 #pragma omp for
-                for (i=1; i<n; i++) {
+                for (i=0; i<n; i++) {
                     if(minValue > pDataX[i*incX]) {
                         minValue = pDataX[i*incX];
                         minIndex = i;
@@ -855,7 +855,7 @@ static PHP_METHOD(Math, imin)
                 }
                 #pragma omp critical
                 {
-                    if(resultMin<minValue) {
+                    if(resultMin>minValue) {
                         resultMin = minValue;
                         resultIdx = minIndex;
                     }

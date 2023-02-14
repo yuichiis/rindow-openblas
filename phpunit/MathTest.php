@@ -105,6 +105,22 @@ class Test extends TestCase
         return [$m,$n,$AA,$offA,$n,$XX,$offX,1];
     }
 
+    public function translate_pow(
+        NDArray $X,
+        float $alpha
+        ) : array
+    {
+        $n = $X->size();
+        $XX = $X->buffer();
+        $offX = $X->offset();
+
+        return [
+            $n,
+            $XX,$offX,1,
+            $alpha
+        ];
+    }
+
     public function translate_multiply(
        NDArray $X,
        NDArray $A,
@@ -247,7 +263,39 @@ class Test extends TestCase
             $XX,$offX,1
         ];
     }
-/*
+
+    public function translate_fill(
+        $value,
+        NDArray $X
+        )
+    {
+        if(is_scalar($value)) {
+            if(is_string($value)) {
+                $value = ord($value);
+            }
+            $V = $this->alloc([1],$X->dtype());
+            $V[0] = $value;
+        } elseif($value instanceof NDArray) {
+            if($value->size()!=1) {
+                throw new InvalidArgumentException('Value must be scalar');
+            }
+            $V = $value;
+        } else {
+            throw new InvalidArgumentException('Invalid data type');
+        }
+        $n = $X->size();
+        $VV = $V->buffer();
+        $offV = $V->offset();
+        $XX = $X->buffer();
+        $offX = $X->offset();
+        return [
+            $n,
+            $VV, $offV,
+            $XX, $offX,1
+        ];
+    }
+
+    /*
     public function translate_selectAxis0(
         NDArray $A,
         NDArray $X,
@@ -3726,7 +3774,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $math->pow($N,$XX,$offX,$incX,$alpha);
         $this->assertEquals([1,4,9],$X->toArray());
@@ -3739,7 +3787,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $N = 0;
         $this->expectException(RuntimeException::class);
@@ -3754,7 +3802,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $offX = -1;
         $this->expectException(RuntimeException::class);
@@ -3769,7 +3817,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $incX = -1;
         $this->expectException(RuntimeException::class);
@@ -3784,7 +3832,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $XX = new \stdClass();
         $this->expectException(TypeError::class);
@@ -3799,7 +3847,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $XX = $mo->array([1,2])->buffer();
         $this->expectException(RuntimeException::class);
@@ -3814,7 +3862,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $offX = 1;
         $this->expectException(RuntimeException::class);
@@ -3829,7 +3877,7 @@ class Test extends TestCase
 
         $X = $mo->array([1,2,3]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,2);
+            $this->translate_pow($X,2);
 
         $incX = 2;
         $this->expectException(RuntimeException::class);
@@ -4097,6 +4145,24 @@ class Test extends TestCase
         $math->log($N,$XX,$offX,$incX);
     }
 
+    public function testfillNormal()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $X = $mo->array([NAN,NAN,NAN,NAN],NDArray::float32);
+        [$N, $VV, $offV, $XX, $offX, $incX] =
+            $this->translate_fill($mo->array(1.0,dtype:$X->dtype()),$X);
+        $math->fill($N, $VV, $offV, $XX, $offX, $incX);
+        $this->assertEquals([1,1,1,1],$X->toArray());
+
+        $X = $mo->array([NAN,NAN,NAN,NAN],NDArray::float64);
+        [$N, $VV, $offV, $XX, $offX, $incX] =
+            $this->translate_fill($mo->array(1.0,dtype:$X->dtype()),$X);
+        $math->fill($N, $VV, $offV, $XX, $offX, $incX);
+        $this->assertEquals([1,1,1,1],$X->toArray());
+    }
+
     public function testnan2numNormal()
     {
         $mo = new MatrixOperator();
@@ -4104,13 +4170,13 @@ class Test extends TestCase
 
         $X = $mo->array([NAN,2,4,NAN]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,0.0);
+            $this->translate_pow($X,0.0);
         $math->nan2num($N,$XX,$offX,$incX,$alpha);
         $this->assertEquals([0,2,4,0],$X->toArray());
 
         $X = $mo->array([NAN,2,4,NAN]);
         [$N,$XX,$offX,$incX,$alpha] =
-            $this->translate_maximum($X,1.0);
+            $this->translate_pow($X,1.0);
         $math->nan2num($N,$XX,$offX,$incX,$alpha);
         $this->assertEquals([1,2,4,1],$X->toArray());
     }
@@ -6335,29 +6401,29 @@ class Test extends TestCase
         $math->equal($n,$XX,$offX,$incX,$YY,$offY,$incY);
         $this->assertEquals([0,1,1,1,0],$Y->toArray());
 
-        $X = $mo->array([-1.0,-0.5,0.0,0.5,-1.0],NDArray::int8);
-        $Y = $mo->array([1.0,-0.5,0.0,0.5,1.0],NDArray::int8);
+        $X = $mo->array([-2,-1,0,1,-1],NDArray::int8);
+        $Y = $mo->array([ 1,-1,0,1, 1],NDArray::int8);
         $XX = $X->buffer();
         $YY = $Y->buffer();
         $math->equal($n,$XX,$offX,$incX,$YY,$offY,$incY);
         $this->assertEquals([0,1,1,1,0],$Y->toArray());
 
-        $X = $mo->array([-1.0,-0.5,0.0,0.5,-1.0],NDArray::int16);
-        $Y = $mo->array([1.0,-0.5,0.0,0.5,1.0],NDArray::int16);
+        $X = $mo->array([-2,-1,0,1,-1],NDArray::int16);
+        $Y = $mo->array([ 1,-1,0,1, 1],NDArray::int16);
         $XX = $X->buffer();
         $YY = $Y->buffer();
         $math->equal($n,$XX,$offX,$incX,$YY,$offY,$incY);
         $this->assertEquals([0,1,1,1,0],$Y->toArray());
 
-        $X = $mo->array([-1.0,-0.5,0.0,0.5,-1.0],NDArray::int32);
-        $Y = $mo->array([1.0,-0.5,0.0,0.5,1.0],NDArray::int32);
+        $X = $mo->array([-2,-1,0,1,-1],NDArray::int32);
+        $Y = $mo->array([ 1,-1,0,1, 1],NDArray::int32);
         $XX = $X->buffer();
         $YY = $Y->buffer();
         $math->equal($n,$XX,$offX,$incX,$YY,$offY,$incY);
         $this->assertEquals([0,1,1,1,0],$Y->toArray());
 
-        $X = $mo->array([-1.0,-0.5,0.0,0.5,-1.0],NDArray::int64);
-        $Y = $mo->array([1.0,-0.5,0.0,0.5,1.0],NDArray::int64);
+        $X = $mo->array([-2,-1,0,1,-1],NDArray::int64);
+        $Y = $mo->array([ 1,-1,0,1, 1],NDArray::int64);
         $XX = $X->buffer();
         $YY = $Y->buffer();
         $math->equal($n,$XX,$offX,$incX,$YY,$offY,$incY);
@@ -6625,9 +6691,9 @@ class Test extends TestCase
         $kernel_w = 3;
         $stride_h = 1;
         $stride_w = 1;
-        $padding = null;
-        $channels_first = null;
-        $cols_channels_first=null;
+        $padding = false;
+        $channels_first = false;
+        $cols_channels_first=false;
         $cols = null;
         $out_h = 2;
         $out_w = 2;
@@ -6720,9 +6786,9 @@ class Test extends TestCase
         $stride_d = 1;
         $stride_h = 1;
         $stride_w = 1;
-        $padding = null;
-        $channels_first = null;
-        $cols_channels_first=null;
+        $padding = false;
+        $channels_first = false;
+        $cols_channels_first=false;
         $cols = null;
         $out_d = 2;
         $out_h = 2;
