@@ -755,27 +755,92 @@ $la = $mo->laRawMode();
 #echo hrtime(true)-$start;
 #echo "\n";
 
-#
-# im2col3d
-#
-$a = $mo->zeros([10,80,80,80,3],NDArray::float32);
-$start = hrtime(true);
-$cols1 = $la->im2col3d(false,$a);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10000,10,10,10,3],NDArray::float32);
-$start = hrtime(true);
-$cols2 = $la->im2col3d(false,$a);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10,80,80,80,3],NDArray::float32);
-$start = hrtime(true);
-$la->im2col3d(true,$a,cols:$cols1);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10000,10,10,10,3],NDArray::float32);
-$start = hrtime(true);
-$la->im2col3d(true,$a,cols:$cols2);
-echo hrtime(true)-$start;
-echo "\n";
+##
+## im2col3d
+##
+#$a = $mo->zeros([10,80,80,80,3],NDArray::float32);
+#$start = hrtime(true);
+#$cols1 = $la->im2col3d(false,$a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000,10,10,10,3],NDArray::float32);
+#$start = hrtime(true);
+#$cols2 = $la->im2col3d(false,$a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,80,80,80,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->im2col3d(true,$a,cols:$cols1);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000,10,10,10,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->im2col3d(true,$a,cols:$cols2);
+#echo hrtime(true)-$start;
+#echo "\n";
 
+##
+## reduceSum
+##
+#$a = $mo->zeros([10,20000,30],NDArray::float32);
+#$start = hrtime(true);
+#$sum = $la->reduceSum($a,axis:0);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$sum->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([10,20000,30],NDArray::float32);
+#$start = hrtime(true);
+#$sum = $la->reduceSum($a,axis:1);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$sum->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([10,20000,30],NDArray::float32);
+#$start = hrtime(true);
+#$sum = $la->reduceSum($a,axis:2);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$sum->shape())."]";
+#echo "\n";
+
+#
+# reduceMax
+#
+#$a = $mo->zeros([10,20000,30],NDArray::float32);
+#$start = hrtime(true);
+#$max = $la->reduceMax($a,axis:0);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$max->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([10,20000,30],NDArray::float32);
+#$start = hrtime(true);
+#$max = $la->reduceMax($a,axis:1);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$max->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([10,20000,30],NDArray::float32);
+#$start = hrtime(true);
+#$max = $la->reduceMax($a,axis:2);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$max->shape())."]";
+#echo "\n";
+
+#
+# reduceArgMax
+#
+$a = $mo->zeros([10,20000,30],NDArray::float32);
+$start = hrtime(true);
+$max = $la->reduceMax($a,axis:0);
+echo hrtime(true)-$start;
+echo "[".implode(',',$max->shape())."]";
+echo "\n";
+$a = $mo->zeros([10,20000,30],NDArray::float32);
+$start = hrtime(true);
+$max = $la->reduceMax($a,axis:1);
+echo hrtime(true)-$start;
+echo "[".implode(',',$max->shape())."]";
+echo "\n";
+$a = $mo->zeros([10,20000,30],NDArray::float32);
+$start = hrtime(true);
+$max = $la->reduceMax($a,axis:2);
+echo hrtime(true)-$start;
+echo "[".implode(',',$max->shape())."]";
+echo "\n";
