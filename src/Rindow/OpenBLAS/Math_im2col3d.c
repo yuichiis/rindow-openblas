@@ -154,8 +154,7 @@ static inline int im2col3d_execute(
     zend_long out_filter_step;
     zend_long out_channel_step;
     zend_long out_cell_step;
-    zend_long out_pos;
-    zend_long batch_pos;
+    zend_long batch_offset;
     zend_long padding_d;
     zend_long padding_h;
     zend_long padding_w;
@@ -163,13 +162,6 @@ static inline int im2col3d_execute(
     zend_long im_w_step;
     zend_long im_h_step;
 
-    zend_long batch;
-    zend_long stride_d_pos;
-    zend_long stride_h_pos;
-    zend_long stride_w_pos;
-    zend_long vim_z;
-    zend_long vim_y;
-    zend_long vim_x;
     zend_long vim_d;
     zend_long vim_h;
     zend_long vim_w;
@@ -246,8 +238,8 @@ static inline int im2col3d_execute(
     }
     out_cell_step = filter_d*filter_h*filter_w*channels;
 
-    batch_pos = images_offset-im_d_step*padding_d-im_h_step*padding_h-im_w_step*padding_w;
-    out_pos = cols_offset;
+    batch_offset = images_offset-im_d_step*padding_d-im_h_step*padding_h-im_w_step*padding_w;
+    
 
     vim_d = out_d*stride_d;
     vim_h = out_h*stride_h;
@@ -256,14 +248,21 @@ static inline int im2col3d_execute(
     vfilter_h = filter_h*dilation_h;
     vfilter_w = filter_w*dilation_w;
 
+    // input_size_per_image = batch_step
+    // output_size_per_col = out_d*out_h*out_w*out_cell_step
+
+    zend_long batch;
+    #pragma omp parallel for
     for(batch=0; batch<batches;batch++) {
-        stride_d_pos = batch_pos;
-        for(vim_z=0;vim_z<vim_d;vim_z+=stride_d){
-            stride_h_pos = stride_d_pos;
-            for(vim_y=0;vim_y<vim_h;vim_y+=stride_h){
-                stride_w_pos = stride_h_pos;
-                for(vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
-                    int rc;
+        int rc=0;
+        zend_long stride_d_pos = batch_offset + batch_step*batch;
+        zend_long out_pos = cols_offset + out_cell_step*out_d*out_h*out_w*batch;
+
+        for(zend_long vim_z=0;vim_z<vim_d;vim_z+=stride_d){
+            zend_long stride_h_pos = stride_d_pos;
+            for(zend_long vim_y=0;vim_y<vim_h;vim_y+=stride_h){
+                zend_long stride_w_pos = stride_h_pos;
+                for(zend_long vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
                     rc = im2col3d_copyCell(
                         reverse,
                         images,
@@ -291,16 +290,24 @@ static inline int im2col3d_execute(
                         out_channel_step
                     );
                     if(rc) {
-                        return rc;
+                        break;
                     }
                     stride_w_pos += stride_w_step;
                     out_pos += out_cell_step;
                 }
+                if(rc) {
+                    break;
+                }
                 stride_h_pos += stride_h_step;
+            }
+            if(rc) {
+                break;
             }
             stride_d_pos += stride_d_step;
         }
-        batch_pos += batch_step;
+        if(rc) {
+            break;
+        }
     }
     return 0;
 }

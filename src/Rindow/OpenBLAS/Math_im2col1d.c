@@ -112,14 +112,10 @@ static inline int im2col1d_execute(
     zend_long out_filter_step;
     zend_long out_channel_step;
     zend_long out_cell_step;
-    zend_long out_pos;
-    zend_long batch_pos;
+    zend_long batch_offset;
     zend_long padding_w;
     zend_long im_w_step;
 
-    zend_long batch;
-    zend_long stride_w_pos;
-    zend_long vim_x;
     zend_long vim_w;
     zend_long vfilter_w;
 
@@ -172,16 +168,22 @@ static inline int im2col1d_execute(
     }
     out_cell_step = filter_w*channels;
 
-    batch_pos = images_offset-im_w_step*padding_w;
-    out_pos = cols_offset;
+    batch_offset = images_offset-im_w_step*padding_w;
 
     vim_w = out_w*stride_w;
     vfilter_w = filter_w*dilation_w;
 
+    // input_size_per_image = batch_step
+    // output_size_per_col = out_w*out_cell_step
+
+    zend_long batch;
+    #pragma omp parallel for
     for(batch=0; batch<batches;batch++) {
-        stride_w_pos = batch_pos;
-        for(vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
-            int rc;
+        int rc=0;
+        zend_long stride_w_pos = batch_offset + batch*batch_step;
+        zend_long out_pos = cols_offset + out_cell_step*out_w*batch;
+
+        for(zend_long vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
             rc = im2col1d_copyCell(
                 reverse,
                 images,
@@ -199,12 +201,14 @@ static inline int im2col1d_execute(
                 out_channel_step
             );
             if(rc) {
-                return rc;
+                break;
             }
             stride_w_pos += stride_w_step;
             out_pos += out_cell_step;
         }
-        batch_pos += batch_step;
+        if(rc) {
+            break;
+        }
     }
     return 0;
 }

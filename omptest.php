@@ -693,15 +693,89 @@ $la = $mo->laRawMode();
 #
 # searchsorted
 #
-$a = $mo->zeros([10000000],NDArray::float32);
-$x = $mo->ones([10],NDArray::float32);
+#$a = $mo->zeros([10000000],NDArray::float32);
+#$x = $mo->ones([10],NDArray::float32);
+#$start = hrtime(true);
+#$la->searchsorted($a,$x);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10],NDArray::float32);
+#$x = $mo->ones([10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->searchsorted($a,$x);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+
+##
+## im2col1d
+##
+#$a = $mo->zeros([10,100000,3],NDArray::float32);
+#$start = hrtime(true);
+#$cols1 = $la->im2col1d(false,$a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000,100,3],NDArray::float32);
+#$start = hrtime(true);
+#$cols2 = $la->im2col1d(false,$a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,100000,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->im2col1d(true,$a,cols:$cols1);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000,100,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->im2col1d(true,$a,cols:$cols2);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+#
+# im2col2d
+#
+#$a = $mo->zeros([10,500,500,3],NDArray::float32);
+#$start = hrtime(true);
+#$cols1 = $la->im2col2d(false,$a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000,20,20,3],NDArray::float32);
+#$start = hrtime(true);
+#$cols2 = $la->im2col2d(false,$a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,500,500,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->im2col2d(true,$a,cols:$cols1);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000,20,20,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->im2col2d(true,$a,cols:$cols2);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+#
+# im2col3d
+#
+$a = $mo->zeros([10,80,80,80,3],NDArray::float32);
 $start = hrtime(true);
-$la->searchsorted($a,$x);
+$cols1 = $la->im2col3d(false,$a);
 echo hrtime(true)-$start;
 echo "\n";
-$a = $mo->zeros([10],NDArray::float32);
-$x = $mo->ones([10000000],NDArray::float32);
+$a = $mo->zeros([10000,10,10,10,3],NDArray::float32);
 $start = hrtime(true);
-$la->searchsorted($a,$x);
+$cols2 = $la->im2col3d(false,$a);
 echo hrtime(true)-$start;
 echo "\n";
+$a = $mo->zeros([10,80,80,80,3],NDArray::float32);
+$start = hrtime(true);
+$la->im2col3d(true,$a,cols:$cols1);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([10000,10,10,10,3],NDArray::float32);
+$start = hrtime(true);
+$la->im2col3d(true,$a,cols:$cols2);
+echo hrtime(true)-$start;
+echo "\n";
+
