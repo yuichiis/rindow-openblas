@@ -3651,47 +3651,58 @@ static PHP_METHOD(Math, updateAddOnehot)
     }
 
     switch (bufferY->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *y = &(((float *)bufferY->data)[offsetY]);
-                zend_long i,selector;
-                for(i=0; i<m; i++) {
-                    if(rindow_openblas_math_get_integer(
-                                bufferX->dtype, bufferX->data, offsetX,incX,
-                                i, &selector)) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
-                        return;
-                    }
-                    if(selector<0||selector>=n) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
-                        return;
-                    }
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *y = &(((float *)bufferY->data)[offsetY]);
+            zend_long selector;
+            if(rindow_openblas_math_get_integer(bufferX->dtype, bufferX->data, offsetX,incX,0, &selector)) {
+                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                return;
+            }
+            int selerror=0;
+            zend_long i;
+            //#pragma omp parallel for private(selector)
+            for(i=0; i<m; i++) {
+                rindow_openblas_math_get_integer(bufferX->dtype, bufferX->data, offsetX,incX,i, &selector);
+                if(selector>=0 && selector<n) {
                     y[i*ldY+selector] += (float)a;
+                } else {
+                    selerror=1;
                 }
             }
+            if(selerror) {
+                zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
+                return;
+            }
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *y = &(((double *)bufferY->data)[offsetY]);
-                zend_long i,selector;
-                for(i=0; i<m; i++) {
-                    if(rindow_openblas_math_get_integer(
-                                bufferX->dtype, bufferX->data, offsetX,incX,
-                                i, &selector)) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
-                        return;
-                    }
-                    if(selector<0||selector>=n) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
-                        return;
-                    }
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *y = &(((double *)bufferY->data)[offsetY]);
+            zend_long selector;
+            if(rindow_openblas_math_get_integer(bufferX->dtype, bufferX->data, offsetX,incX,0,&selector)) {
+                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                return;
+            }
+            int selerror=0;
+            zend_long i;
+            //#pragma omp parallel for private(selector)
+            for(i=0; i<m; i++) {
+                rindow_openblas_math_get_integer(bufferX->dtype, bufferX->data, offsetX,incX,i, &selector);
+                if(selector>=0 && selector<n) {
                     y[i*ldY+selector] += (double)a;
+                } else {
+                    selerror=1;
                 }
             }
+            if(selerror) {
+                zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
+                return;
+            }
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
 }
 /* }}} */
@@ -3739,59 +3750,64 @@ static PHP_METHOD(Math, softmax)
         return;
     }
     switch (buffer->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *a = &(((float *)buffer->data)[offsetA]);
-                zend_long i,j;
-                for(i=0;i<m;i++,a+=ldA) {
-                    float t,max_a,sum_exp;
-                    max_a = s_max(n,a,1);
-                    sum_exp = 0;
-                    for(j=0;j<n;j++) {
-                        t = expf(a[j]-max_a);
-                        sum_exp += t;
-                        a[j] = t;
-                    }
-                    // *** CAUTION ***
-                    // disable checking for NaN and INFINITY values
-                    //if(sum_exp==0.0) {
-                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
-                    //    return;
-                    //}
-                    for(j=0;j<n;j++) {
-                        a[j] = a[j] / sum_exp;
-                    }
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *a = &(((float *)buffer->data)[offsetA]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<m;i++) {
+                float t,max_a,sum_exp;
+                zend_long j;
+                zend_long pos=i*ldA;
+                max_a = s_max(n,&a[pos],1);
+                sum_exp = 0;
+                for(j=0;j<n;j++) {
+                    t = expf(a[pos+j]-max_a);
+                    sum_exp += t;
+                    a[pos+j] = t;
+                }
+                // *** CAUTION ***
+                // disable checking for NaN and INFINITY values
+                //if(sum_exp==0.0) {
+                //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
+                //    return;
+                //}
+                for(j=0;j<n;j++) {
+                    a[pos+j] = a[pos+j] / sum_exp;
                 }
             }
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *a = &(((double *)buffer->data)[offsetA]);
-                zend_long i,j;
-                for(i=0;i<m;i++,a+=ldA) {
-                    double t,max_a,sum_exp;
-                    max_a = d_max(n,a,1);
-                    sum_exp = 0;
-                    for(j=0;j<n;j++) {
-                        t = exp(a[j]-max_a);
-                        sum_exp += t;
-                        a[j] = t;
-                    }
-                    // *** CAUTION ***
-                    // disable checking for NaN and INFINITY values
-                    //if(sum_exp==0.0) {
-                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
-                    //    return;
-                    //}
-                    for(j=0;j<n;j++) {
-                        a[j] = a[j] / sum_exp;
-                    }
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *a = &(((double *)buffer->data)[offsetA]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<m;i++) {
+                double t,max_a,sum_exp;
+                zend_long j;
+                zend_long pos=i*ldA;
+                max_a = d_max(n,&a[pos],1);
+                sum_exp = 0;
+                for(j=0;j<n;j++) {
+                    t = expf(a[pos+j]-max_a);
+                    sum_exp += t;
+                    a[pos+j] = t;
+                }
+                // *** CAUTION ***
+                // disable checking for NaN and INFINITY values
+                //if(sum_exp==0.0) {
+                //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide in softmax.", 0);
+                //    return;
+                //}
+                for(j=0;j<n;j++) {
+                    a[pos+j] = a[pos+j] / sum_exp;
                 }
             }
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
 }
 /* }}} */
@@ -4095,49 +4111,103 @@ static PHP_METHOD(Math, matrixcopy)
     }
 
     switch (bufferA->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *a = &(((float *)bufferA->data)[offsetA]);
-                float *b = &(((float *)bufferB->data)[offsetB]);
-                zend_long i,j;
-                if(!trans) {
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *a = &(((float *)bufferA->data)[offsetA]);
+            float *b = &(((float *)bufferB->data)[offsetB]);
+            //php_printf("trans=%ld,m=%ld,n=%ld\n",trans,m,n);
+            if(!trans) {
+                if(m>n) {
+                    zend_long i;
+                    #pragma omp parallel for
                     for(i=0;i<m;i++) {
+                        zend_long j;
                         for(j=0;j<n;j++) {
                             b[i*ldB+j] = (float)alpha * a[i*ldA+j];
                         }
                     }
                 } else {
+                    zend_long j;
+                    #pragma omp parallel for
+                    for(j=0;j<n;j++) {
+                        zend_long i;
+                        for(i=0;i<m;i++) {
+                            b[i*ldB+j] = (float)alpha * a[i*ldA+j];
+                        }
+                    }
+                }
+            } else {
+                if(m>n) {
+                    zend_long i;
+                    #pragma omp parallel for
                     for(i=0;i<m;i++) {
+                        zend_long j;
                         for(j=0;j<n;j++) {
+                            b[j*ldB+i] = (float)alpha * a[i*ldA+j];
+                        }
+                    }
+                } else {
+                    zend_long j;
+                    #pragma omp parallel for
+                    for(j=0;j<n;j++) {
+                        zend_long i;
+                        for(i=0;i<m;i++) {
                             b[j*ldB+i] = (float)alpha * a[i*ldA+j];
                         }
                     }
                 }
             }
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *a = &(((double *)bufferA->data)[offsetA]);
-                double *b = &(((double *)bufferB->data)[offsetB]);
-                zend_long i,j;
-                if(!trans) {
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *a = &(((double *)bufferA->data)[offsetA]);
+            double *b = &(((double *)bufferB->data)[offsetB]);
+            if(!trans) {
+                if(m>n) {
+                    zend_long i;
+                    #pragma omp parallel for
                     for(i=0;i<m;i++) {
+                        zend_long j;
                         for(j=0;j<n;j++) {
                             b[i*ldB+j] = (double)alpha * a[i*ldA+j];
                         }
                     }
                 } else {
+                    zend_long j;
+                    #pragma omp parallel for
+                    for(j=0;j<n;j++) {
+                        zend_long i;
+                        for(i=0;i<m;i++) {
+                            b[i*ldB+j] = (double)alpha * a[i*ldA+j];
+                        }
+                    }
+                }
+            } else {
+                if(m>n) {
+                    zend_long i;
+                    #pragma omp parallel for
                     for(i=0;i<m;i++) {
+                        zend_long j;
                         for(j=0;j<n;j++) {
+                            b[j*ldB+i] = (double)alpha * a[i*ldA+j];
+                        }
+                    }
+                } else {
+                    zend_long j;
+                    #pragma omp parallel for
+                    for(j=0;j<n;j++) {
+                        zend_long i;
+                        for(i=0;i<m;i++) {
                             b[j*ldB+i] = (double)alpha * a[i*ldA+j];
                         }
                     }
                 }
             }
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of A.", 0);
             return;
+        }
     }
 }
 /* }}} */
@@ -4255,90 +4325,94 @@ static PHP_METHOD(Math, imagecopy)
     biasX -= widthShift*directionX;
 
     switch (bufferA->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *a = &(((float *)bufferA->data)[offsetA]);
-                float *b = &(((float *)bufferB->data)[offsetB]);
-                for(zend_long y=0;y<height;y++) {
-                    for(zend_long x=0;x<width;x++) {
-                        for(zend_long c=0;c<channels;c++) {
-                            zend_long sy = y*directionY+biasY;
-                            zend_long sx = x*directionX+biasX;
-                            if(sy<0) {
-                                sy = 0;
-                            } else if(sy>=height) {
-                                sy = height-1;
-                            }
-                            if(sx<0) {
-                                sx = 0;
-                            } else if(sx>=width) {
-                                sx = width-1;
-                            }
-                            zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
-                            b[y*ldY+x*ldX+c*ldC] =
-                                a[sy*ldY+sx*ldX+srcc*ldC];
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *a = &(((float *)bufferA->data)[offsetA]);
+            float *b = &(((float *)bufferB->data)[offsetB]);
+            zend_long y;
+            #pragma omp parallel for
+            for(y=0;y<height;y++) {
+                for(zend_long x=0;x<width;x++) {
+                    for(zend_long c=0;c<channels;c++) {
+                        zend_long sy = y*directionY+biasY;
+                        zend_long sx = x*directionX+biasX;
+                        if(sy<0) {
+                            sy = 0;
+                        } else if(sy>=height) {
+                            sy = height-1;
                         }
+                        if(sx<0) {
+                            sx = 0;
+                        } else if(sx>=width) {
+                            sx = width-1;
+                        }
+                        zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
+                        b[y*ldY+x*ldX+c*ldC] =
+                            a[sy*ldY+sx*ldX+srcc*ldC];
                     }
                 }
             }
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *a = &(((double *)bufferA->data)[offsetA]);
-                double *b = &(((double *)bufferB->data)[offsetB]);
-                for(zend_long y=0;y<height;y++) {
-                    for(zend_long x=0;x<width;x++) {
-                        for(zend_long c=0;c<channels;c++) {
-                            zend_long sy = y*directionY+biasY;
-                            zend_long sx = x*directionX+biasX;
-                            if(sy<0) {
-                                sy = 0;
-                            } else if(sy>=height) {
-                                sy = height-1;
-                            }
-                            if(sx<0) {
-                                sx = 0;
-                            } else if(sx>=width) {
-                                sx = width-1;
-                            }
-                            zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
-                            b[y*ldY+x*ldX+c*ldC] =
-                                a[sy*ldY+sx*ldX+srcc*ldC];
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *a = &(((double *)bufferA->data)[offsetA]);
+            double *b = &(((double *)bufferB->data)[offsetB]);
+            zend_long y;
+            #pragma omp parallel for
+            for(y=0;y<height;y++) {
+                for(zend_long x=0;x<width;x++) {
+                    for(zend_long c=0;c<channels;c++) {
+                        zend_long sy = y*directionY+biasY;
+                        zend_long sx = x*directionX+biasX;
+                        if(sy<0) {
+                            sy = 0;
+                        } else if(sy>=height) {
+                            sy = height-1;
                         }
+                        if(sx<0) {
+                            sx = 0;
+                        } else if(sx>=width) {
+                            sx = width-1;
+                        }
+                        zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
+                        b[y*ldY+x*ldX+c*ldC] =
+                            a[sy*ldY+sx*ldX+srcc*ldC];
                     }
                 }
             }
             break;
-        case php_interop_polite_math_matrix_dtype_uint8:
-            {
-                uint8_t *a = &(((uint8_t *)bufferA->data)[offsetA]);
-                uint8_t *b = &(((uint8_t *)bufferB->data)[offsetB]);
-                for(zend_long y=0;y<height;y++) {
-                    for(zend_long x=0;x<width;x++) {
-                        for(zend_long c=0;c<channels;c++) {
-                            zend_long sy = y*directionY+biasY;
-                            zend_long sx = x*directionX+biasX;
-                            if(sy<0) {
-                                sy = 0;
-                            } else if(sy>=height) {
-                                sy = height-1;
-                            }
-                            if(sx<0) {
-                                sx = 0;
-                            } else if(sx>=width) {
-                                sx = width-1;
-                            }
-                            zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
-                            b[y*ldY+x*ldX+c*ldC] =
-                                a[sy*ldY+sx*ldX+srcc*ldC];
+        }
+        case php_interop_polite_math_matrix_dtype_uint8:{
+            uint8_t *a = &(((uint8_t *)bufferA->data)[offsetA]);
+            uint8_t *b = &(((uint8_t *)bufferB->data)[offsetB]);
+            zend_long y;
+            #pragma omp parallel for
+            for(y=0;y<height;y++) {
+                for(zend_long x=0;x<width;x++) {
+                    for(zend_long c=0;c<channels;c++) {
+                        zend_long sy = y*directionY+biasY;
+                        zend_long sx = x*directionX+biasX;
+                        if(sy<0) {
+                            sy = 0;
+                        } else if(sy>=height) {
+                            sy = height-1;
                         }
+                        if(sx<0) {
+                            sx = 0;
+                        } else if(sx>=width) {
+                            sx = width-1;
+                        }
+                        zend_long srcc = (rgbFlip&&c<3)?(2-c):c;
+                        b[y*ldY+x*ldX+c*ldC] =
+                            a[sy*ldY+sx*ldX+srcc*ldC];
                     }
                 }
             }
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of A.", 0);
             return;
+        }
     }
 }
 /* }}} */
@@ -4646,67 +4720,60 @@ static PHP_METHOD(Math, searchsorted)
     }
 
     switch (bufferA->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *a = &(((float *)bufferA->data)[offsetA]);
-                float *x = &(((float *)bufferX->data)[offsetX]);
-                float value;
-                zend_long idxA;
-                zend_long idxX = 0;
-                zend_long idxY = 0;
-                for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
-                    zend_long j;
-                    value = x[idxX];
-                    idxA = 0;
-                    if(right) {
-                        for(j=0;j<m;j++,idxA+=incA) {
-                            if(!(value>=a[idxA])) {
-                                break;
-                            }
-                        }
-                    } else {
-                        for(j=0;j<m;j++,idxA+=incA) {
-                            if(!(value>a[idxA])) {
-                                break;
-                            }
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *a = &(((float *)bufferA->data)[offsetA]);
+            float *x = &(((float *)bufferX->data)[offsetX]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<n;i++) {
+                zend_long j;
+                float value = x[i*incX];
+                if(right) {
+                    for(j=0;j<m;j++) {
+                        if(!(value>=a[j*incA])) {
+                            break;
                         }
                     }
-                    rindow_openblas_math_set_integer(bufferY->dtype, bufferY->data, offsetY, 1, idxY, j);
-                }
-            }
-            break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *a = &(((double *)bufferA->data)[offsetA]);
-                double *x = &(((double *)bufferX->data)[offsetX]);
-                double value;
-                zend_long idxA;
-                zend_long idxX = 0;
-                zend_long idxY = 0;
-                for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
-                    zend_long j;
-                    value = x[idxX];
-                    idxA = offsetA;
-                    if(right) {
-                        for(j=0;j<m;j++,idxA+=incA) {
-                            if(!(value>=a[idxA])) {
-                                break;
-                            }
-                        }
-                    } else {
-                        for(j=0;j<m;j++,idxA+=incA) {
-                            if(!(value>a[idxA])) {
-                                break;
-                            }
+                } else {
+                    for(j=0;j<m;j++) {
+                        if(!(value>a[j*incA])) {
+                            break;
                         }
                     }
-                    rindow_openblas_math_set_integer(bufferY->dtype, bufferY->data, offsetY, 1, idxY, j);
                 }
+                rindow_openblas_math_set_integer(bufferY->dtype, bufferY->data, offsetY, 1, i*incY, j);
             }
             break;
-        default:
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *a = &(((double *)bufferA->data)[offsetA]);
+            double *x = &(((double *)bufferX->data)[offsetX]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<n;i++) {
+                zend_long j;
+                double value = x[i*incX];
+                if(right) {
+                    for(j=0;j<m;j++) {
+                        if(!(value>=a[j*incA])) {
+                            break;
+                        }
+                    }
+                } else {
+                    for(j=0;j<m;j++) {
+                        if(!(value>a[j*incA])) {
+                            break;
+                        }
+                    }
+                }
+                rindow_openblas_math_set_integer(bufferY->dtype, bufferY->data, offsetY, 1, i*incY, j);
+            }
+            break;
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
 }
 
@@ -4783,63 +4850,62 @@ static PHP_METHOD(Math, cumsum)
     }
 
     switch (bufferX->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *x = &(((float *)bufferX->data)[offsetX]);
-                float *y = &(((float *)bufferY->data)[offsetY]);
-                zend_long idxX,idxY;
-                float value = 0.0;
-                if(reverse) {
-                    idxX = 0;
-                    idxY = incY*(n-1);
-                    incY = -incY;
-                } else {
-                    idxX = 0;
-                    idxY = 0;
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *x = &(((float *)bufferX->data)[offsetX]);
+            float *y = &(((float *)bufferY->data)[offsetY]);
+            zend_long idxX,idxY;
+            float value = 0.0;
+            if(reverse) {
+                idxX = 0;
+                idxY = incY*(n-1);
+                incY = -incY;
+            } else {
+                idxX = 0;
+                idxY = 0;
+            }
+            if(exclusive) {
+                for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
+                    y[idxY] = value;
+                    value += x[idxX];
                 }
-                if(exclusive) {
-                    for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
-                        y[idxY] = value;
-                        value += x[idxX];
-                    }
-                } else {
-                    for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
-                        value += x[idxX];
-                        y[idxY] = value;
-                    }
+            } else {
+                for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
+                    value += x[idxX];
+                    y[idxY] = value;
                 }
             }
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *x = &(((double *)bufferX->data)[offsetX]);
-                double *y = &(((double *)bufferY->data)[offsetY]);
-                zend_long idxX,idxY;
-                double value = 0.0;
-                if(reverse) {
-                    idxX = 0;
-                    idxY = incY*(n-1);
-                    incY = -incY;
-                } else {
-                    idxX = 0;
-                    idxY = 0;
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *x = &(((double *)bufferX->data)[offsetX]);
+            double *y = &(((double *)bufferY->data)[offsetY]);
+            zend_long idxX,idxY;
+            double value = 0.0;
+            if(reverse) {
+                idxX = 0;
+                idxY = incY*(n-1);
+                incY = -incY;
+            } else {
+                idxX = 0;
+                idxY = 0;
+            }
+            if(exclusive) {
+                for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
+                    y[idxY] = value;
+                    value += x[idxX];
                 }
-                if(exclusive) {
-                    for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
-                        y[idxY] = value;
-                        value += x[idxX];
-                    }
-                } else {
-                    for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
-                        value += x[idxX];
-                        y[idxY] = value;
-                    }
+            } else {
+                for(zend_long i=0;i<n;i++,idxX+=incX,idxY+=incY) {
+                    value += x[idxX];
+                    y[idxY] = value;
                 }
             }
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
 }
 

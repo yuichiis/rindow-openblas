@@ -10,16 +10,25 @@ $mo = new Rindow\Math\Matrix\MatrixOperator();
 $blas = new Rindow\OpenBlas\Math();
 $la = $mo->laRawMode();
 
+##
+## increment
+##
 #$a = $mo->zeros([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->increment($a,1);
 #echo hrtime(true)-$start;
 
+##
+## reciprocal
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->reciprocal($a);
 #echo hrtime(true)-$start;
 
+##
+## greater
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->greater($a,1);
@@ -44,6 +53,9 @@ $la = $mo->laRawMode();
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## greaterEqual
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->greaterEqual($a,1);
@@ -68,6 +80,9 @@ $la = $mo->laRawMode();
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## less
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->less($a,1);
@@ -92,6 +107,9 @@ $la = $mo->laRawMode();
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## lessEqual
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->lessEqual($a,1);
@@ -116,6 +134,9 @@ $la = $mo->laRawMode();
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## multiply
+##
 #$a = $mo->zeros([1],NDArray::float32);
 #$b = $mo->zeros([10000000,1],NDArray::float32);
 #$start = hrtime(true);
@@ -145,54 +166,55 @@ $la = $mo->laRawMode();
 ##
 ## add
 ##
-$a = $mo->zeros([1],NDArray::float32);
-$b = $mo->zeros([10000000,1],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([1],NDArray::float32);
-$b = $mo->zeros([1,10000000],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b,trans:true);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10000000],NDArray::float32);
-$b = $mo->zeros([10000000],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10000000],NDArray::float32);
-$b = $mo->zeros([10000000],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b,trans:true);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10],NDArray::float32);
-$b = $mo->zeros([1000000,10],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([10],NDArray::float32);
-$b = $mo->zeros([10,1000000],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b,trans:true);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([1000000],NDArray::float32);
-$b = $mo->zeros([10,1000000],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->zeros([1000000],NDArray::float32);
-$b = $mo->zeros([1000000,10],NDArray::float32);
-$start = hrtime(true);
-$la->add($a,$b,trans:true);
-echo hrtime(true)-$start;
-echo "\n";
+#$a = $mo->zeros([1],NDArray::float32);
+#$b = $mo->zeros([10000000,1],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1],NDArray::float32);
+#$b = $mo->zeros([1,10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b,trans:true);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000000],NDArray::float32);
+#$b = $mo->zeros([10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10000000],NDArray::float32);
+#$b = $mo->zeros([10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b,trans:true);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10],NDArray::float32);
+#$b = $mo->zeros([1000000,10],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10],NDArray::float32);
+#$b = $mo->zeros([10,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b,trans:true);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1000000],NDArray::float32);
+#$b = $mo->zeros([10,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1000000],NDArray::float32);
+#$b = $mo->zeros([1000000,10],NDArray::float32);
+#$start = hrtime(true);
+#$la->add($a,$b,trans:true);
+#echo hrtime(true)-$start;
+#echo "\n";
+
 
 ##
 ## duplicate
@@ -228,60 +250,90 @@ echo "\n";
 ##echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## sqrt
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->sqrt($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## rsqrt
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->rsqrt($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## pow
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->pow($a,2);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## exp
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->exp($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## log
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->log($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## tanh
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->tanh($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## sin
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->sin($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## cos
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->cos($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## tan
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->tan($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## zeros
+##
 #$a = $mo->ones([1,10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->zeros($a);
@@ -318,6 +370,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## equal
+##
 #$a = $mo->zeros([1,10000000],NDArray::float32);
 #$b = $mo->zeros([1,10000000],NDArray::float32);
 #$start = hrtime(true);
@@ -331,6 +386,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## astype
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->astype($a,NDArray::int32);
@@ -342,6 +400,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## fill
+##
 #$a = $mo->zeros([10000000],NDArray::bool);
 #$start = hrtime(true);
 #$la->fill(true,$a);
@@ -358,18 +419,27 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## nan2num
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->nan2num($a,0);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## isnan
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$la->isnan($a);
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## sum
+##
 #$a = $mo->ones([10000000],NDArray::float32);
 #$start = hrtime(true);
 #$sum = $la->sum($a);
@@ -437,6 +507,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## imax
+##
 #$a = $mo->arange(10000000,dtype:NDArray::float32);
 #$start = hrtime(true);
 #$idx = $la->imax($a);
@@ -450,6 +523,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## imin
+##
 #$a = $mo->arange(10000000,dtype:NDArray::float32);
 #$start = hrtime(true);
 #$idx = $la->imin($a);
@@ -463,6 +539,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## maximum
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$b = $mo->ones([10000000],NDArray::float32);
 #$start = hrtime(true);
@@ -491,6 +570,9 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
+##
+## minimum
+##
 #$a = $mo->zeros([10000000],NDArray::float32);
 #$b = $mo->ones([10000000],NDArray::float32);
 #$start = hrtime(true);
@@ -518,3 +600,108 @@ echo "\n";
 #var_dump($la->sum($a));
 #echo hrtime(true)-$start;
 #echo "\n";
+
+##
+## UpdateAddOnehot
+##
+#$a = $mo->zeros([10000000],NDArray::int32);
+#$start = hrtime(true);
+#$la->onehot($a,10);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+##
+## softmax
+##
+#$a = $mo->zeros([1000000,10],NDArray::float32);
+#$start = hrtime(true);
+#$la->softmax($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->softmax($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+
+
+##
+## matrixcopy(transpose,augmentedMatrix)
+##
+#$a = $mo->zeros([1000000,10],NDArray::float32);
+#$start = hrtime(true);
+#$la->transpose($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->transpose($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,1000000],NDArray::float32);
+#$b = $mo->zeros([10,1000001],NDArray::float32);
+# [$m,$n] = $a->shape();
+# [$mb,$ldB] = $b->shape();
+#$start = hrtime(true);
+#$blas->matrixcopy(false,$m,$n,1.0,$a->buffer(),0,$n,$b->buffer(),0,$ldB);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1000000,10],NDArray::float32);
+#$b = $mo->zeros([1000000,11],NDArray::float32);
+# [$m,$n] = $a->shape();
+# [$mb,$ldB] = $b->shape();
+#$start = hrtime(true);
+#$blas->matrixcopy(false,$m,$n,1.0,$a->buffer(),0,$n,$b->buffer(),0,$ldB);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+##
+## imagecopy
+##
+#$a = $mo->zeros([1000000,10,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->imagecopy($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,1000000,3],NDArray::float32);
+#$start = hrtime(true);
+#$la->imagecopy($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1000000,10,3],NDArray::float64);
+#$start = hrtime(true);
+#$la->imagecopy($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,1000000,3],NDArray::float64);
+#$start = hrtime(true);
+#$la->imagecopy($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1000000,10,3],NDArray::uint8);
+#$start = hrtime(true);
+#$la->imagecopy($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([10,1000000,3],NDArray::uint8);
+#$start = hrtime(true);
+#$la->imagecopy($a);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+#
+# searchsorted
+#
+$a = $mo->zeros([10000000],NDArray::float32);
+$x = $mo->ones([10],NDArray::float32);
+$start = hrtime(true);
+$la->searchsorted($a,$x);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([10],NDArray::float32);
+$x = $mo->ones([10000000],NDArray::float32);
+$start = hrtime(true);
+$la->searchsorted($a,$x);
+echo hrtime(true)-$start;
+echo "\n";
