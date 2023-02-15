@@ -57,7 +57,7 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
      src/Rindow/OpenBLAS/Lapack.c \
      src/Rindow/OpenBLAS/Math.c \
   "
-  AC_MSG_RESULT(ext_shared: $ext_shared)
+  AC_MSG_RESULT(LIBADD: $RINDOW_OPENBLAS_SHARED_LIBADD)
 
   PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -msse2)
 fi
