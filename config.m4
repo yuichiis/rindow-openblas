@@ -32,9 +32,9 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
   else
     AC_MSG_ERROR(pkg-config not found)
   fi
-  PHP_EVAL_LIBLINE(-fopenmp $LIBBLAS_LIBDIR, RINDOW_OPENBLAS_SHARED_LIBADD)
+  PHP_EVAL_LIBLINE($LIBBLAS_LIBDIR, RINDOW_OPENBLAS_SHARED_LIBADD)
   PHP_EVAL_INCLINE($LIBBLAS_CFLAGS)
-
+ 
   dnl # PHP_ADD_INCLUDE($RINDOW_OPENBLAS_DIR/include)
   AC_MSG_CHECKING(for Interop/Polite/Math/Matrix.h)
   if test -f "PHP_EXT_SRCDIR(rindow_openblas)/vendor/interop-phpobjects/polite-math/include/Interop/Polite/Math/Matrix.h" ; then
@@ -58,5 +58,5 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
      src/Rindow/OpenBLAS/Math.c \
   "
 
-  PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -msse2)
+  PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, -fopenmp $ext_shared,, -fopenmp -msse2)
 fi
