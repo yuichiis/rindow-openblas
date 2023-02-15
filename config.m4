@@ -34,7 +34,8 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
   fi
   PHP_EVAL_LIBLINE($LIBBLAS_LIBDIR, RINDOW_OPENBLAS_SHARED_LIBADD)
   PHP_EVAL_INCLINE($LIBBLAS_CFLAGS)
- 
+  OPENMP_LINK_FLAG="-fopenmp"
+
   dnl # PHP_ADD_INCLUDE($RINDOW_OPENBLAS_DIR/include)
   AC_MSG_CHECKING(for Interop/Polite/Math/Matrix.h)
   if test -f "PHP_EXT_SRCDIR(rindow_openblas)/vendor/interop-phpobjects/polite-math/include/Interop/Polite/Math/Matrix.h" ; then
@@ -45,7 +46,9 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
     AC_MSG_ERROR(Interop/Polite/Math/Matrix.h not found. Please type "composer update")
   fi
 
+  PHP_SUBST(OPENMP_LINK_FLAG)
   PHP_SUBST(RINDOW_OPENBLAS_SHARED_LIBADD)
+  
 
   dnl # In case of no dependencies
   AC_DEFINE(HAVE_RINDOW_OPENBLAS, 1, [ Have rindow_openblas support ])
@@ -57,7 +60,6 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
      src/Rindow/OpenBLAS/Lapack.c \
      src/Rindow/OpenBLAS/Math.c \
   "
-  AC_MSG_RESULT(LIBADD: $RINDOW_OPENBLAS_SHARED_LIBADD)
 
   PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -msse2)
 fi
