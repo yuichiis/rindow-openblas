@@ -846,7 +846,7 @@ echo hrtime(true)-$start;
 #echo "\n";
 
 #
-echo "========== repeat =========\n";
+#echo "========== repeat =========\n";
 #
 #$a = $mo->zeros([1000000,10],NDArray::float32);
 #$start = hrtime(true);
