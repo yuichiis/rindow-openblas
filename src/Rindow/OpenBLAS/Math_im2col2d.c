@@ -220,43 +220,42 @@ static inline int im2col2d_execute(
         zend_long stride_h_pos = batch_offset + batch_step*batch;
         zend_long out_pos = cols_offset + out_cell_step*out_h*out_w*batch;
 
-        for(zend_long vim_y=0;vim_y<vim_h;vim_y+=stride_h){
-            zend_long stride_w_pos = stride_h_pos;
-            for(zend_long vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
-                rc = im2col2d_copyCell(
-                    reverse,
-                    images,
-                    stride_w_pos,
-                    im_h,
-                    im_w,
-                    channels,
-                    channel_step,
-                    filter_h_step,
-                    filter_w_step,
-                    vim_y-padding_h,
-                    vim_x-padding_w,
-                    vfilter_h,
-                    vfilter_w,
-                    dilation_h,
-                    dilation_w,
-                    cols,
-                    out_pos,
-                    out_filter_step,
-                    out_channel_step
-                );
+        if(!rc) {
+            for(zend_long vim_y=0;vim_y<vim_h;vim_y+=stride_h){
+                zend_long stride_w_pos = stride_h_pos;
+                for(zend_long vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
+                    rc = im2col2d_copyCell(
+                        reverse,
+                        images,
+                        stride_w_pos,
+                        im_h,
+                        im_w,
+                        channels,
+                        channel_step,
+                        filter_h_step,
+                        filter_w_step,
+                        vim_y-padding_h,
+                        vim_x-padding_w,
+                        vfilter_h,
+                        vfilter_w,
+                        dilation_h,
+                        dilation_w,
+                        cols,
+                        out_pos,
+                        out_filter_step,
+                        out_channel_step
+                    );
+                    if(rc) {
+                        break;
+                    }
+                    stride_w_pos += stride_w_step;
+                    out_pos += out_cell_step;
+                }
                 if(rc) {
                     break;
                 }
-                stride_w_pos += stride_w_step;
-                out_pos += out_cell_step;
+                stride_h_pos += stride_h_step;
             }
-            if(rc) {
-                break;
-            }
-            stride_h_pos += stride_h_step;
-        }
-        if(rc) {
-            break;
         }
     }
 
