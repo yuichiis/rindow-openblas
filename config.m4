@@ -58,5 +58,5 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
      src/Rindow/OpenBLAS/Math.c \
   "
 
-  PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -mSSE2)
+  PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -msse2)
 fi
