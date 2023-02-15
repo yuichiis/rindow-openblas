@@ -17,6 +17,7 @@ $a = $mo->zeros([1,10000000],NDArray::float32);
 $start = hrtime(true);
 $la->increment($a,1);
 echo hrtime(true)-$start;
+echo "\n";
 
 ##
 ## reciprocal
