@@ -5,9 +5,12 @@ ARG_ENABLE('rindow_openblas', 'rindow_openblas support', 'no');
 ARG_WITH('openblas', 'openblas support', 'no');
 ARG_WITH('flang', 'flang support', 'no');
 
+
+
 if (PHP_RINDOW_OPENBLAS != 'no') {
   var PHP_RINDOW_OPENBLAS_CFLAGS="\
     /openmp:experimental \
+    /Qvec-report:1 \
     /DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 \
     /I" + configure_module_dirname + " \
   ";

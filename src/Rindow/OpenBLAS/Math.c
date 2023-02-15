@@ -2532,7 +2532,7 @@ static PHP_METHOD(Math, add)
                 if(incAj==1) {
                     //php_printf("cols=1,incAj=1\n");
                     zend_long j;
-                    //#pragma omp parallel for
+                    #pragma omp simd
                     for(j=0; j<rows; j++) {
                         a[j] += xx;
                     }
@@ -4000,7 +4000,7 @@ static PHP_METHOD(Math, astype)
             return;
         }
         /// If you use OpenMP, optimization will not work and it will be very slow
-        ////#pragma omp parallel for
+        //#pragma omp parallel for
         for(i=0;i<n;i++) {
             rindow_openblas_math_get_integer(bufferX->dtype, bufferX->data, offsetX, incX, i, &value);
             rindow_openblas_math_set_integer(bufferY->dtype, bufferY->data, offsetY, incY, i, value);
@@ -4013,7 +4013,7 @@ static PHP_METHOD(Math, astype)
             return;
         }
         /// If you use OpenMP, optimization will not work and it will be very slow
-        ////#pragma omp parallel for
+        //#pragma omp parallel for
         for(i=0;i<n;i++) {
             rindow_openblas_math_get_float(bufferX->dtype, bufferX->data, offsetX, incX, i, &value);
             rindow_openblas_math_set_float(bufferY->dtype, bufferY->data, offsetY, incY, i, value);
