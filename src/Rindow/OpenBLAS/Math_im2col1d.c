@@ -183,31 +183,30 @@ static inline int im2col1d_execute(
         zend_long stride_w_pos = batch_offset + batch*batch_step;
         zend_long out_pos = cols_offset + out_cell_step*out_w*batch;
 
-        for(zend_long vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
-            rc = im2col1d_copyCell(
-                reverse,
-                images,
-                stride_w_pos,
-                im_w,
-                channels,
-                channel_step,
-                filter_w_step,
-                vim_x-padding_w,
-                vfilter_w,
-                dilation_w,
-                cols,
-                out_pos,
-                out_filter_step,
-                out_channel_step
-            );
-            if(rc) {
-                break;
+        if(!rc) {
+            for(zend_long vim_x=0;vim_x<vim_w;vim_x+=stride_w) {
+                rc = im2col1d_copyCell(
+                    reverse,
+                    images,
+                    stride_w_pos,
+                    im_w,
+                    channels,
+                    channel_step,
+                    filter_w_step,
+                    vim_x-padding_w,
+                    vfilter_w,
+                    dilation_w,
+                    cols,
+                    out_pos,
+                    out_filter_step,
+                    out_channel_step
+                );
+                if(rc) {
+                    break;
+                }
+                stride_w_pos += stride_w_step;
+                out_pos += out_cell_step;
             }
-            stride_w_pos += stride_w_step;
-            out_pos += out_cell_step;
-        }
-        if(rc) {
-            break;
         }
     }
     return 0;
