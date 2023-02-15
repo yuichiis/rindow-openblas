@@ -46,8 +46,8 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
     AC_MSG_ERROR(Interop/Polite/Math/Matrix.h not found. Please type "composer update")
   fi
 
-  PHP_SUBST(OPENMP_LINK_FLAG)
   PHP_SUBST(RINDOW_OPENBLAS_SHARED_LIBADD)
+  PHP_SUBST(OPENMP_LINK_FLAG)
   
 
   dnl # In case of no dependencies
