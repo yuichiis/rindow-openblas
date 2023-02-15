@@ -10,13 +10,13 @@ $mo = new Rindow\Math\Matrix\MatrixOperator();
 $blas = new Rindow\OpenBlas\Math();
 $la = $mo->laRawMode();
 
-##
-## increment
-##
-#$a = $mo->zeros([1,10000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->increment($a,1);
-#echo hrtime(true)-$start;
+#
+echo "========== increment =========\n";
+#
+$a = $mo->zeros([1,10000000],NDArray::float32);
+$start = hrtime(true);
+$la->increment($a,1);
+echo hrtime(true)-$start;
 
 ##
 ## reciprocal
@@ -802,7 +802,7 @@ $la = $mo->laRawMode();
 #echo "\n";
 
 #
-# reduceMax
+#echo "========== reduceMax =========\n";
 #
 #$a = $mo->zeros([10,20000,30],NDArray::float32);
 #$start = hrtime(true);
@@ -824,8 +824,8 @@ $la = $mo->laRawMode();
 #echo "\n";
 
 ##
-## reduceArgMax
-##
+#echo "========== reduceArgMax =========\n";
+## 
 #$a = $mo->zeros([10,20000,30],NDArray::float32);
 #$start = hrtime(true);
 #$max = $la->reduceMax($a,axis:0);
@@ -846,41 +846,41 @@ $la = $mo->laRawMode();
 #echo "\n";
 
 #
-# repeat
+echo "========== repeat =========\n";
 #
-$a = $mo->zeros([1000000,10],NDArray::float32);
-$start = hrtime(true);
-$out = $la->repeat($a,5,axis:1);
-echo hrtime(true)-$start;
-echo "[".implode(',',$out->shape())."]";
-echo "\n";
-$a = $mo->zeros([5,10],NDArray::float32);
-$start = hrtime(true);
-$out = $la->repeat($a,1000000,axis:1);
-echo hrtime(true)-$start;
-echo "[".implode(',',$out->shape())."]";
-echo "\n";
-$a = $mo->zeros([5,1000000],NDArray::float32);
-$start = hrtime(true);
-$out = $la->repeat($a,10,axis:1);
-echo hrtime(true)-$start;
-echo "[".implode(',',$out->shape())."]";
-echo "\n";
-$a = $mo->zeros([5,1000000],NDArray::float32);
-$start = hrtime(true);
-$out = $la->repeat($a,10,axis:0);
-echo hrtime(true)-$start;
-echo "[".implode(',',$out->shape())."]";
-echo "\n";
-$a = $mo->zeros([5,1000000],NDArray::float32);
-$start = hrtime(true);
-$out = $la->repeat($a,10,axis:2);
-echo hrtime(true)-$start;
-echo "[".implode(',',$out->shape())."]";
-echo "\n";
-$a = $mo->zeros([10,20],NDArray::float32);
-$start = hrtime(true);
-$out = $la->repeat($a,5);
-echo hrtime(true)-$start;
-echo "[".implode(',',$out->shape())."]";
-echo "\n";
+#$a = $mo->zeros([1000000,10],NDArray::float32);
+#$start = hrtime(true);
+#$out = $la->repeat($a,5,axis:1);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$out->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([5,10],NDArray::float32);
+#$start = hrtime(true);
+#$out = $la->repeat($a,1000000,axis:1);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$out->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([5,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$out = $la->repeat($a,10,axis:1);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$out->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([5,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$out = $la->repeat($a,10,axis:0);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$out->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([5,1000000],NDArray::float32);
+#$start = hrtime(true);
+#$out = $la->repeat($a,10,axis:2);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$out->shape())."]";
+#echo "\n";
+#$a = $mo->zeros([10,20],NDArray::float32);
+#$start = hrtime(true);
+#$out = $la->repeat($a,5);
+#echo hrtime(true)-$start;
+#echo "[".implode(',',$out->shape())."]";
+#echo "\n";
