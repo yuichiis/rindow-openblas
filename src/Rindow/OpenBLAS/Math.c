@@ -914,29 +914,28 @@ static PHP_METHOD(Math, increment)
         return;
     }
     switch (buffer->dtype) {
-        case php_interop_polite_math_matrix_dtype_float32:
-            {
-                float *x = &(((float *)buffer->data)[offsetX]);
-                zend_long i;
-                #pragma omp parallel for
-                for(i=0;i<n;i++) {
-                    x[i*incX] = (float)alpha * x[i*incX] + (float)beta;
-                }
+        case php_interop_polite_math_matrix_dtype_float32:{
+            float *x = &(((float *)buffer->data)[offsetX]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<n;i++) {
+                x[i*incX] = (float)alpha * x[i*incX] + (float)beta;
             }
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            {
-                double *x = &(((double *)buffer->data)[offsetX]);
-                zend_long i;
-                #pragma omp parallel for
-                for(i=0;i<n;i++) {
-                    x[i*incX] = (double)alpha * x[i*incX] + (double)beta;
-                }
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            double *x = &(((double *)buffer->data)[offsetX]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<n;i++) {
+                x[i*incX] = (double)alpha * x[i*incX] + (double)beta;
             }
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
 }
 /* }}} */
