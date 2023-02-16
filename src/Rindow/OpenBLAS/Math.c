@@ -983,20 +983,20 @@ static PHP_METHOD(Math, reciprocal)
     }
     switch (buffer->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:{
-                float *x = &(((float *)buffer->data)[offsetX]);
-                zend_long i;
-                #pragma omp parallel for
-                for(i=0;i<n;i++) {
-                    float t;
-                    t = (float)alpha * x[i*incX] + (float)beta;
-                    // *** CAUTION ***
-                    // disable checking for INFINITY values
-                    //if(t==0.0) {
-                    //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
-                    //    return;
-                    //}
-                    x[i*incX] = 1 / t;
-                }
+            float *x = &(((float *)buffer->data)[offsetX]);
+            zend_long i;
+            #pragma omp parallel for
+            for(i=0;i<n;i++) {
+                float t;
+                t = (float)alpha * x[i*incX] + (float)beta;
+                // *** CAUTION ***
+                // disable checking for INFINITY values
+                //if(t==0.0) {
+                //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
+                //    return;
+                //}
+                x[i*incX] = 1 / t;
+            }
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
