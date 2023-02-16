@@ -26,6 +26,7 @@ $a = $mo->ones([1,10000000],NDArray::float32);
 $start = hrtime(true);
 $la->reciprocal($a);
 echo hrtime(true)-$start;
+echo "\n";
 
 ##
 ## greater
@@ -885,3 +886,5 @@ echo hrtime(true)-$start;
 #echo hrtime(true)-$start;
 #echo "[".implode(',',$out->shape())."]";
 #echo "\n";
+
+echo "Finish!"; // Check Linux coredump by exiting without newline
