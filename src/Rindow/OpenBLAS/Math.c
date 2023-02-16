@@ -995,7 +995,7 @@ static PHP_METHOD(Math, reciprocal)
                 //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
                 //    return;
                 //}
-                x[i*incX] = 1 / t;
+                x[i*incX] = 1.0 / t;
             }
             break;
         }
@@ -1012,7 +1012,7 @@ static PHP_METHOD(Math, reciprocal)
                 //    zend_throw_exception(spl_ce_RuntimeException, "Zero divide.", 0);
                 //    return;
                 //}
-                x[i*incX] = 1 / t;
+                x[i*incX] = 1.0 / t;
             }
             break;
         }
