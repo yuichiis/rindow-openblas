@@ -1,5 +1,5 @@
 /*
-   B(m,repeats,k) := A(m,k)
+   B(n,repeats,k) := A(n,k)
 
    Method Rindow\OpenBLAS\Math::
    public function repeat(
@@ -75,25 +75,14 @@ static PHP_METHOD(Math, repeat)
         case php_interop_polite_math_matrix_dtype_float32: {
             float *a = &(((float *)bufferA->data)[offsetA]);
             float *b = &(((float *)bufferB->data)[offsetB]);
-            if(m==1) {
-                zend_long i;
-                #pragma omp parallel for
-                for(i=0; i<repeats; i++) {
-                    zend_long b_cell = k*i;
-                    for(zend_long j=0; j<k; j++) {
-                        b[j+b_cell] = a[j];
-                    }
-                }
-            } else {
-                zend_long h;
-                #pragma omp parallel for
-                for(h=0; h<m; h++) {
-                    zend_long a_cell = k*h;
-                    for(zend_long i=0; i<repeats; i++) {
-                        zend_long b_cell = k*i+k*repeats*h;
-                        for(zend_long j=0; j<k; j++) {
-                            b[j+b_cell] = a[j+a_cell];
-                        }
+            size_t ldA = k;
+            size_t ldB = k;
+            for(zend_long i=0; i<m; i++,a+=ldA) {
+                for(zend_long j=0; j<repeats; j++,b+=ldB) {
+                    if(k==1) {
+                        *b = *a;
+                    } else {
+                        cblas_scopy((blasint)k, a,(blasint)1, b,(blasint)1);
                     }
                 }
             }
@@ -102,25 +91,14 @@ static PHP_METHOD(Math, repeat)
         case php_interop_polite_math_matrix_dtype_float64: {
             double *a = &(((double *)bufferA->data)[offsetA]);
             double *b = &(((double *)bufferB->data)[offsetB]);
-            if(m==1) {
-                zend_long i;
-                #pragma omp parallel for
-                for(i=0; i<repeats; i++) {
-                    zend_long b_cell = k*i;
-                    for(zend_long j=0; j<k; j++) {
-                        b[j+b_cell] = a[j];
-                    }
-                }
-            } else {
-                zend_long h;
-                #pragma omp parallel for
-                for(h=0; h<m; h++) {
-                    zend_long a_cell = k*h;
-                    for(zend_long i=0; i<repeats; i++) {
-                        zend_long b_cell = k*i+k*repeats*h;
-                        for(zend_long j=0; j<k; j++) {
-                            b[j+b_cell] = a[j+a_cell];
-                        }
+            size_t ldA = k;
+            size_t ldB = k;
+            for(zend_long i=0; i<m; i++,a+=ldA) {
+                for(zend_long j=0; j<repeats; j++,b+=ldB) {
+                    if(k==1) {
+                        *b = *a;
+                    } else {
+                        cblas_dcopy((blasint)k, a,(blasint)1, b,(blasint)1);
                     }
                 }
             }
@@ -140,8 +118,8 @@ static PHP_METHOD(Math, repeat)
             int rc;
             a = php_rindow_openblas_get_address(bufferA,offsetA,valueSize);
             b = php_rindow_openblas_get_address(bufferB,offsetB,valueSize);
-            for(zend_long h=0; h<m; h++,a+=ldA) {
-                for(zend_long i=0; i<repeats; i++,b+=ldB) {
+            for(zend_long i=0; i<m; i++,a+=ldA) {
+                for(zend_long j=0; j<repeats; j++,b+=ldB) {
                     rc = php_rindow_openblas_math_copy(
                         k, bufferA->dtype, a, 1, b, 1);
                 }
