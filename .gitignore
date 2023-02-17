@@ -1,5 +1,6 @@
 *.lo
 *.la
+*.dep
 .libs
 acinclude.m4
 aclocal.m4
@@ -8,12 +9,14 @@ build
 config.guess
 config.h
 config.h.in
+config.h.in~
 config.log
 config.nice
 config.nice.bat
 config.status
 config.sub
 configure
+configure~
 configure.ac
 configure.in
 configure.bat
