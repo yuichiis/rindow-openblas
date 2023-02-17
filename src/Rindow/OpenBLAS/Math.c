@@ -2530,7 +2530,7 @@ static PHP_METHOD(Math, add)
                 if(incAj==1) {
                     //php_printf("cols=1,incAj=1\n");
                     zend_long j;
-                    #pragma omp simd
+                    //#pragma omp parallel for
                     for(j=0; j<rows; j++) {
                         a[j] += xx;
                     }
@@ -2552,12 +2552,25 @@ static PHP_METHOD(Math, add)
                 }
             } else {
                 //php_printf("cols<rows\n");
-                zend_long j;
-                #pragma omp parallel for
-                for(j=0; j<rows; j++) {
-                    zend_long i;
-                    for(i=0; i<cols; i++) {
-                        a[j*incAj+i*incAi] += (float)alpha * x[i*incX];
+                if(incX==1&&incAi==1&&alpha==1.0) {
+                    zend_long j;
+                    #pragma omp parallel for
+                    for(j=0; j<rows; j++) {
+                        float *aa = &a[j*incAj];
+                        zend_long i;
+                        #pragma omp simd
+                        for(i=0; i<cols; i++) {
+                            aa[i] += x[i];
+                        }
+                    }
+                } else {
+                    zend_long j;
+                    #pragma omp parallel for
+                    for(j=0; j<rows; j++) {
+                        zend_long i;
+                        for(i=0; i<cols; i++) {
+                            a[j*incAj+i*incAi] += (float)alpha * x[i*incX];
+                        }
                     }
                 }
             }
