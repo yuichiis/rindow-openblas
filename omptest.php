@@ -10,23 +10,23 @@ $mo = new Rindow\Math\Matrix\MatrixOperator();
 $blas = new Rindow\OpenBlas\Math();
 $la = $mo->laRawMode();
 
-##
-#echo "========== increment =========\n";
-##
-#$a = $mo->zeros([1,10000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->increment($a,1);
-#echo hrtime(true)-$start;
-#echo "\n";
-
 #
-# reciprocal
+echo "========== increment =========\n";
 #
-$a = $mo->ones([1,10000000],NDArray::float32);
+$a = $mo->zeros([1,10000000],NDArray::float32);
 $start = hrtime(true);
-$la->reciprocal($a);
+$la->increment($a,1);
 echo hrtime(true)-$start;
 echo "\n";
+
+##
+## reciprocal
+##
+#$a = $mo->ones([1,10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->reciprocal($a);
+#echo hrtime(true)-$start;
+#echo "\n";
 
 ##
 ## greater
