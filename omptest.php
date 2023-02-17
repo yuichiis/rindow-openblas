@@ -19,14 +19,14 @@ $la = $mo->laRawMode();
 #echo hrtime(true)-$start;
 #echo "\n";
 
-#
-# reciprocal
-#
-$a = $mo->ones([1,10000000],NDArray::float32);
-$start = hrtime(true);
-$la->reciprocal($a);
-echo hrtime(true)-$start;
-echo "\n";
+##
+#echo "========== reciprocal =========\n";
+##
+#$a = $mo->ones([1,10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->reciprocal($a);
+#echo hrtime(true)-$start;
+#echo "\n";
 
 ##
 ## greater
@@ -165,57 +165,57 @@ echo "\n";
 #echo "\n";
 
 
-##
-## add
-##
-#$a = $mo->zeros([1],NDArray::float32);
-#$b = $mo->zeros([10000000,1],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([1],NDArray::float32);
-#$b = $mo->zeros([1,10000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b,trans:true);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([10000000],NDArray::float32);
-#$b = $mo->zeros([10000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([10000000],NDArray::float32);
-#$b = $mo->zeros([10000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b,trans:true);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([10],NDArray::float32);
-#$b = $mo->zeros([1000000,10],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([10],NDArray::float32);
-#$b = $mo->zeros([10,1000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b,trans:true);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([1000000],NDArray::float32);
-#$b = $mo->zeros([10,1000000],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->zeros([1000000],NDArray::float32);
-#$b = $mo->zeros([1000000,10],NDArray::float32);
-#$start = hrtime(true);
-#$la->add($a,$b,trans:true);
-#echo hrtime(true)-$start;
-#echo "\n";
+#
+echo "========== add =========\n";
+#
+$a = $mo->zeros([1],NDArray::float32);
+$b = $mo->zeros([10000000,1],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([1],NDArray::float32);
+$b = $mo->zeros([1,10000000],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b,trans:true);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([10000000],NDArray::float32);
+$b = $mo->zeros([10000000],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([10000000],NDArray::float32);
+$b = $mo->zeros([10000000],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b,trans:true);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([10],NDArray::float32);
+$b = $mo->zeros([1000000,10],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([10],NDArray::float32);
+$b = $mo->zeros([10,1000000],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b,trans:true);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([1000000],NDArray::float32);
+$b = $mo->zeros([10,1000000],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->zeros([1000000],NDArray::float32);
+$b = $mo->zeros([1000000,10],NDArray::float32);
+$start = hrtime(true);
+$la->add($a,$b,trans:true);
+echo hrtime(true)-$start;
+echo "\n";
 
 
 ##

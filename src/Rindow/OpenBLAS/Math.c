@@ -2551,8 +2551,9 @@ static PHP_METHOD(Math, add)
                         &a[j*incAj],(blasint)incAi);
                 }
             } else {
-                //php_printf("cols<rows\n");
+                php_printf("cols<rows\n");
                 if(incX==1&&incAi==1&&alpha==1.0) {
+                    php_printf("cols<rows simd\n");
                     zend_long j;
                     #pragma omp parallel for
                     for(j=0; j<rows; j++) {
