@@ -101,21 +101,37 @@ static double d_sum(zend_long n,double *x,zend_long incX)
 
 static void s_increment(zend_long n, float *x, long incX, float alpha, float beta)
 {
-    //if(incX==1) {
-    //    long i;
-    //    #pragma omp simd
-    //    for(i=0;i<n;i++) {
-    //        x[i] = alpha * x[i] + beta;
-    //    }
-    //} else {
+    if(incX==1) {
+        long i;
+        #pragma omp simd
+        for(i=0;i<n;i++) {
+            x[i] = alpha * x[i] + beta;
+        }
+    } else {
         long i;
         #pragma omp parallel for
         for(i=0;i<n;i++) {
-            x[i*incX] = alpha * x[i*incX] + (float)beta;
+            x[i*incX] = alpha * x[i*incX] + beta;
         }
-    //}
+    }
 }
 
+static void d_increment(zend_long n, double *x, long incX, double alpha, double beta)
+{
+    if(incX==1) {
+        long i;
+        #pragma omp simd
+        for(i=0;i<n;i++) {
+            x[i] = alpha * x[i] + beta;
+        }
+    } else {
+        long i;
+        #pragma omp parallel for
+        for(i=0;i<n;i++) {
+            x[i*incX] = alpha * x[i*incX] + beta;
+        }
+    }
+}
 
 static zend_object_handlers rindow_openblas_math_object_handlers;
 
@@ -581,11 +597,7 @@ static PHP_METHOD(Math, increment)
         }
         case php_interop_polite_math_matrix_dtype_float64:{
             double *x = &(((double *)buffer->data)[offsetX]);
-            zend_long i;
-            //#pragma omp parallel for
-            for(i=0;i<n;i++) {
-                x[i*incX] = (double)alpha * x[i*incX] + (double)beta;
-            }
+            d_increment(n, x, incX, alpha, beta);
             break;
         }
         default:{
