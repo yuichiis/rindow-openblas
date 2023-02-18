@@ -101,19 +101,19 @@ static double d_sum(zend_long n,double *x,zend_long incX)
 
 static void s_increment(zend_long n, float *x, long incX, float alpha, float beta)
 {
-    if(incX==1) {
-        long i;
-        #pragma omp simd
-        for(i=0;i<n;i++) {
-            x[i] = alpha * x[i] + beta;
-        }
-    } else {
+    //if(incX==1) {
+    //    long i;
+    //    #pragma omp simd
+    //    for(i=0;i<n;i++) {
+    //        x[i] = alpha * x[i] + beta;
+    //    }
+    //} else {
         long i;
         #pragma omp parallel for
         for(i=0;i<n;i++) {
             x[i*incX] = alpha * x[i*incX] + (float)beta;
         }
-    }
+    //}
 }
 
 
