@@ -88,7 +88,7 @@ static PHP_METHOD(Math, reduceSum)
                 zend_long ldB = k;
                 for(zend_long i=0; i<m; i++,idxA+=ldA,idxB+=ldB) {
                     for(zend_long j=0; j<k; j++) {
-                        b[idxB+j] = s_sum(n,&a[idxA+j],k);
+                        b[idxB+j] = s_sum_sb(n,&a[idxA+j],k);
                     }
                 }
             }
@@ -103,7 +103,7 @@ static PHP_METHOD(Math, reduceSum)
                 zend_long ldB = k;
                 for(zend_long i=0; i<m; i++,idxA+=ldA,idxB+=ldB) {
                     for(zend_long j=0; j<k; j++) {
-                        b[idxB+j] = d_sum(n,&a[idxA+j],k);
+                        b[idxB+j] = d_sum_sb(n,&a[idxA+j],k);
                     }
                 }
             }

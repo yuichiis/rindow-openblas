@@ -19,9 +19,13 @@
 
 #include "php_rindow_openblas.h"
 
-static float s_max(zend_long n,float *x,zend_long incX)
+#define RINDOW_MATHLIB_INCLUDING_SOURCE 1
+
+#include "mathlib.c"
+
+static float s_max(long n, float *x, long incX)
 {
-    zend_long i;
+    long i;
     float a;
     a = x[0];
     for(i=1;i<n;i++) {
@@ -34,9 +38,9 @@ static float s_max(zend_long n,float *x,zend_long incX)
     return a;
 }
 
-static double d_max(zend_long n,double *x,zend_long incX)
+static double d_max(long n, double *x, long incX)
 {
-    zend_long i;
+    long i;
     double a;
     a = x[0];
     for(i=1;i<n;i++) {
@@ -47,10 +51,10 @@ static double d_max(zend_long n,double *x,zend_long incX)
     return a;
 }
 
-static zend_long s_argmax(zend_long n,float *x,zend_long incX)
+static long s_argmax(long n, float *x, long incX)
 {
-    zend_long i;
-    zend_long idx;
+    long i;
+    long idx;
     float a;
     idx = 0;
     a = x[0];
@@ -63,10 +67,10 @@ static zend_long s_argmax(zend_long n,float *x,zend_long incX)
     return idx;
 }
 
-static zend_long d_argmax(zend_long n,double *x,zend_long incX)
+static long d_argmax(long n, double *x, long incX)
 {
-    zend_long i;
-    zend_long idx;
+    long i;
+    long idx;
     double a;
     idx = 0;
     a = x[0];
@@ -79,9 +83,9 @@ static zend_long d_argmax(zend_long n,double *x,zend_long incX)
     return idx;
 }
 
-static float s_sum(zend_long n,float *x,zend_long incX)
+static float s_sum_sb(long n, float *x, long incX)
 {
-    zend_long i;
+    long i;
     float a=0;
     for(i=0; i<n; i++) {
         a += x[i*incX];
@@ -89,9 +93,9 @@ static float s_sum(zend_long n,float *x,zend_long incX)
     return a;
 }
 
-static double d_sum(zend_long n,double *x,zend_long incX)
+static double d_sum_sb(long n, double *x, long incX)
 {
-    zend_long i;
+    long i;
     double a=0;
     for(i=0; i<n; i++) {
         a += x[i*incX];
@@ -99,39 +103,6 @@ static double d_sum(zend_long n,double *x,zend_long incX)
     return a;
 }
 
-static void s_increment(zend_long n, float *x, long incX, float alpha, float beta)
-{
-    if(incX==1) {
-        long i;
-        #pragma omp simd
-        for(i=0;i<n;i++) {
-            x[i] = alpha * x[i] + beta;
-        }
-    } else {
-        long i;
-        #pragma omp parallel for
-        for(i=0;i<n;i++) {
-            x[i*incX] = alpha * x[i*incX] + beta;
-        }
-    }
-}
-
-static void d_increment(zend_long n, double *x, long incX, double alpha, double beta)
-{
-    if(incX==1) {
-        long i;
-        #pragma omp simd
-        for(i=0;i<n;i++) {
-            x[i] = alpha * x[i] + beta;
-        }
-    } else {
-        long i;
-        #pragma omp parallel for
-        for(i=0;i<n;i++) {
-            x[i*incX] = alpha * x[i*incX] + beta;
-        }
-    }
-}
 
 static zend_object_handlers rindow_openblas_math_object_handlers;
 
@@ -164,6 +135,10 @@ static zend_object* php_rindow_openblas_math_create_object(zend_class_entry* cla
         result += (data_type)*pDataX; \
     } \
 }
+#define PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(data_type,variable,offset) \
+    data_type  *variable; \
+    variable = &(((data_type *)buffer->data)[offset]); \
+
 
 int php_rindow_openblas_val2int(
     zval* val_value,
@@ -356,12 +331,16 @@ static PHP_METHOD(Math, sum)
     }
     switch (buffer->dtype) {
         zend_long i;
-        case php_interop_polite_math_matrix_dtype_float32:
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(float)
+        case php_interop_polite_math_matrix_dtype_float32:{
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,offsetX)
+            result = rindow_math_mathlib_s_sum(n,pDataX,incX,0.0);
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(double)
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,offsetX)
+            result = rindow_math_mathlib_d_sum(n,pDataX,incX,0.0);
             break;
+        }
         case php_interop_polite_math_matrix_dtype_int8:
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int8_t)
             break;
@@ -592,12 +571,12 @@ static PHP_METHOD(Math, increment)
     switch (buffer->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:{
             float *x = &(((float *)buffer->data)[offsetX]);
-            s_increment(n, x, incX, alpha, beta);
+            rindow_math_mathlib_s_increment(n, x, incX, alpha, beta);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
             double *x = &(((double *)buffer->data)[offsetX]);
-            d_increment(n, x, incX, alpha, beta);
+            rindow_math_mathlib_d_increment(n, x, incX, alpha, beta);
             break;
         }
         default:{
