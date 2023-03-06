@@ -24,6 +24,10 @@ RINDOW_FUNC_DECL void rindow_math_mathlib_s_increment(int32_t n, float *x, int32
 RINDOW_FUNC_DECL void rindow_math_mathlib_d_increment(int32_t n, double *x, int32_t incX, double alpha, double beta);
 RINDOW_FUNC_DECL float rindow_math_mathlib_s_sum(int32_t n,float *x,int32_t incX, float sum);
 RINDOW_FUNC_DECL double rindow_math_mathlib_d_sum(int32_t n,double *x,int32_t incX, double sum);
+RINDOW_FUNC_DECL int32_t rindow_math_mathlib_s_imax(int32_t n,float *x, int32_t incX, float floatMax);
+RINDOW_FUNC_DECL int32_t rindow_math_mathlib_d_imax(int32_t n,double *x, int32_t incX, double floatMax);
+RINDOW_FUNC_DECL int32_t rindow_math_mathlib_s_imin(int32_t n,float *x, int32_t incX, float floatMin);
+RINDOW_FUNC_DECL int32_t rindow_math_mathlib_d_imin(int32_t n,double *x, int32_t incX, double floatMin);
 
 
 #ifdef __cplusplus

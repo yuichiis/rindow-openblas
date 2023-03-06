@@ -377,9 +377,10 @@ static PHP_METHOD(Math, sum)
                 }
             }
             break;
-        default:
+        default:{
             zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
             return;
+        }
     }
     RETURN_DOUBLE(result);
 }
@@ -424,33 +425,20 @@ static PHP_METHOD(Math, imax)
     }
     switch (buffer->dtype) {
         zend_long i;
-        case php_interop_polite_math_matrix_dtype_float32:
-            pFloatX = &(((float *)buffer->data)[offsetX]);
-            floatMax = *pFloatX;
-            pFloatX += incX;
-            resultIdx = 0;
-            for (i=1; i<n; i++,pFloatX+=incX) {
-                if(floatMax < *pFloatX || isnan(floatMax)) {
-                    floatMax = *pFloatX;
-                    resultIdx = i;
-                }
-            }
+        case php_interop_polite_math_matrix_dtype_float32:{
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,offsetX)
+            resultIdx = rindow_math_mathlib_s_imax(n,pDataX,incX,-INFINITY);
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            pDoubleX = &(((double *)buffer->data)[offsetX]);
-            doubleMax = *pDoubleX;
-            pDoubleX += incX;
-            resultIdx = 0;
-            for (i=1; i<n; i++,pDoubleX+=incX) {
-                if(doubleMax < *pDoubleX || isnan(doubleMax)) {
-                    doubleMax = *pDoubleX;
-                    resultIdx = i;
-                }
-            }
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,offsetX)
+            resultIdx = rindow_math_mathlib_s_imax(n,pDataX,incX,-INFINITY);
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
     RETURN_LONG(resultIdx);
 }
@@ -495,33 +483,20 @@ static PHP_METHOD(Math, imin)
     }
     switch (buffer->dtype) {
         zend_long i;
-        case php_interop_polite_math_matrix_dtype_float32:
-            pFloatX = &(((float *)buffer->data)[offsetX]);
-            floatMin = *pFloatX;
-            pFloatX += incX;
-            resultIdx = 0;
-            for (i=1; i<n; i++,pFloatX+=incX) {
-                if(floatMin > *pFloatX) {
-                    floatMin = *pFloatX;
-                    resultIdx = i;
-                }
-            }
+        case php_interop_polite_math_matrix_dtype_float32:{
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,offsetX)
+            resultIdx = rindow_math_mathlib_s_imin(n,pDataX,incX,INFINITY);
             break;
-        case php_interop_polite_math_matrix_dtype_float64:
-            pDoubleX = &(((double *)buffer->data)[offsetX]);
-            doubleMin = *pDoubleX;
-            pDoubleX += incX;
-            resultIdx = 0;
-            for (i=1; i<n; i++,pDoubleX+=incX) {
-                if(doubleMin > *pDoubleX) {
-                    doubleMin = *pDoubleX;
-                    resultIdx = i;
-                }
-            }
+        }
+        case php_interop_polite_math_matrix_dtype_float64:{
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,offsetX)
+            resultIdx = rindow_math_mathlib_d_imin(n,pDataX,incX,INFINITY);
             break;
-        default:
+        }
+        default:{
             zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
             return;
+        }
     }
     RETURN_LONG(resultIdx);
 }
