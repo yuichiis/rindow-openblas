@@ -10,14 +10,14 @@ $mo = new Rindow\Math\Matrix\MatrixOperator();
 $blas = new Rindow\OpenBlas\Math();
 $la = $mo->laRawMode();
 
-#
-echo "========== increment =========\n";
-#
-$a = $mo->zeros([1,10000000],NDArray::float32);
-$start = hrtime(true);
-$la->increment($a,1);
-echo hrtime(true)-$start;
-echo "\n";
+##
+#echo "========== increment =========\n";
+##
+#$a = $mo->zeros([1,10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->increment($a,1);
+#echo hrtime(true)-$start;
+#echo "\n";
 
 ##
 ## reciprocal
@@ -509,21 +509,21 @@ echo "\n";
 #echo hrtime(true)-$start;
 #echo "\n";
 
-##
-## imax
-##
-#$a = $mo->arange(10000000,dtype:NDArray::float32);
-#$start = hrtime(true);
-#$idx = $la->imax($a);
-#var_dump($idx);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->arange(10000000,dtype:NDArray::float64);
-#$start = hrtime(true);
-#$idx = $la->imax($a);
-#var_dump($idx);
-#echo hrtime(true)-$start;
-#echo "\n";
+#
+# imax
+#
+$a = $mo->arange(10000000,dtype:NDArray::float32);
+$start = hrtime(true);
+$idx = $la->imax($a);
+var_dump($idx);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->arange(10000000,dtype:NDArray::float64);
+$start = hrtime(true);
+$idx = $la->imax($a);
+var_dump($idx);
+echo hrtime(true)-$start;
+echo "\n";
 
 ##
 ## imin
