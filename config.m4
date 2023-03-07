@@ -32,9 +32,13 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
   else
     AC_MSG_ERROR(pkg-config not found)
   fi
+  LIBMATHLIB_LIBDIR=PHP_EXT_SRCDIR(rindow_openblas)[/lib]
+  dnl # LIBBLAS_LIBDIR="-L$LIBMATHLIB_LIBDIR -lrindowmathlib $LIBBLAS_LIBDIR"
   PHP_EVAL_LIBLINE($LIBBLAS_LIBDIR, RINDOW_OPENBLAS_SHARED_LIBADD)
   PHP_EVAL_INCLINE($LIBBLAS_CFLAGS)
-  RINDOW_OPENBLAS_SHARED_LIBADD="-fopenmp $RINDOW_OPENBLAS_SHARED_LIBADD"
+  dnl # RINDOW_OPENBLAS_SHARED_LIBADD="-fopenmp $RINDOW_OPENBLAS_SHARED_LIBADD"
+  AC_MSG_CHECKING([LIBBLAS_LIBDIR])
+  AC_MSG_RESULT($LIBBLAS_LIBDIR)
 
   dnl # PHP_ADD_INCLUDE($RINDOW_OPENBLAS_DIR/include)
   AC_MSG_CHECKING(for Interop/Polite/Math/Matrix.h)
@@ -60,5 +64,6 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
      src/Rindow/OpenBLAS/Math.c \
   "
 
-  PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -msse2)
+  dnl # PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared,, -fopenmp -msse2)
+  PHP_NEW_EXTENSION(rindow_openblas, $RINDOW_OPENBLAS_SOURCES, $ext_shared)
 fi

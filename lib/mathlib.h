@@ -1,18 +1,27 @@
 #ifndef RINDOW_MATH_MATHLIB_H_
 #define RINDOW_MATH_MATHLIB_H_
 
-#if !defined(RINDOW_FUNC)
-  #if defined(RINDOW_COMPILING_DLL)
-    #define RINDOW_FUNC
-    #define RINDOW_FUNC_DECL extern __declspec(dllexport)
-  #elif defined(RINDOW_MATHLIB_INCLUDING_SOURCE)
-    #define RINDOW_FUNC
-    #define RINDOW_FUNC_DECL static
-  #else
-    #define RINDOW_FUNC
-    #define RINDOW_FUNC_DECL extern __declspec(dllimport)
-  #endif
+#ifdef _OPENMP
+#include <omp.h>
 #endif
+
+#if _MSC_VER
+  #if !defined(RINDOW_FUNC)
+    #if defined(RINDOW_COMPILING_DLL)
+      #define RINDOW_FUNC
+      #define RINDOW_FUNC_DECL extern __declspec(dllexport)
+    #elif defined(RINDOW_MATHLIB_INCLUDING_SOURCE)
+      #define RINDOW_FUNC
+      #define RINDOW_FUNC_DECL
+    #else
+      #define RINDOW_FUNC
+      #define RINDOW_FUNC_DECL extern __declspec(dllimport)
+    #endif
+  #endif
+#else // _MSC_VER
+  #define RINDOW_FUNC
+  #define RINDOW_FUNC_DECL extern
+#endif // _MSC_VER
 
 #include <stdint.h>
 

@@ -1,7 +1,4 @@
 #include <php.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 #include <Zend/zend_interfaces.h>
 #include <Zend/zend_exceptions.h>
 #include <ext/spl/spl_iterators.h>
@@ -19,9 +16,10 @@
 
 #include "php_rindow_openblas.h"
 
-#define RINDOW_MATHLIB_INCLUDING_SOURCE 1
+//#define RINDOW_MATHLIB_INCLUDING_SOURCE 1
 
-#include "mathlib.c"
+#include "../../../lib/mathlib.c"
+//#include "../../../lib/mathlib.h"
 
 static float s_max(long n, float *x, long incX)
 {
@@ -431,8 +429,8 @@ static PHP_METHOD(Math, imax)
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
-            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,offsetX)
-            resultIdx = rindow_math_mathlib_s_imax(n,pDataX,incX,-INFINITY);
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,offsetX)
+            resultIdx = rindow_math_mathlib_d_imax(n,pDataX,incX,-INFINITY);
             break;
         }
         default:{
@@ -545,13 +543,13 @@ static PHP_METHOD(Math, increment)
     }
     switch (buffer->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:{
-            float *x = &(((float *)buffer->data)[offsetX]);
-            rindow_math_mathlib_s_increment(n, x, incX, alpha, beta);
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,offsetX)
+            rindow_math_mathlib_s_increment(n, pDataX, incX, alpha, beta);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
-            double *x = &(((double *)buffer->data)[offsetX]);
-            rindow_math_mathlib_d_increment(n, x, incX, alpha, beta);
+            PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,offsetX)
+            rindow_math_mathlib_d_increment(n, pDataX, incX, alpha, beta);
             break;
         }
         default:{

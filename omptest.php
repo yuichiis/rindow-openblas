@@ -11,9 +11,135 @@ $blas = new Rindow\OpenBlas\Math();
 $la = $mo->laRawMode();
 
 ##
+#echo "========== asum =========\n";
+## 
+#$a = $mo->ones([10000000],NDArray::float32);
+#$start = hrtime(true);
+#$sum = $la->asum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::float64);
+#$start = hrtime(true);
+#$sum = $la->asum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+#
+echo "========== sum =========\n";
+# 
+$a = $mo->ones([10000000],NDArray::float32);
+$start = hrtime(true);
+$sum = $la->sum($a);
+var_dump($sum);
+echo hrtime(true)-$start;
+echo "\n";
+$a = $mo->ones([10000000],NDArray::float64);
+$start = hrtime(true);
+$sum = $la->sum($a);
+var_dump($sum);
+echo hrtime(true)-$start;
+echo "\n";
+#$a = $mo->ones([10000000],NDArray::int8);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::uint8);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::int16);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::uint16);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::int32);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::uint32);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::int64);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::uint64);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->ones([10000000],NDArray::bool);
+#$start = hrtime(true);
+#$sum = $la->sum($a);
+#var_dump($sum);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+##
+#echo "========== imax =========\n";
+##
+#$a = $mo->arange(10000000,dtype:NDArray::float32);
+#//$a = $mo->arange(10000,dtype:NDArray::float32);
+#$start = hrtime(true);
+#$idx = $la->imax($a);
+#var_dump($idx);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->arange(10000000,dtype:NDArray::float64);
+#//$a = $mo->arange(10000,dtype:NDArray::float64);
+#$start = hrtime(true);
+#$idx = $la->imax($a);
+#var_dump($idx);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+##
+## imin
+##
+#$a = $mo->arange(10000000,dtype:NDArray::float32);
+#$start = hrtime(true);
+#$idx = $la->imin($a);
+#var_dump($idx);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->arange(10000000,dtype:NDArray::float64);
+#$start = hrtime(true);
+#$idx = $la->imin($a);
+#var_dump($idx);
+#echo hrtime(true)-$start;
+#echo "\n";
+
+
+##
 #echo "========== increment =========\n";
 ##
 #$a = $mo->zeros([1,10000000],NDArray::float32);
+#$start = hrtime(true);
+#$la->increment($a,1);
+#echo hrtime(true)-$start;
+#echo "\n";
+#$a = $mo->zeros([1,10000000],NDArray::float64);
 #$start = hrtime(true);
 #$la->increment($a,1);
 #echo hrtime(true)-$start;
@@ -440,108 +566,6 @@ $la = $mo->laRawMode();
 #echo "\n";
 
 ##
-## sum
-##
-#$a = $mo->ones([10000000],NDArray::float32);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::float64);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::int8);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::uint8);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::int16);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::uint16);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::int32);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::uint32);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::int64);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::uint64);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->ones([10000000],NDArray::bool);
-#$start = hrtime(true);
-#$sum = $la->sum($a);
-#var_dump($sum);
-#echo hrtime(true)-$start;
-#echo "\n";
-
-#
-# imax
-#
-$a = $mo->arange(10000000,dtype:NDArray::float32);
-$start = hrtime(true);
-$idx = $la->imax($a);
-var_dump($idx);
-echo hrtime(true)-$start;
-echo "\n";
-$a = $mo->arange(10000000,dtype:NDArray::float64);
-$start = hrtime(true);
-$idx = $la->imax($a);
-var_dump($idx);
-echo hrtime(true)-$start;
-echo "\n";
-
-##
-## imin
-##
-#$a = $mo->arange(10000000,dtype:NDArray::float32);
-#$start = hrtime(true);
-#$idx = $la->imin($a);
-#var_dump($idx);
-#echo hrtime(true)-$start;
-#echo "\n";
-#$a = $mo->arange(10000000,dtype:NDArray::float64);
-#$start = hrtime(true);
-#$idx = $la->imin($a);
-#var_dump($idx);
-#echo hrtime(true)-$start;
-#echo "\n";
-
-##
 ## maximum
 ##
 #$a = $mo->zeros([10000000],NDArray::float32);
@@ -887,4 +911,6 @@ echo "\n";
 #echo "[".implode(',',$out->shape())."]";
 #echo "\n";
 
+
+#echo "sleep(1) ..";sleep(1);
 echo "Finish!"; // Check Linux coredump by exiting without newline
