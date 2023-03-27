@@ -1,15 +1,16 @@
 #include "mathlib.h"
 #include <math.h>
 
-float rindow_math_mathlib_s_sum(int32_t n,float *x, int32_t incX, float sum)
+float rindow_math_mathlib_s_sum(int32_t n,float *x, int32_t incX, float tsum)
 {
+    float sum = 0;
 #ifdef _OPENMP
     int32_t i;
     #pragma omp parallel for reduction(+:sum)
     for(i=0; i<n; i++) {
         sum += x[i*incX];
     }
-    return sum;
+    return tsum+sum;
 #else
     int32_t num_thread = get_nprocs();
     int32_t cell_size = n/num_thread;
@@ -35,19 +36,20 @@ float rindow_math_mathlib_s_sum(int32_t n,float *x, int32_t incX, float sum)
         sum += th_arg[i].sum;
     }
     free(th_arg);
-    return sum;
+    return tsum+sum;
 #endif
 }
 
-double rindow_math_mathlib_d_sum(int32_t n,double *x, int32_t incX, double sum)
+double rindow_math_mathlib_d_sum(int32_t n,double *x, int32_t incX, double tsum)
 {
+    double sum = 0;
 #ifdef _OPENMP
     int32_t i;
     #pragma omp parallel for reduction(+:sum)
     for(i=0; i<n; i++) {
         sum += x[i*incX];
     }
-    return sum;
+    return tsum+sum;
 #else
 
 
@@ -75,64 +77,80 @@ double rindow_math_mathlib_d_sum(int32_t n,double *x, int32_t incX, double sum)
         sum += th_arg[i].sum;
     }
     free(th_arg);
-    return sum;
+    return tsum+sum;
 #endif
 }
 
 
 
-#define PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(data_type) { \
-    data_type  *pDataX=x; \
-    for(int i=0; i<n; i++,pDataX+=incX) { \
-        sum += *pDataX; \
-    } \
-}
+#define PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(data_type) \
+    for(i=0; i<n; i++) {\
+        sum += pDataX[i*incX];\
+    }
 
-int64_t rindow_math_mathlib_int_sum(int32_t dtype, int32_t n,void *x, int32_t incX, int64_t sum)
+int64_t rindow_math_mathlib_int_sum(int32_t dtype, int32_t n,void *x, int32_t incX, int64_t tsum)
 {
+    int32_t i;
+    int64_t sum=0;
     switch(dtype) {
         case rindow_math_mathlib_dtype_int8: {
+            int8_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int8_t)
             break;
         }
         case rindow_math_mathlib_dtype_uint8: {
+            uint8_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint8_t)
             break;
         }
         case rindow_math_mathlib_dtype_int16: {
+            int16_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int16_t)
             break;
         }
         case rindow_math_mathlib_dtype_uint16: {
+            uint16_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint16_t)
             break;
         }
         case rindow_math_mathlib_dtype_int32: {
+            int32_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int32_t)
             break;
         }
         case rindow_math_mathlib_dtype_uint32: {
+            uint32_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint32_t)
             break;
         }
         case rindow_math_mathlib_dtype_int64: {
+            int64_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int64_t)
             break;
         }
         case rindow_math_mathlib_dtype_uint64: {
+            uint64_t *pDataX=x;
+            #pragma omp parallel for reduction(+:sum)
             PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint64_t)
             break;
         }
         case rindow_math_mathlib_dtype_bool: {
-                uint8_t *pBoolX = x;
-                for (int i=0; i<n; i++,pBoolX+=incX) {
-                    if(*pBoolX!=0) {
-                        sum += 1;
+                uint8_t *pDataX=x;
+                #pragma omp parallel for reduction(+:sum)
+                for (i=0; i<n; i++) {
+                    if(pDataX[i*incX]!=0) {
+                        sum++;
                     }
                 }
             break;
         }
     }
-    return sum;
+    return tsum+sum;
 }
-

@@ -88,14 +88,26 @@ int32_t rindow_math_mathlib_s_transpose(
         free(targetStrides);
         return RINDOW_MATH_MATHLIB_E_DUP_AXIS;
     }
-    s_transCopy(
-        ndim-1,
-        shape,
-        strides,
-        targetStrides,
-        a,
-        b
-    );
+
+    ndim--;
+    int32_t repeat = *shape;
+    stride = *strides;
+    targetStride = *targetStrides;
+
+    if(ndim<=0) {
+        memcpy(b,a,repeat*sizeof(float));
+        return RINDOW_MATH_MATHLIB_SUCCESS;
+    }
+
+    int pos;
+    #pragma omp parallel for
+    for(pos=0; pos<repeat; pos++) {
+        s_transCopy(
+            ndim-1,shape+1,strides+1,targetStrides+1,
+            a+(stride*pos),b+(targetStride*pos)
+        );
+    }
+
     free(strides);
     free(targetStrides);
     return RINDOW_MATH_MATHLIB_SUCCESS;
@@ -180,14 +192,26 @@ int32_t rindow_math_mathlib_d_transpose(
         free(targetStrides);
         return RINDOW_MATH_MATHLIB_E_DUP_AXIS;
     }
-    d_transCopy(
-        ndim-1,
-        shape,
-        strides,
-        targetStrides,
-        a,
-        b
-    );
+
+    ndim--;
+    int32_t repeat = *shape;
+    stride = *strides;
+    targetStride = *targetStrides;
+
+    if(ndim<=0) {
+        memcpy(b,a,repeat*sizeof(double));
+        return RINDOW_MATH_MATHLIB_SUCCESS;
+    }
+
+    int pos;
+    #pragma omp parallel for
+    for(pos=0; pos<repeat; pos++) {
+        d_transCopy(
+            ndim-1,shape+1,strides+1,targetStrides+1,
+            a+(stride*pos),b+(targetStride*pos)
+        );
+    }
+
     free(strides);
     free(targetStrides);
     return RINDOW_MATH_MATHLIB_SUCCESS;
@@ -262,15 +286,28 @@ int32_t rindow_math_mathlib_int_transpose(
         free(targetStrides);
         return RINDOW_MATH_MATHLIB_E_DUP_AXIS;
     }
-    int_transCopy(
-        dtype,
-        ndim-1,
-        shape,
-        strides,
-        targetStrides,
-        a,
-        b
-    );
+
+    ndim--;
+    int32_t repeat = *shape;
+    stride = *strides;
+    targetStride = *targetStrides;
+    size_t value_bytes = php_rindow_mathlib_common_dtype_to_valuesize(dtype);
+
+    if(ndim<=0) {
+        memcpy(b,a,repeat*value_bytes);
+        return RINDOW_MATH_MATHLIB_SUCCESS;
+    }
+
+    int pos;
+    #pragma omp parallel for
+    for(pos=0; pos<repeat; pos++) {
+        void* a_next = (int8_t*)a+(value_bytes*stride*pos);
+        void* b_next = (int8_t*)b+(value_bytes*targetStride*pos);
+        int_transCopy(
+            dtype,ndim-1,shape+1,strides+1,targetStrides+1,
+            a_next,b_next);
+    }
+
     free(strides);
     free(targetStrides);
     return RINDOW_MATH_MATHLIB_SUCCESS;
