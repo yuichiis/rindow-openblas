@@ -120,7 +120,7 @@ static PHP_METHOD(Math, gather)
                 if(rindow_openblas_math_get_integer(
                             bufferX->dtype, bufferX->data, offsetX,1,
                             j, &selector)) {
-                    zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                    zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type of label number.", 0);
                     return;
                 }
                 if(selector<0||selector>=numClass) {
@@ -177,7 +177,7 @@ static PHP_METHOD(Math, gather)
                 if(rindow_openblas_math_get_integer(
                             bufferX->dtype, bufferX->data, offsetX,1,
                             j, &selector)) {
-                    zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                    zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type of label number.", 0);
                     return;
                 }
                 if(selector<0||selector>=numClass) {
@@ -227,7 +227,7 @@ static PHP_METHOD(Math, gather)
         default: {
             if(!php_rindow_openblas_common_dtype_is_int(bufferA->dtype)&&
                 !php_rindow_openblas_common_dtype_is_bool(bufferA->dtype)) {
-                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+                zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
                 return;
             }
 
@@ -244,7 +244,7 @@ static PHP_METHOD(Math, gather)
                 if(rindow_openblas_math_get_integer(
                             bufferX->dtype, bufferX->data, offsetX,1,
                             j, &selector)) {
-                    zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                    zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type of label number.", 0);
                     return;
                 }
                 if(selector<0||selector>=numClass) {
@@ -399,7 +399,7 @@ static PHP_METHOD(Math, reduceGather)
                     if(rindow_openblas_math_get_integer(
                                 bufferX->dtype, bufferX->data, idxX, 1,
                                 j, &selector)) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                        zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type of label number.", 0);
                         return;
                     }
                     if(selector<0||selector>=numClass) {
@@ -436,7 +436,7 @@ static PHP_METHOD(Math, reduceGather)
                     if(rindow_openblas_math_get_integer(
                                 bufferX->dtype, bufferX->data, idxX, 1,
                                 j, &selector)) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                        zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type of label number.", 0);
                         return;
                     }
                     if(selector<0||selector>=numClass) {
@@ -463,7 +463,7 @@ static PHP_METHOD(Math, reduceGather)
         default: {
             if(!php_rindow_openblas_common_dtype_is_int(bufferA->dtype)&&
                 !php_rindow_openblas_common_dtype_is_bool(bufferA->dtype)) {
-                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+                zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
                 return;
             }
 
@@ -484,7 +484,7 @@ static PHP_METHOD(Math, reduceGather)
                     if(rindow_openblas_math_get_integer(
                                 bufferX->dtype, bufferX->data, idxX,1,
                                 j, &selector)) {
-                        zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type of label number.", 0);
+                        zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type of label number.", 0);
                         return;
                     }
                     if(selector<0||selector>=numClass) {

@@ -109,7 +109,7 @@ static PHP_METHOD(Math, reduceSum)
             }
             break;
         default:
-            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
             return;
     }
 }
@@ -226,7 +226,7 @@ static PHP_METHOD(Math, reduceMax)
             }
             break;
         default:
-            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
             return;
     }
 }
@@ -335,7 +335,7 @@ static PHP_METHOD(Math, reduceArgMax)
                         value = d_argmax(n,&a[idxA+j],k);
                         int rc = rindow_openblas_math_set_integer(bufferB->dtype, bufferB->data, offsetB, 1, idxB+j, value);
                         if(rc) {
-                            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+                            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
                             return;
                         }
                     }
@@ -343,7 +343,7 @@ static PHP_METHOD(Math, reduceArgMax)
             }
             break;
         default:
-            zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
             return;
     }
 }

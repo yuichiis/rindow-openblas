@@ -6,6 +6,7 @@ use Interop\Polite\Math\Matrix\NDArray;
 use Rindow\OpenBLAS\Buffer;
 use ArgumentCountError;
 use RuntimeException;
+use OutOfRangeException;
 use TypeError;
 
 /**
@@ -142,7 +143,7 @@ class Test extends TestCase
     {
         //$buf = new \SplFixedArray(3);
         $buf = new Buffer(3,NDArray::float32);
-        $this->expectException(RuntimeException::class);
+        $this->expectException(OutOfRangeException::class);
         $this->expectExceptionMessage('Index invalid or out of range');
         $buf[3] = 1;
     }
@@ -151,7 +152,7 @@ class Test extends TestCase
     {
         //$buf = new \SplFixedArray(3);
         $buf = new Buffer(3,NDArray::float32);
-        $this->expectException(RuntimeException::class);
+        $this->expectException(OutOfRangeException::class);
         $this->expectExceptionMessage('Index invalid or out of range');
         $buf[-1] = 1;
     }
@@ -160,7 +161,7 @@ class Test extends TestCase
     {
         //$buf = new \SplFixedArray(3);
         $buf = new Buffer(3,NDArray::float32);
-        $this->expectException(RuntimeException::class);
+        $this->expectException(OutOfRangeException::class);
         $this->expectExceptionMessage('Index invalid or out of range');
         $x = $buf[3];
     }
@@ -169,7 +170,7 @@ class Test extends TestCase
     {
         //$buf = new \SplFixedArray(3);
         $buf = new Buffer(3,NDArray::float32);
-        $this->expectException(RuntimeException::class);
+        $this->expectException(OutOfRangeException::class);
         $this->expectExceptionMessage('Index invalid or out of range');
         $x = $buf[-1];
     }

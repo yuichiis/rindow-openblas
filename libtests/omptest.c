@@ -1,21 +1,25 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <math.h>
+#ifdef _MSC_VER
+#include <windows.h>
+#else
 #include <sys/sysinfo.h>
+#endif
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-//#define RINDOW_MATHLIB_INCLUDING_SOURCE 1
-//#include "lib/mathlib.c"
-#include "lib/mathlib.h"
+#define RINDOW_MATHLIB_INCLUDING_SOURCE 1
+#include "../lib/mathlib.c"
+//#include "../lib/mathlib.h"
 
 //#define N 10000000
 #define N 1000
 static float s_array_a[N];
 static double d_array_a[N];
 
-int main(int ac,char* av)
+int main()
 {
     float v=0.0;
     long long iv = 0;
@@ -25,12 +29,17 @@ int main(int ac,char* av)
         iv += (long long)v;
         v += 1.0;
     }
+#ifndef _MSC_VER
     printf("get_nprocs_conf() = %d\n",get_nprocs_conf());
     printf("get_nprocs() = %d\n",get_nprocs());
+#endif
+
+#ifdef _OPENMP
     //printf("omp stack size=%d\n",omp_get_stack_size());
     printf("omp max threads=%d\n",omp_get_max_threads());
     printf("omp in parallel=%d\n",omp_in_parallel());
     printf("omp num threads=%d\n",omp_get_num_threads());
+#endif
 
     printf("MAXI=%lld max 32 bit integer\n",(long long)1<<31);
     printf("MAXS=%lld max 24 bit integer\n",(long long)1<<24);
@@ -46,7 +55,9 @@ int main(int ac,char* av)
     int result_d = rindow_math_mathlib_d_imax(N,d_array_a,1,-INFINITY);
     printf("dimax=%d\n",result_d);
  
+#ifdef _OPENMP
     printf("omp in parallel=%d\n",omp_in_parallel());
     printf("omp num threads=%d\n",omp_get_num_threads());
+#endif
     printf("Finish!");
 }

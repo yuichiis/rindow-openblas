@@ -285,7 +285,7 @@ class Test extends TestCase
 
         $N = 0;
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
@@ -301,7 +301,7 @@ class Test extends TestCase
 
         $offX = -1;
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
@@ -317,7 +317,7 @@ class Test extends TestCase
             $this->translate_scal(2,$X);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
@@ -348,7 +348,7 @@ class Test extends TestCase
             $this->translate_scal(2,$X);
 
         $XX = $mo->array([1,2])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
@@ -363,7 +363,7 @@ class Test extends TestCase
             $this->translate_scal(2,$X);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
@@ -378,7 +378,7 @@ class Test extends TestCase
             $this->translate_scal(2,$X);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
@@ -408,7 +408,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -424,7 +424,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -440,7 +440,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -472,7 +472,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $XX = $mo->array([1,2])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -488,7 +488,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -504,7 +504,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -520,7 +520,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $offY = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -536,7 +536,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $incY = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incY must be greater than 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -568,7 +568,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $YY = $mo->array([1,2])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -584,7 +584,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $offY = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -600,7 +600,7 @@ class Test extends TestCase
             $this->translate_axpy($X,$Y,2);
 
         $incY = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -630,7 +630,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -646,7 +646,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -662,7 +662,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -694,7 +694,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $XX = $mo->array([1,2])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -710,7 +710,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -726,7 +726,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -742,7 +742,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $offY = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -758,7 +758,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $incY = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incY must be greater than 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -790,7 +790,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $YY = $mo->array([1,2])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -806,7 +806,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $offY = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -822,7 +822,7 @@ class Test extends TestCase
             $this->translate_dot($X,$Y);
 
         $incY = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -850,7 +850,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
@@ -865,7 +865,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
@@ -880,7 +880,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
@@ -910,7 +910,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $XX = $mo->array([100,-10])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
@@ -925,7 +925,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
@@ -940,7 +940,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
@@ -968,7 +968,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
@@ -983,7 +983,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
@@ -998,7 +998,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
@@ -1028,7 +1028,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $XX = $mo->array([100,-10])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
@@ -1043,7 +1043,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
@@ -1058,7 +1058,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
@@ -1088,7 +1088,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
@@ -1104,7 +1104,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
@@ -1120,7 +1120,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
@@ -1152,7 +1152,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $XX = $mo->array([100,-10])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
@@ -1168,7 +1168,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
@@ -1184,7 +1184,7 @@ class Test extends TestCase
             $this->translate_amin($X);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for buffer');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
@@ -1214,7 +1214,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1230,7 +1230,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1246,7 +1246,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1278,7 +1278,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $offY = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1294,7 +1294,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $incY = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incY must be greater than 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1326,7 +1326,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $XX = $mo->array([100,10])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1342,7 +1342,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $offX = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1358,7 +1358,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $incX = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1374,7 +1374,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $YY = $mo->array([100,10])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferY.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1390,7 +1390,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $offY = 1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferY.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1406,7 +1406,7 @@ class Test extends TestCase
             $this->translate_copy($X,$Y);
 
         $incY = 2;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferY.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
@@ -1479,7 +1479,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $m = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument m must be greater than 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1505,7 +1505,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $n = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1531,7 +1531,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $offA = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1557,7 +1557,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $ldA = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument ldA must be greater than 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1609,7 +1609,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $offX = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1635,7 +1635,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $incX = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1687,7 +1687,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $offY = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1713,7 +1713,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $incY = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incY must be greater than 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1765,7 +1765,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $AA = $mo->array([1,2,3,4,5])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferA');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1791,7 +1791,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $XX = $mo->array([10,1])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -1817,7 +1817,7 @@ class Test extends TestCase
             $this->translate_gemv($A,$X,null,null,$Y);
 
         $YY = $mo->array([0])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferY');
         $blas->gemv(
             BLAS::RowMajor,$trans,
@@ -2068,7 +2068,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $M = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument m must be greater than 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2097,7 +2097,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $N = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2126,7 +2126,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $K = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument k must be greater than 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2155,7 +2155,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $offA = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2184,7 +2184,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $lda = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument ldA must be greater than 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2242,7 +2242,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $offB = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetB must be greater than equals 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2271,7 +2271,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $ldb = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument ldB must be greater than 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2329,7 +2329,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $offC = -1;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument offsetC must be greater than equals 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2358,7 +2358,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $ldc = 0;
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument ldC must be greater than 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2416,7 +2416,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $AA = $mo->array([1,2,3,4,5])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferA');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2445,7 +2445,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $BB = $mo->array([1,0,0, 0,1,0, 0,0])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferB');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2475,7 +2475,7 @@ class Test extends TestCase
 
 
         $CC = $mo->zeros([5])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferC');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2504,7 +2504,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $AA = $mo->array([1,0,0, 0,1,0, 0,0])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferA');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2533,7 +2533,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $BB = $mo->array([1,2,3,4,5])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferB');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
@@ -2562,7 +2562,7 @@ class Test extends TestCase
             $this->translate_gemm($A,$B,$alpha,$beta,$C,$transA,$transB);
 
         $CC = $mo->zeros([5])->buffer();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Matrix specification too large for bufferC');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,

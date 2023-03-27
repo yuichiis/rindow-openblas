@@ -107,7 +107,7 @@ static PHP_METHOD(Math, repeat)
         default: {
             if(!php_rindow_openblas_common_dtype_is_int(bufferA->dtype)&&
                 !php_rindow_openblas_common_dtype_is_bool(bufferA->dtype)) {
-                zend_throw_exception(spl_ce_RuntimeException, "Unsupported data type.", 0);
+                zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
                 return;
             }
 
