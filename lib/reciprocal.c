@@ -1,7 +1,7 @@
-#include "mathlib.h"
+#include "matlib.h"
 #include <math.h>
 
-void rindow_math_mathlib_s_reciprocal(int32_t n, float *x, int32_t incX, float alpha, float beta)
+void rindow_matlib_s_reciprocal(int32_t n, float *x, int32_t incX, float alpha, float beta)
 {
     if(incX==1) {
         int32_t i;
@@ -22,7 +22,7 @@ void rindow_math_mathlib_s_reciprocal(int32_t n, float *x, int32_t incX, float a
     }
 }
 
-void rindow_math_mathlib_d_reciprocal(int32_t n, double *x, int32_t incX, double alpha, double beta)
+void rindow_matlib_d_reciprocal(int32_t n, double *x, int32_t incX, double alpha, double beta)
 {
     if(incX==1) {
         int32_t i;

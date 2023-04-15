@@ -1,4 +1,4 @@
-#include "mathlib.h"
+#include "matlib.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -49,7 +49,7 @@ static void s_transCopy(
 //printf("end s_transCopy\n");
 }
 
-int32_t rindow_math_mathlib_s_transpose(
+int32_t rindow_matlib_s_transpose(
     int32_t ndim,
     int32_t *shape,
     int32_t *perm,
@@ -58,16 +58,16 @@ int32_t rindow_math_mathlib_s_transpose(
     )
 {
     if(ndim<=0) {
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t* strides = calloc(ndim,sizeof(int32_t));
     if(strides==NULL) {
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t* targetStrides = calloc(ndim,sizeof(int32_t));
     if(targetStrides==NULL) {
         free(strides);
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t stride = 1;
     int32_t targetStride = 1;
@@ -78,7 +78,7 @@ int32_t rindow_math_mathlib_s_transpose(
         if(targDepth>=ndim) {
             free(strides);
             free(targetStrides);
-            return RINDOW_MATH_MATHLIB_E_PERM_OUT_OF_RANGE;
+            return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
         }
         targetStrides[targDepth] = targetStride;
         targetStride *= shape[targDepth];
@@ -86,7 +86,7 @@ int32_t rindow_math_mathlib_s_transpose(
     if(stride!=targetStride) {
         free(strides);
         free(targetStrides);
-        return RINDOW_MATH_MATHLIB_E_DUP_AXIS;
+        return RINDOW_MATLIB_E_DUP_AXIS;
     }
 
     ndim--;
@@ -96,7 +96,7 @@ int32_t rindow_math_mathlib_s_transpose(
 
     if(ndim<=0) {
         memcpy(b,a,repeat*sizeof(float));
-        return RINDOW_MATH_MATHLIB_SUCCESS;
+        return RINDOW_MATLIB_SUCCESS;
     }
 
     int pos;
@@ -110,7 +110,7 @@ int32_t rindow_math_mathlib_s_transpose(
 
     free(strides);
     free(targetStrides);
-    return RINDOW_MATH_MATHLIB_SUCCESS;
+    return RINDOW_MATLIB_SUCCESS;
 }
 
 
@@ -153,7 +153,7 @@ static void d_transCopy(
     }
 }
 
-int32_t rindow_math_mathlib_d_transpose(
+int32_t rindow_matlib_d_transpose(
     int32_t ndim,
     int32_t *shape,
     int32_t *perm,
@@ -162,16 +162,16 @@ int32_t rindow_math_mathlib_d_transpose(
     )
 {
     if(ndim<=0) {
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t* strides = calloc(ndim,sizeof(int32_t));
     if(strides==NULL) {
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t* targetStrides = calloc(ndim,sizeof(int32_t));
     if(targetStrides==NULL) {
         free(strides);
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t stride = 1;
     int32_t targetStride = 1;
@@ -182,7 +182,7 @@ int32_t rindow_math_mathlib_d_transpose(
         if(targDepth>=ndim) {
             free(strides);
             free(targetStrides);
-            return RINDOW_MATH_MATHLIB_E_PERM_OUT_OF_RANGE;
+            return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
         }
         targetStrides[targDepth] = targetStride;
         targetStride *= shape[targDepth];
@@ -190,7 +190,7 @@ int32_t rindow_math_mathlib_d_transpose(
     if(stride!=targetStride) {
         free(strides);
         free(targetStrides);
-        return RINDOW_MATH_MATHLIB_E_DUP_AXIS;
+        return RINDOW_MATLIB_E_DUP_AXIS;
     }
 
     ndim--;
@@ -200,7 +200,7 @@ int32_t rindow_math_mathlib_d_transpose(
 
     if(ndim<=0) {
         memcpy(b,a,repeat*sizeof(double));
-        return RINDOW_MATH_MATHLIB_SUCCESS;
+        return RINDOW_MATLIB_SUCCESS;
     }
 
     int pos;
@@ -214,7 +214,7 @@ int32_t rindow_math_mathlib_d_transpose(
 
     free(strides);
     free(targetStrides);
-    return RINDOW_MATH_MATHLIB_SUCCESS;
+    return RINDOW_MATLIB_SUCCESS;
 }
 
 static void int_transCopy(
@@ -232,11 +232,11 @@ static void int_transCopy(
     int32_t targetStride = *targetStrides;
 
     if(ndim<=0) {
-        php_rindow_mathlib_copysub(dtype,repeat,a,stride,b,targetStride);
+        php_rindow_matlib_copysub(dtype,repeat,a,stride,b,targetStride);
         return;
     }
 
-    size_t value_bytes = php_rindow_mathlib_common_dtype_to_valuesize(dtype);
+    size_t value_bytes = php_rindow_matlib_common_dtype_to_valuesize(dtype);
     for(int pos=0; pos<repeat; pos++) {
         void* a_next = (int8_t*)a+(value_bytes*stride*pos);
         void* b_next = (int8_t*)b+(value_bytes*targetStride*pos);
@@ -246,7 +246,7 @@ static void int_transCopy(
     }
 }
 
-int32_t rindow_math_mathlib_int_transpose(
+int32_t rindow_matlib_int_transpose(
     int32_t dtype,
     int32_t ndim,
     int32_t *shape,
@@ -256,16 +256,16 @@ int32_t rindow_math_mathlib_int_transpose(
     )
 {
     if(ndim<=0) {
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t* strides = calloc(ndim,sizeof(int32_t));
     if(strides==NULL) {
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t* targetStrides = calloc(ndim,sizeof(int32_t));
     if(targetStrides==NULL) {
         free(strides);
-        return RINDOW_MATH_MATHLIB_E_MEM_ALLOC_FAILURE;
+        return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
     }
     int32_t stride = 1;
     int32_t targetStride = 1;
@@ -276,7 +276,7 @@ int32_t rindow_math_mathlib_int_transpose(
         if(targDepth>=ndim) {
             free(strides);
             free(targetStrides);
-            return RINDOW_MATH_MATHLIB_E_PERM_OUT_OF_RANGE;
+            return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
         }
         targetStrides[targDepth] = targetStride;
         targetStride *= shape[targDepth];
@@ -284,18 +284,18 @@ int32_t rindow_math_mathlib_int_transpose(
     if(stride!=targetStride) {
         free(strides);
         free(targetStrides);
-        return RINDOW_MATH_MATHLIB_E_DUP_AXIS;
+        return RINDOW_MATLIB_E_DUP_AXIS;
     }
 
     ndim--;
     int32_t repeat = *shape;
     stride = *strides;
     targetStride = *targetStrides;
-    size_t value_bytes = php_rindow_mathlib_common_dtype_to_valuesize(dtype);
+    size_t value_bytes = php_rindow_matlib_common_dtype_to_valuesize(dtype);
 
     if(ndim<=0) {
         memcpy(b,a,repeat*value_bytes);
-        return RINDOW_MATH_MATHLIB_SUCCESS;
+        return RINDOW_MATLIB_SUCCESS;
     }
 
     int pos;
@@ -310,5 +310,5 @@ int32_t rindow_math_mathlib_int_transpose(
 
     free(strides);
     free(targetStrides);
-    return RINDOW_MATH_MATHLIB_SUCCESS;
+    return RINDOW_MATLIB_SUCCESS;
 }

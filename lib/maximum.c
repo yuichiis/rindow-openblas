@@ -1,7 +1,7 @@
-#include "mathlib.h"
+#include "matlib.h"
 #include <math.h>
 
-void rindow_math_mathlib_s_maximum(
+void rindow_matlib_s_maximum(
     int32_t m,
     int32_t n,
     float *a, int32_t ldA,
@@ -49,7 +49,7 @@ void rindow_math_mathlib_s_maximum(
     }
 }
 
-void rindow_math_mathlib_d_maximum(
+void rindow_matlib_d_maximum(
     int32_t m,
     int32_t n,
     double *a, int32_t ldA,

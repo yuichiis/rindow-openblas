@@ -4,9 +4,9 @@
 #include <math.h>
 #include "unitest.h"
 
-#define RINDOW_MATHLIB_INCLUDING_SOURCE 1
-#include "../lib/mathlib.c"
-//#include "../lib/mathlib.h"
+#define RINDOW_MATLIB_INCLUDING_SOURCE 1
+#include "../lib/matlib.c"
+//#include "../lib/matlib.h"
 
 //#define N 10000000
 #define M 2
@@ -15,7 +15,7 @@
 
 
 #define TEST_TRANSPOSE_FLOATFUNC(ftype) \
-    rindow_math_mathlib_##ftype##_transpose(\
+    rindow_matlib_##ftype##_transpose(\
         ndim,\
         shape,\
         perm,\
@@ -24,7 +24,7 @@
     )
 
 #define TEST_TRANSPOSE_INTFUNC(dtype) \
-    rindow_math_mathlib_int_transpose(\
+    rindow_matlib_int_transpose(\
         dtype,\
         ndim,\
         shape,\
@@ -147,10 +147,10 @@ TEST_TRANSPOSE_1D(double,d,f,TEST_TRANSPOSE_FLOATFUNC(d))
 TEST_TRANSPOSE_2D(double,d,f,TEST_TRANSPOSE_FLOATFUNC(d))
 TEST_TRANSPOSE_3D(double,d,f,TEST_TRANSPOSE_FLOATFUNC(d))
 TEST_TRANSPOSE_3D2(double,d,f,TEST_TRANSPOSE_FLOATFUNC(d))
-TEST_TRANSPOSE_1D(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_math_mathlib_dtype_int32))
-TEST_TRANSPOSE_2D(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_math_mathlib_dtype_int32))
-TEST_TRANSPOSE_3D(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_math_mathlib_dtype_int32))
-TEST_TRANSPOSE_3D2(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_math_mathlib_dtype_int32))
+TEST_TRANSPOSE_1D(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_matlib_dtype_int32))
+TEST_TRANSPOSE_2D(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_matlib_dtype_int32))
+TEST_TRANSPOSE_3D(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_matlib_dtype_int32))
+TEST_TRANSPOSE_3D2(int32_t,int,d,TEST_TRANSPOSE_INTFUNC(rindow_matlib_dtype_int32))
 
 
 int main()

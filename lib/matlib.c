@@ -1,4 +1,4 @@
-#include "mathlib.h"
+#include "matlib.h"
 
 #ifndef _OPENMP
 
@@ -45,3 +45,4 @@ static void *d_sum_kernel(void *varg)
 #include "minimum.c"
 
 #include "transpose.c"
+#include "bandpart.c"

@@ -1,7 +1,7 @@
-#include "mathlib.h"
+#include "matlib.h"
 #include <math.h>
 
-#define PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(data_type) { \
+#define PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(data_type) { \
     data_type  *pDataX; \
     data_type  *pDataY; \
     pDataX = (data_type *)source; \
@@ -12,7 +12,7 @@
         pDataY+=incDest; \
     } \
 }
-int php_rindow_mathlib_copysub(
+int php_rindow_matlib_copysub(
     int32_t dtype,
     int32_t n,
     void* source,
@@ -23,38 +23,38 @@ int php_rindow_mathlib_copysub(
 {
     switch (dtype) {
         int32_t i;
-        case rindow_math_mathlib_dtype_float32:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(float)
+        case rindow_matlib_dtype_float32:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(float)
             break;
-        case rindow_math_mathlib_dtype_float64:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(double)
+        case rindow_matlib_dtype_float64:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(double)
             break;
-        case rindow_math_mathlib_dtype_bool:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(int8_t)
+        case rindow_matlib_dtype_bool:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(int8_t)
             break;
-        case rindow_math_mathlib_dtype_int8:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(int8_t)
+        case rindow_matlib_dtype_int8:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(int8_t)
             break;
-        case rindow_math_mathlib_dtype_uint8:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(uint8_t)
+        case rindow_matlib_dtype_uint8:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(uint8_t)
             break;
-        case rindow_math_mathlib_dtype_int16:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(int16_t)
+        case rindow_matlib_dtype_int16:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(int16_t)
             break;
-        case rindow_math_mathlib_dtype_uint16:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(uint16_t)
+        case rindow_matlib_dtype_uint16:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(uint16_t)
             break;
-        case rindow_math_mathlib_dtype_int32:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(int32_t)
+        case rindow_matlib_dtype_int32:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(int32_t)
             break;
-        case rindow_math_mathlib_dtype_uint32:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(uint32_t)
+        case rindow_matlib_dtype_uint32:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(uint32_t)
             break;
-        case rindow_math_mathlib_dtype_int64:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(int64_t)
+        case rindow_matlib_dtype_int64:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(int64_t)
             break;
-        case rindow_math_mathlib_dtype_uint64:
-            PHP_RINDOW_MATHLIB_COPYSUB_TEMPLATE(uint64_t)
+        case rindow_matlib_dtype_uint64:
+            PHP_RINDOW_MATLIB_COPYSUB_TEMPLATE(uint64_t)
             break;
         default:
             return -1;

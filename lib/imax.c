@@ -1,7 +1,7 @@
-#include "mathlib.h"
+#include "matlib.h"
 #include <math.h>
 
-int32_t rindow_math_mathlib_s_imax(int32_t n,float *x, int32_t incX, float floatMax)
+int32_t rindow_matlib_s_imax(int32_t n,float *x, int32_t incX, float floatMax)
 {
     int32_t resultIdx = -1;
     #pragma omp parallel
@@ -27,7 +27,7 @@ int32_t rindow_math_mathlib_s_imax(int32_t n,float *x, int32_t incX, float float
     return resultIdx;
 }
 
-int32_t rindow_math_mathlib_d_imax(int32_t n,double *x, int32_t incX, double floatMax)
+int32_t rindow_matlib_d_imax(int32_t n,double *x, int32_t incX, double floatMax)
 {
     int32_t resultIdx = -1;
     #pragma omp parallel

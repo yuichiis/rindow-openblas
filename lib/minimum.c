@@ -1,7 +1,7 @@
-#include "mathlib.h"
+#include "matlib.h"
 #include <math.h>
 
-void rindow_math_mathlib_s_minimum(
+void rindow_matlib_s_minimum(
     int32_t m,
     int32_t n,
     float *a, int32_t ldA,
@@ -47,7 +47,7 @@ void rindow_math_mathlib_s_minimum(
     }
 }
 
-void rindow_math_mathlib_d_minimum(
+void rindow_matlib_d_minimum(
     int32_t m,
     int32_t n,
     double *a, int32_t ldA,

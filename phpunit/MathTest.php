@@ -796,6 +796,30 @@ class Test extends TestCase
         ];
     }
 
+    public function translate_bandpart(
+        NDArray $A,
+        int $lower,
+        int $upper,
+    ) : array
+    {
+        if($A->ndim()<2) {
+            throw new InvalidArgumentException('input array must be 2D or upper.');
+        }
+        $shape = $A->shape();
+        $k = array_pop($shape);
+        $n = array_pop($shape);
+        $m = (int)array_product($shape);
+        $buffer = $A->buffer();
+        $offset = $A->offset();
+        return [
+            $m,$n,$k,
+            $buffer,$offset,
+            $lower,
+            $upper,
+        ];
+    }
+
+
    public function testSumNormal()
    {
        $mo = new MatrixOperator();
@@ -5974,6 +5998,163 @@ class Test extends TestCase
          ],$origB->toArray());
     }
     
+######################################################################
+
+    public function testBandpartNormal()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        // under
+        $A = $mo->ones([2,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,-1);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+        ],$A->toArray());
+
+        $A = $mo->ones([2,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,1);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,1,0],
+             [0,1,1],
+             [0,0,1]],
+            [[1,1,0],
+             [0,1,1],
+             [0,0,1]],
+        ],$A->toArray());
+
+        // upper
+        $A = $mo->ones([2,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,-1,0);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,0,0],
+             [1,1,0],
+             [1,1,1]],
+            [[1,0,0],
+             [1,1,0],
+             [1,1,1]],
+        ],$A->toArray());
+
+        $A = $mo->ones([2,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,1,0);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,0,0],
+             [1,1,0],
+             [0,1,1]],
+            [[1,0,0],
+             [1,1,0],
+             [0,1,1]],
+        ],$A->toArray());
+    }
+
+    public function testBandpartOffset()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $ORGA = $mo->ones([2,3,3]);
+        $A = $ORGA[[1,1]];
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,-1);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,1,1],
+             [1,1,1],
+             [1,1,1]],
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+        ],$ORGA->toArray());
+    }
+
+    public function testBandpartOverSize()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->ones([2,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,-1);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Vector specification too large for bufferA');
+        $math->bandpart(
+            $m,$n,$k+1,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+    }
+
+    public function testBandpartUnsupportedDtype()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        $A = $mo->ones([2,3,3],NDArray::int32);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,-1);
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unsupported data type.');
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+    }
+
 ######################################################################
 
     public function testGatherAxisNullNormal()
