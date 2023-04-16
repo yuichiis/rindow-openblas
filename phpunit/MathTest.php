@@ -6088,6 +6088,61 @@ class Test extends TestCase
         ],$A->toArray());
     }
 
+    public function testBandpartParallel()
+    {
+        $mo = new MatrixOperator();
+        $math = $this->getMath($mo);
+
+        // m > n
+        $A = $mo->ones([4,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,-1);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+        ],$A->toArray());
+
+        // m < n
+        $A = $mo->ones([2,3,3]);
+        [
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        ] = $this->translate_bandpart($A,0,-1);
+        $math->bandpart(
+            $m,$n,$k,
+            $AA, $offsetA,
+            $lower,$upper
+        );
+        $this->assertEquals([
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+            [[1,1,1],
+             [0,1,1],
+             [0,0,1]],
+        ],$A->toArray());
+
+    }
+
     public function testBandpartOffset()
     {
         $mo = new MatrixOperator();
