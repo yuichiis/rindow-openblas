@@ -83,12 +83,12 @@ double rindow_matlib_d_sum(int32_t n,double *x, int32_t incX, double tsum)
 
 
 
-#define PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(data_type) \
+#define RINDOW_MATLIB_SUM_TEMPLATE(data_type) \
     for(i=0; i<n; i++) {\
         sum += pDataX[i*incX];\
     }
 
-int64_t rindow_matlib_int_sum(int32_t dtype, int32_t n,void *x, int32_t incX, int64_t tsum)
+int64_t rindow_matlib_i_sum(int32_t dtype, int32_t n,void *x, int32_t incX, int64_t tsum)
 {
     int32_t i;
     int64_t sum=0;
@@ -96,49 +96,49 @@ int64_t rindow_matlib_int_sum(int32_t dtype, int32_t n,void *x, int32_t incX, in
         case rindow_matlib_dtype_int8: {
             int8_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int8_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(int8_t)
             break;
         }
         case rindow_matlib_dtype_uint8: {
             uint8_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint8_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(uint8_t)
             break;
         }
         case rindow_matlib_dtype_int16: {
             int16_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int16_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(int16_t)
             break;
         }
         case rindow_matlib_dtype_uint16: {
             uint16_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint16_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(uint16_t)
             break;
         }
         case rindow_matlib_dtype_int32: {
             int32_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int32_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(int32_t)
             break;
         }
         case rindow_matlib_dtype_uint32: {
             uint32_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint32_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(uint32_t)
             break;
         }
         case rindow_matlib_dtype_int64: {
             int64_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(int64_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(int64_t)
             break;
         }
         case rindow_matlib_dtype_uint64: {
             uint64_t *pDataX=x;
             #pragma omp parallel for reduction(+:sum)
-            PHP_RINDOW_OPENBLAS_MATH_SUM_TEMPLATE(uint64_t)
+            RINDOW_MATLIB_SUM_TEMPLATE(uint64_t)
             break;
         }
         case rindow_matlib_dtype_bool: {

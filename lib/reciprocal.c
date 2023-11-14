@@ -3,7 +3,7 @@
 
 void rindow_matlib_s_reciprocal(int32_t n, float *x, int32_t incX, float alpha, float beta)
 {
-    if(incX==1) {
+    if(incX==1 && n<256) {
         int32_t i;
         #pragma omp simd
         for(i=0;i<n;i++) {
@@ -24,7 +24,7 @@ void rindow_matlib_s_reciprocal(int32_t n, float *x, int32_t incX, float alpha, 
 
 void rindow_matlib_d_reciprocal(int32_t n, double *x, int32_t incX, double alpha, double beta)
 {
-    if(incX==1) {
+    if(incX==1 && n<256) {
         int32_t i;
         #pragma omp simd
         for(i=0;i<n;i++) {

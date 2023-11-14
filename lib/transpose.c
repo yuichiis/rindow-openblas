@@ -232,11 +232,11 @@ static void int_transCopy(
     int32_t targetStride = *targetStrides;
 
     if(ndim<=0) {
-        php_rindow_matlib_copysub(dtype,repeat,a,stride,b,targetStride);
+        rindow_matlib_common_copysub(dtype,repeat,a,stride,b,targetStride);
         return;
     }
 
-    size_t value_bytes = php_rindow_matlib_common_dtype_to_valuesize(dtype);
+    size_t value_bytes = rindow_matlib_common_dtype_to_valuesize(dtype);
     for(int pos=0; pos<repeat; pos++) {
         void* a_next = (int8_t*)a+(value_bytes*stride*pos);
         void* b_next = (int8_t*)b+(value_bytes*targetStride*pos);
@@ -246,7 +246,7 @@ static void int_transCopy(
     }
 }
 
-int32_t rindow_matlib_int_transpose(
+int32_t rindow_matlib_i_transpose(
     int32_t dtype,
     int32_t ndim,
     int32_t *shape,
@@ -291,7 +291,7 @@ int32_t rindow_matlib_int_transpose(
     int32_t repeat = *shape;
     stride = *strides;
     targetStride = *targetStrides;
-    size_t value_bytes = php_rindow_matlib_common_dtype_to_valuesize(dtype);
+    size_t value_bytes = rindow_matlib_common_dtype_to_valuesize(dtype);
 
     if(ndim<=0) {
         memcpy(b,a,repeat*value_bytes);

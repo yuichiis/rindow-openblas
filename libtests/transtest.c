@@ -24,7 +24,7 @@
     )
 
 #define TEST_TRANSPOSE_INTFUNC(dtype) \
-    rindow_matlib_int_transpose(\
+    rindow_matlib_i_transpose(\
         dtype,\
         ndim,\
         shape,\
@@ -163,8 +163,8 @@ int main()
     TEST(test_d_transpose_2d)
     TEST(test_d_transpose_3d)
     TEST(test_d_transpose_3d2)
-    TEST(test_int_transpose_1d)
-    TEST(test_int_transpose_2d)
-    TEST(test_int_transpose_3d)
-    TEST(test_int_transpose_3d2)
+    TEST(test_i_transpose_1d)
+    TEST(test_i_transpose_2d)
+    TEST(test_i_transpose_3d)
+    TEST(test_i_transpose_3d2)
 }
