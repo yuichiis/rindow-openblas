@@ -104,6 +104,11 @@ int get_nprocs(void)
 #define RINDOW_MATLIB_E_PERM_OUT_OF_RANGE     -102
 #define RINDOW_MATLIB_E_DUP_AXIS              -103
 #define RINDOW_MATLIB_E_UNSUPPORTED_DATA_TYPE -104
+#define RINDOW_MATLIB_E_UNMATCH_IMAGE_BUFFER_SIZE -105
+#define RINDOW_MATLIB_E_UNMATCH_COLS_BUFFER_SIZE -106
+#define RINDOW_MATLIB_E_INVALID_SHAPE_OR_PARAM -107
+#define RINDOW_MATLIB_E_IMAGES_OUT_OF_RANGE   -108
+#define RINDOW_MATLIB_E_COLS_OUT_OF_RANGE     -109
 
 #define RINDOW_MATLIB_NO_TRANS       111
 #define RINDOW_MATLIB_TRANS          112
@@ -176,10 +181,7 @@ static inline int32_t rindow_matlib_common_dtype_is_bool(int32_t dtype)
 extern "C" {
 #endif
 
-RINDOW_FUNC_DECL int32_t rindow_matlib_common_copysub(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);
 RINDOW_FUNC_DECL void* rindow_matlib_common_get_address(int32_t dtype, void *buffer, int32_t offset);
-RINDOW_FUNC_DECL int32_t rindow_matlib_common_get_integer(int32_t dtype, void *buffer, int32_t incWidth,int32_t index, int64_t *value);
-RINDOW_FUNC_DECL int32_t rindow_matlib_common_set_integer(int32_t dtype, void *buffer, int32_t incWidth,int32_t index, int64_t value);
 
 RINDOW_FUNC_DECL float rindow_matlib_s_sum(int32_t n,float *x,int32_t incX, float sum);
 RINDOW_FUNC_DECL double rindow_matlib_d_sum(int32_t n,double *x,int32_t incX, double sum);
@@ -267,13 +269,6 @@ RINDOW_FUNC_DECL void rindow_matlib_d_searchsorted(int32_t m, double *a, int32_t
     int32_t right, int32_t dtype, void *y, int32_t incY);
 RINDOW_FUNC_DECL void rindow_matlib_s_cumsum(int32_t n,float *x, int32_t incX,int32_t exclusive,int32_t reverse,float *y, int32_t incY);
 RINDOW_FUNC_DECL void rindow_matlib_d_cumsum(int32_t n,double *x, int32_t incX,int32_t exclusive,int32_t reverse,double *y, int32_t incY);
-RINDOW_FUNC_DECL int32_t rindow_matlib_s_gather(int32_t reverse,int32_t addMode,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *x,float *a,float *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_d_gather(int32_t reverse,int32_t addMode,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *x,double *a,double *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_i_gather(int32_t reverse,int32_t addMode,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *x,int32_t data_dtype,void *a,void *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_s_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,float *a,float *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_d_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,double *a,double *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_i_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,int32_t data_dtype,void *a,void *b);
-
 
 RINDOW_FUNC_DECL int32_t rindow_matlib_s_transpose(int32_t ndim,int32_t *shape,int32_t *perm,float *a,float *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_d_transpose(int32_t ndim,int32_t *shape,int32_t *perm,double *a,double *b);
@@ -281,6 +276,76 @@ RINDOW_FUNC_DECL int32_t rindow_matlib_i_transpose(int32_t dtype,int32_t ndim,in
 RINDOW_FUNC_DECL void rindow_matlib_s_bandpart(int32_t m, int32_t n, int32_t k,float *a,int32_t lower, int32_t upper);
 RINDOW_FUNC_DECL void rindow_matlib_d_bandpart(int32_t m, int32_t n, int32_t k,double *a,int32_t lower, int32_t upper);
 
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_gather(int32_t reverse,int32_t addMode,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *x,float *a,float *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_gather(int32_t reverse,int32_t addMode,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *x,double *a,double *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_i_gather(int32_t reverse,int32_t addMode,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *x,int32_t data_dtype,void *a,void *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,float *a,float *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,double *a,double *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_i_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,int32_t data_dtype,void *a,void *b);
+
+RINDOW_FUNC_DECL void rindow_matlib_s_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,float *a, int32_t incA,float *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);
+RINDOW_FUNC_DECL void rindow_matlib_d_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,double *a, int32_t incA,double *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);
+RINDOW_FUNC_DECL void rindow_matlib_i_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,int32_t dtype,void *a, int32_t incA,void *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);
+
+RINDOW_FUNC_DECL void rindow_matlib_s_repeat(int32_t m,int32_t k,int32_t repeats,float *a,float *b);
+RINDOW_FUNC_DECL void rindow_matlib_d_repeat(int32_t m,int32_t k,int32_t repeats,double *a,double *b);
+
+RINDOW_FUNC_DECL void rindow_matlib_s_reducesum(int32_t m,int32_t n,int32_t k,float *a,float *b);
+RINDOW_FUNC_DECL void rindow_matlib_d_reducesum(int32_t m,int32_t n,int32_t k,double *a,double *b);
+RINDOW_FUNC_DECL void rindow_matlib_s_reducemax(int32_t m,int32_t n,int32_t k,float *a,float *b);
+RINDOW_FUNC_DECL void rindow_matlib_d_reducemax(int32_t m,int32_t n,int32_t k,double *a,double *b);
+RINDOW_FUNC_DECL void rindow_matlib_s_reduceargmax(int32_t m,int32_t n,int32_t k,float *a,int32_t dtype,void *b);
+RINDOW_FUNC_DECL void rindow_matlib_d_reduceargmax(int32_t m,int32_t n,int32_t k,double *a,int32_t dtype,void *b);
+
+RINDOW_FUNC_DECL void rindow_matlib_s_randomuniform(int32_t n,float *x, int32_t incX,float low,float high,int32_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_d_randomuniform(int32_t n,double *x, int32_t incX,double low,double high,int32_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_i_randomuniform(int32_t n,int32_t dtype,double *x, int32_t incX,int32_t low,int32_t high,int32_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_s_randomnormal(int32_t n,float *x, int32_t incX,float mean,float scale,int32_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_d_randomnormal(int32_t n,double *x, int32_t incX,double mean,double scale,int32_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_i_randomsequence(int32_t n,int32_t size,int32_t dtype,void *x, int32_t incX,int32_t seed);
+
+RINDOW_FUNC_DECL int32_t rindow_matlib_im2col1d(
+    int32_t dtype,int32_t reverse,
+    void *images_data,
+    int32_t images_size,
+    int32_t batches,
+    int32_t im_w,
+    int32_t channels,
+    int32_t filter_w,
+    int32_t stride_w,
+    int32_t padding,int32_t channels_first,
+    int32_t dilation_w,
+    int32_t cols_channels_first,
+    void *cols_data,int32_t cols_size
+    );
+
+RINDOW_FUNC_DECL int32_t rindow_matlib_im2col2d(
+    int32_t dtype,int32_t reverse,
+    void *images_data,int32_t images_size,
+    int32_t batches,
+    int32_t im_h,int32_t im_w,
+    int32_t channels,
+    int32_t filter_h,int32_t filter_w,
+    int32_t stride_h,int32_t stride_w,
+    int32_t padding,int32_t channels_first,
+    int32_t dilation_h,int32_t dilation_w,
+    int32_t cols_channels_first,
+    void *cols_data,int32_t cols_size
+    );
+
+RINDOW_FUNC_DECL int32_t rindow_matlib_im2col3d(
+    int32_t dtype,int32_t reverse,
+    void* images_data,int32_t images_size,
+    int32_t batches,
+    int32_t im_d,int32_t im_h,int32_t im_w,
+    int32_t channels,
+    int32_t filter_d,int32_t filter_h,int32_t filter_w,
+    int32_t stride_d,int32_t stride_h,int32_t stride_w,
+    int32_t padding,int32_t channels_first,
+    int32_t dilation_d,int32_t dilation_h,int32_t dilation_w,
+    int32_t cols_channels_first,
+    void* cols_data,int32_t cols_size
+    );
 
 #ifdef __cplusplus
 } // extern "C"

@@ -2,19 +2,19 @@
 #include "common.h"
 #include <math.h>
 
-#define RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(data_type) { \
+#define RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(data_type) { \
     data_type  *pDataX; \
     data_type  *pDataY; \
     pDataX = (data_type *)source; \
     pDataY = (data_type *)dest; \
     for (i=0; i<n; i++) { \
-        *pDataY += *pDataX; \
+        *pDataY = *pDataX; \
         pDataX+=incSource; \
         pDataY+=incDest; \
     } \
 }
 
-int32_t rindow_matlib_common_copysub(
+int32_t rindow_matlib_common_copy_ex(
     int32_t dtype,
     int32_t n,
     void* source,
@@ -26,43 +26,106 @@ int32_t rindow_matlib_common_copysub(
     switch (dtype) {
         int32_t i;
         case rindow_matlib_dtype_float32:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(float)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(float)
             break;
         case rindow_matlib_dtype_float64:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(double)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(double)
             break;
         case rindow_matlib_dtype_bool:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(int8_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(int8_t)
             break;
         case rindow_matlib_dtype_int8:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(int8_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(int8_t)
             break;
         case rindow_matlib_dtype_uint8:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(uint8_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(uint8_t)
             break;
         case rindow_matlib_dtype_int16:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(int16_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(int16_t)
             break;
         case rindow_matlib_dtype_uint16:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(uint16_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(uint16_t)
             break;
         case rindow_matlib_dtype_int32:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(int32_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(int32_t)
             break;
         case rindow_matlib_dtype_uint32:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(uint32_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(uint32_t)
             break;
         case rindow_matlib_dtype_int64:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(int64_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(int64_t)
             break;
         case rindow_matlib_dtype_uint64:
-            RINDOW_MATLIB_COMMON_COPYSUB_TEMPLATE(uint64_t)
+            RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(uint64_t)
             break;
         default:
             return -1;
     }
     return 0;
 }
+
+#define RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(data_type) { \
+    data_type  *pDataX; \
+    data_type  *pDataY; \
+    pDataX = (data_type *)source; \
+    pDataY = (data_type *)dest; \
+    for (i=0; i<n; i++) { \
+        *pDataY += *pDataX; \
+        pDataX+=incSource; \
+        pDataY+=incDest; \
+    } \
+}
+
+int32_t rindow_matlib_common_add_ex(
+    int32_t dtype,
+    int32_t n,
+    void* source,
+    int32_t incSource,
+    void* dest,
+    int32_t incDest
+    )
+{
+    switch (dtype) {
+        int32_t i;
+        case rindow_matlib_dtype_float32:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(float)
+            break;
+        case rindow_matlib_dtype_float64:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(double)
+            break;
+        case rindow_matlib_dtype_bool:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(int8_t)
+            break;
+        case rindow_matlib_dtype_int8:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(int8_t)
+            break;
+        case rindow_matlib_dtype_uint8:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(uint8_t)
+            break;
+        case rindow_matlib_dtype_int16:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(int16_t)
+            break;
+        case rindow_matlib_dtype_uint16:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(uint16_t)
+            break;
+        case rindow_matlib_dtype_int32:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(int32_t)
+            break;
+        case rindow_matlib_dtype_uint32:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(uint32_t)
+            break;
+        case rindow_matlib_dtype_int64:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(int64_t)
+            break;
+        case rindow_matlib_dtype_uint64:
+            RINDOW_MATLIB_COMMON_ADD_EX_TEMPLATE(uint64_t)
+            break;
+        default:
+            return -1;
+    }
+    return 0;
+}
+
 
 void* rindow_matlib_common_get_address(
     int32_t dtype, void *buffer, int32_t offset)
@@ -337,4 +400,103 @@ void rindow_matlib_common_i_add(int32_t n, int32_t dtype, void *x, void *y)
             break;
         }
     }
+}
+
+float rindow_matlib_common_s_sum_sb(int32_t n, float *x, int32_t incX)
+{
+    float a=0;
+    for(int32_t i=0; i<n; i++) {
+        a += x[i*incX];
+    }
+    return a;
+}
+
+double rindow_matlib_common_d_sum_sb(int32_t n, double *x, int32_t incX)
+{
+    double a=0;
+    for(int32_t i=0; i<n; i++) {
+        a += x[i*incX];
+    }
+    return a;
+}
+
+float rindow_matlib_common_s_max(int32_t n, float *x, int32_t incX)
+{
+    float a;
+    a = x[0];
+    for(int32_t i=1;i<n;i++) {
+        // if NaN set NaN
+        // Compatible with reduce_max of tensorflow 2.6
+        if(!(a>=x[i*incX])) {
+            a = x[i*incX];
+        }
+    }
+    return a;
+}
+
+double rindow_matlib_common_d_max(int32_t n, double *x, int32_t incX)
+{
+    double a;
+    a = x[0];
+    for(int32_t i=1;i<n;i++) {
+        // if NaN set NaN
+        // Compatible with reduce_max of tensorflow 2.6
+        if(!(a>=x[i*incX])) {
+            a = x[i*incX];
+        }
+    }
+    return a;
+}
+
+int32_t rindow_matlib_common_s_argmax(int32_t n, float *x, int32_t incX)
+{
+    int32_t i;
+    int32_t idx;
+    float a;
+    idx = 0;
+    a = x[0];
+    for(i=1;i<n;i++) {
+        if(a<x[i*incX]) {
+            idx = i;
+            a = x[i*incX];
+        }
+    }
+    return idx;
+}
+
+int32_t rindow_matlib_common_d_argmax(int32_t n, double *x, int32_t incX)
+{
+    int32_t i;
+    int32_t idx;
+    double a;
+    idx = 0;
+    a = x[0];
+    for(i=1;i<n;i++) {
+        if(a<x[i*incX]) {
+            idx = i;
+            a = x[i*incX];
+        }
+    }
+    return idx;
+}
+
+
+int32_t rindow_matlib_common_rand()
+{
+#if _MSC_VER
+    unsigned int number;
+    if(rand_s( &number )) {
+        return 0;
+    }
+    return (int32_t)number & 0x7fffffff;
+#else
+    return random();
+#endif
+}
+void rindow_matlib_common_srand(int32_t seed)
+{
+#if _MSC_VER
+#else
+    srandom(seed);
+#endif
 }

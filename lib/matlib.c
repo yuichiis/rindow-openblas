@@ -74,8 +74,20 @@ static void *d_sum_kernel(void *varg)
 #include "isnan.c"
 #include "searchsorted.c"
 #include "cumsum.c"
-#include "gather.c"
-#include "reduce_gather.c"
-
 #include "transpose.c"
 #include "bandpart.c"
+
+#include "gather.c"
+#include "reduce_gather.c"
+#include "slice.c"
+#include "repeat.c"
+#include "reduce_sum.c"
+#include "reduce_max.c"
+#include "reduce_argmax.c"
+#include "random_uniform.c"
+#include "random_normal.c"
+#include "random_sequence.c"
+#include "im2col1d.c"
+#include "im2col2d.c"
+#include "im2col3d.c"
+

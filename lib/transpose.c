@@ -232,7 +232,7 @@ static void int_transCopy(
     int32_t targetStride = *targetStrides;
 
     if(ndim<=0) {
-        rindow_matlib_common_copysub(dtype,repeat,a,stride,b,targetStride);
+        rindow_matlib_common_copy_ex(dtype,repeat,a,stride,b,targetStride);
         return;
     }
 
