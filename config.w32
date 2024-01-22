@@ -4,6 +4,7 @@ ARG_ENABLE('rindow_openblas', 'rindow_openblas support', 'no');
 
 ARG_WITH('openblas', 'openblas support', 'no');
 ARG_WITH('flang', 'flang support', 'no');
+ARG_WITH('matlib', 'matlib support', 'no');
 
 //  OpenMP compile option
 //    /openmp:experimental 
@@ -33,6 +34,14 @@ if (PHP_RINDOW_OPENBLAS != 'no') {
     ";
   } else {
       ERROR("NOT FOUND: LinearBuffer interface header files. Please execute \"composer update\" on development directory.");
+  }
+  if(CHECK_HEADER_ADD_INCLUDE("rindow/matlib.h", "rindow_openblas", PHP_MATLIB + '/include')) {
+    PHP_RINDOW_OPENBLAS_CFLAGS = PHP_RINDOW_OPENBLAS_CFLAGS + "\
+        /I" + PHP_MATLIB + "/include \
+        /I" + PHP_MATLIB + "/src \
+    ";
+  } else {
+    ERROR("NOT FOUND: Rindow Matlib header files. Please set --with-matlib=/some/directory/path");
   }
 
 	// Condense whitespace in CFLAGS

@@ -198,8 +198,9 @@ static PHP_METHOD(Math, randomSequence)
         zend_throw_exception(spl_ce_InvalidArgumentException, "size must be smaller then n or equal.", 0);
         return;
     }
-    if(bufferX->dtype!=php_interop_polite_math_matrix_dtype_int64) {
-        zend_throw_exception(spl_ce_InvalidArgumentException, "dtype must be int64.", 0);
+    if(bufferX->dtype!=php_interop_polite_math_matrix_dtype_int64&&
+        bufferX->dtype!=php_interop_polite_math_matrix_dtype_int32) {
+        zend_throw_exception(spl_ce_InvalidArgumentException, "dtype must be int32 or int64.", 0);
         return;
     }
 

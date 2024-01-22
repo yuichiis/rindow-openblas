@@ -1,3 +1,0 @@
-call build.bat
-
-transtest

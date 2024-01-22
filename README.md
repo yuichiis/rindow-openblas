@@ -178,7 +178,7 @@ $ PATH %PATH%;/path/to/OpenBLAS/bin
 $ cd /path/to/here
 $ composer update
 $ /path/to/php-devel-pack-x.x.x-Win32-VXXX-x64/phpize.bat
-$ configure --enable-rindow_openblas --with-prefix=/path/to/php-installation-path --with-openblas=/path/to/OpenBLAS-libray-built-directory
+$ configure --enable-rindow_openblas --with-prefix=/path/to/php-installation-path --with-openblas=/path/to/OpenBLAS-libray-built-directory --with-matlib=/path/to/Rindow-Matlib-project-directory
 ```
 Edit "#define PHP_BUILD_SYSTEM" line in the "/php-devel-pack-xxx/include/main/config.w32.h"
 Change the PHP_BUILD_SYSTEM definition to the same value as in "/php-devel-pack-xxx/include/main/config.pickle.h". If the values are not the same, a warning error will occur during build.

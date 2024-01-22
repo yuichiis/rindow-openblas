@@ -18,8 +18,7 @@
 
 #define RINDOW_MATLIB_INCLUDING_SOURCE 1
 
-#include "../../../lib/matlib.c"
-//#include "../../../lib/matlib.h"
+#include "../../../matlib.c"
 
 //static float s_max(long n, float *x, long incX)
 //{
@@ -2091,163 +2090,6 @@ static PHP_METHOD(Math, zeros)
 }
 /* }}} */
 
-#define RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(data_type,get_type) { \
-    data_type *x = &(((data_type *)buffer)[offset]); \
-    *value = (get_type)(x[index*incWidth]);  \
-    return 0; \
-}
-
-#define RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(data_type) { \
-    data_type *x = &(((data_type *)buffer)[offset]); \
-    x[index*incWidth] = (data_type)value;  \
-    return 0; \
-}
-
-static int rindow_openblas_math_get_integer(
-    zend_long dtype,void *buffer, zend_long offset,zend_long incWidth,
-    zend_long index, zend_long *value)
-{
-    switch (dtype) {
-        case php_interop_polite_math_matrix_dtype_bool:
-            {
-                uint8_t *x = &(((uint8_t *)buffer)[offset]);
-                if(x[index*incWidth]==0) { *value=0; return 0; }
-                else                     { *value=1; return 0; }
-            }
-        case php_interop_polite_math_matrix_dtype_int8:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int8_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_uint8:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint8_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_int16:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int16_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_uint16:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint16_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_int32:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int32_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_uint32:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint32_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_int64:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int64_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_uint64:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint64_t,zend_long);
-        case php_interop_polite_math_matrix_dtype_float32:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(float,zend_long);
-        case php_interop_polite_math_matrix_dtype_float64:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(double,zend_long);
-        default:
-            return -1;
-    }
-}
-
-static int rindow_openblas_math_set_integer(
-    zend_long dtype,void *buffer, zend_long offset,zend_long incWidth,
-    zend_long index, zend_long value)
-{
-    switch (dtype) {
-        case php_interop_polite_math_matrix_dtype_bool:
-        {
-            uint8_t *x = &(((uint8_t *)buffer)[offset]);
-            if(value==0) { x[index*incWidth]=0; return 0; }
-            else         { x[index*incWidth]=1; return 0; }
-        }
-        case php_interop_polite_math_matrix_dtype_int8:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int8_t);
-        case php_interop_polite_math_matrix_dtype_uint8:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint8_t);
-        case php_interop_polite_math_matrix_dtype_int16:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int16_t);
-        case php_interop_polite_math_matrix_dtype_uint16:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint16_t);
-        case php_interop_polite_math_matrix_dtype_int32:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int32_t);
-        case php_interop_polite_math_matrix_dtype_uint32:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint32_t);
-        case php_interop_polite_math_matrix_dtype_int64:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int64_t);
-        case php_interop_polite_math_matrix_dtype_uint64:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint64_t);
-        case php_interop_polite_math_matrix_dtype_float32:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(float);
-        case php_interop_polite_math_matrix_dtype_float64:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(double);
-        default:
-            return -1;
-    }
-}
-
-static int rindow_openblas_math_get_float(
-    zend_long dtype,void *buffer, zend_long offset,zend_long incWidth,
-    zend_long index, double *value)
-{
-    switch (dtype) {
-        case php_interop_polite_math_matrix_dtype_bool:
-            {
-                uint8_t *x = &(((uint8_t *)buffer)[offset]);
-                if(x[index*incWidth]==0) { *value=0; return 0; }
-                else                     { *value=1; return 0; }
-            }
-        case php_interop_polite_math_matrix_dtype_int8:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int8_t,double);
-        case php_interop_polite_math_matrix_dtype_uint8:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint8_t,double);
-        case php_interop_polite_math_matrix_dtype_int16:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int16_t,double);
-        case php_interop_polite_math_matrix_dtype_uint16:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint16_t,double);
-        case php_interop_polite_math_matrix_dtype_int32:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int32_t,double);
-        case php_interop_polite_math_matrix_dtype_uint32:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint32_t,double);
-        case php_interop_polite_math_matrix_dtype_int64:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(int64_t,double);
-        case php_interop_polite_math_matrix_dtype_uint64:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(uint64_t,double);
-        case php_interop_polite_math_matrix_dtype_float32:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(float,double);
-        case php_interop_polite_math_matrix_dtype_float64:
-            RINDOW_OPENBLAS_MATH_GET_CAST_TEMPLATE(double,double);
-        default:
-            return -1;
-    }
-}
-
-static int rindow_openblas_math_set_float(
-    zend_long dtype,void *buffer, zend_long offset,zend_long incWidth,
-    zend_long index, double value)
-{
-    switch (dtype) {
-        case php_interop_polite_math_matrix_dtype_bool:
-        {
-            uint8_t *x = &(((uint8_t *)buffer)[offset]);
-            if(value==0) { x[index*incWidth]=0; return 0; }
-            else         { x[index*incWidth]=1; return 0; }
-        }
-        case php_interop_polite_math_matrix_dtype_int8:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int8_t);
-        case php_interop_polite_math_matrix_dtype_uint8:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint8_t);
-        case php_interop_polite_math_matrix_dtype_int16:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int16_t);
-        case php_interop_polite_math_matrix_dtype_uint16:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint16_t);
-        case php_interop_polite_math_matrix_dtype_int32:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int32_t);
-        case php_interop_polite_math_matrix_dtype_uint32:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint32_t);
-        case php_interop_polite_math_matrix_dtype_int64:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(int64_t);
-        case php_interop_polite_math_matrix_dtype_uint64:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(uint64_t);
-        case php_interop_polite_math_matrix_dtype_float32:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(float);
-        case php_interop_polite_math_matrix_dtype_float64:
-            RINDOW_OPENBLAS_MATH_SET_CAST_TEMPLATE(double);
-        default:
-            return -1;
-    }
-}
-
-
 /*
    Y := a * onehot(X) + Y
 
@@ -2755,6 +2597,7 @@ static PHP_METHOD(Math, matrixcopy)
     zval* b=NULL;
     zend_long offsetB;
     zend_long ldB;
+    zend_long transCode;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 10, 10)
         Z_PARAM_BOOL(trans)
@@ -2777,6 +2620,11 @@ static PHP_METHOD(Math, matrixcopy)
     if(php_rindow_openblas_assert_shape_parameter(
         "n", n)) {
         return;
+    }
+    if(trans) {
+        transCode = RINDOW_MATLIB_TRANS;
+    } else {
+        transCode = RINDOW_MATLIB_NO_TRANS;
     }
     // Check Buffer A
     bufferA = Z_INTEROP_POLITE_MATH_MATRIX_LINEAR_BUFFER_OBJ_P(a);
@@ -2817,13 +2665,13 @@ static PHP_METHOD(Math, matrixcopy)
         case php_interop_polite_math_matrix_dtype_float32: {
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataA,bufferA,offsetA)
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataB,bufferB,offsetB)
-            rindow_matlib_s_matrixcopy(trans, m, n, alpha, pDataA, ldA, pDataB, ldB);
+            rindow_matlib_s_matrixcopy(transCode, m, n, alpha, pDataA, ldA, pDataB, ldB);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64: {
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataA,bufferA,offsetA)
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataB,bufferB,offsetB)
-            rindow_matlib_d_matrixcopy(trans, m, n, alpha, pDataA, ldA, pDataB, ldB);
+            rindow_matlib_d_matrixcopy(transCode, m, n, alpha, pDataA, ldA, pDataB, ldB);
             break;
         }
         default: {
