@@ -4,7 +4,7 @@ PHP_ARG_ENABLE(rindow_openblas, whether to enable rindow_openblas support,
 dnl Make sure that the comment is aligned:
 [  --enable-rindow_openblas          Enable rindow_openblas support], no)
 PHP_ARG_WITH(rindow_matlib, rindow_matlib support,
-[  --with-rindow_matlib          Specify rindow_matlib path])
+[  --with-rindow_matlib=DIR          Specify rindow_matlib path])
 
 if test "$PHP_RINDOW_OPENBLAS" != "no"; then
 
@@ -55,13 +55,19 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
     AC_MSG_RESULT(no)
     AC_MSG_ERROR(Interop/Polite/Math/Matrix.h not found. Please type "composer update")
   fi
-  AC_MSG_CHECKING(for rindow/matlib.h)
-  if test -f "$rindow_matlib/include/rindow/matlib.h" ; then
-    AC_MSG_RESULT(ok)
-    PHP_ADD_INCLUDE($rindow_matlib/include)
-  else
-    AC_MSG_RESULT(no)
-    AC_MSG_ERROR(rindow/matlib.h not found. Please specify directory by --with-rindow_matlib option)
+
+  if test "$PHP_RINDOW_MATLIB" != "no"; then
+    if test "$PHP_RINDOW_MATLIB" == "yes"; then
+      AC_MSG_ERROR([You must specify a path when using --with-rindow_matlib])
+    fi
+    AC_MSG_CHECKING(for rindow/matlib.h)
+    if test -f "$PHP_RINDOW_MATLIB/include/rindow/matlib.h" ; then
+      AC_MSG_RESULT(ok)
+      PHP_ADD_INCLUDE($PHP_RINDOW_MATLIB/include)
+    else
+      AC_MSG_RESULT(no)
+      AC_MSG_ERROR(rindow/matlib.h not found. Please specify directory by --with-rindow_matlib option)
+    fi
   fi
 
   PHP_SUBST(RINDOW_OPENBLAS_SHARED_LIBADD)
