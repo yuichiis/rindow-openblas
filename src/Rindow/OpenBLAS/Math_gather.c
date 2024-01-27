@@ -150,7 +150,7 @@ static PHP_METHOD(Math, gather)
                     zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
                     return;
                 } else {
-                    zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Unknown error.", errcode);
+                    zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Unknown error.: %d", errcode);
                     return;
                 }
             }
@@ -338,7 +338,7 @@ static PHP_METHOD(Math, reduceGather)
                     zend_throw_exception(spl_ce_RuntimeException, "Label number is out of bounds.", 0);
                     return;
                 } else {
-                    zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Unknown error.", errcode);
+                    zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Unknown error.: %d", errcode);
                     return;
                 }
             }
