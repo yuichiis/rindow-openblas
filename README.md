@@ -73,7 +73,7 @@ $ git clone https://github.com/rindow/rindow-openblas
 $ cd rindow-openblas
 $ composer update
 $ phpize8.1
-$ ./configure --enable-rindow_openblas --with-php-config=php-config8.1 --with-rindow_matlib /path/to/rindow-matlib
+$ ./configure --enable-rindow_openblas --with-php-config=php-config8.1 --with-rindow_matlib=/path/to/rindow-matlib
 $ make clean
 $ make
 $ make test
