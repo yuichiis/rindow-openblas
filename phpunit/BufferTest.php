@@ -12,7 +12,7 @@ use TypeError;
 /**
  * @requires extension rindow_openblas
  */
-class Test extends TestCase
+class BufferTest extends TestCase
 {
     //public function testExtensionVersion()
     //{
