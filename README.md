@@ -1,3 +1,12 @@
+IMPORTANT
+=========
+Development of this program has ended.
+Please migrate to the program below instead.
+
+- https://github.com/rindow/rindow-openblas-ffi
+
+We stopped using PHP extensions because it was too difficult to prepare binary files for each PHP version and Linux version.
+
 Rindow OpenBLAS PHP extension
 =============================
 The Rindow OpenBLAS PHP extension is universal Buffer for N-dimension and OpenBLAS and Mathematical library.
@@ -13,7 +22,7 @@ Very useful when you want to do deep learning with PHP!
 Requirements
 ============
 
-- PHP7.2 or PHP7.3 or PHP7.4 or PHP8.0 or PHP8.1 or PHP8.2
+- PHP7.2 or PHP7.3 or PHP7.4 or PHP8.0 or PHP8.1 or PHP8.2 or PHP8.3
 - Linux or Windows 10
 - OpenBLAS
 
