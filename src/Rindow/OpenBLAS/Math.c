@@ -3004,13 +3004,13 @@ static PHP_METHOD(Math, isnan)
 /* }}} */
 
 /*
-   Y(n) := searchsorted( A(m), X(n) )
+   Y(n) := searchsorted( A(m,n), X(m) )
 
    Method Rindow\OpenBLAS\Math::
     public function searchsorted(
         int $m,
-        Buffer $A, int $offsetA, int $incA,
         int $n,
+        Buffer $A, int $offsetA, int $ldA,
         Buffer $X, int $offsetX, int $incX,
         bool $right,
         Buffer $Y, int $offsetY int $incY, ) : void
@@ -3019,10 +3019,10 @@ static PHP_METHOD(Math, isnan)
 static PHP_METHOD(Math, searchsorted)
 {
     zend_long m;
+    zend_long n;
     php_interop_polite_math_matrix_linear_buffer_t* bufferA;
     zend_long offsetA;
-    zend_long incA;
-    zend_long n;
+    zend_long ldA;
     php_interop_polite_math_matrix_linear_buffer_t* bufferX;
     zend_long offsetX;
     zend_long incX;
@@ -3036,10 +3036,10 @@ static PHP_METHOD(Math, searchsorted)
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 12, 12)
         Z_PARAM_LONG(m)
+        Z_PARAM_LONG(n)
         Z_PARAM_OBJECT(a) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetA)
-        Z_PARAM_LONG(incA)
-        Z_PARAM_LONG(n)
+        Z_PARAM_LONG(ldA)
 
         Z_PARAM_OBJECT(x) // Interop\Polite\Math\Matrix\LinearBuffer
         Z_PARAM_LONG(offsetX)
@@ -3064,8 +3064,20 @@ static PHP_METHOD(Math, searchsorted)
     if(php_rindow_openblas_assert_buffer_type(bufferA,"A")) {
         return;
     }
-    if(php_rindow_openblas_assert_vector_buffer_spec(
-        "A", bufferA,m,offsetA,incA)) {
+    if(bufferA->data==NULL) {
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "uninitialized array: A");
+        return;
+    }
+    if(offsetA<0) {
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Argument offsetA must be greater than or equals 0.");
+        return;
+    }
+    if(ldA<0) {
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Argument ldA must be greater than or equals 0.");
+        return;
+    }
+    if(offsetA+(m-1)*ldA+(n-1) >= bufferA->size) {
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Matrix specification too large for bufferA.");
         return;
     }
 
@@ -3075,7 +3087,7 @@ static PHP_METHOD(Math, searchsorted)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "X", bufferX,n,offsetX,incX)) {
+        "X", bufferX,m,offsetX,incX)) {
         return;
     }
 
@@ -3085,7 +3097,7 @@ static PHP_METHOD(Math, searchsorted)
         return;
     }
     if(php_rindow_openblas_assert_vector_buffer_spec(
-        "Y", bufferY,n,offsetY,incY)) {
+        "Y", bufferY,m,offsetY,incY)) {
         return;
     }
 
@@ -3100,14 +3112,14 @@ static PHP_METHOD(Math, searchsorted)
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataA,bufferA,offsetA)
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,bufferX,offsetX)
             void *pDataY = rindow_matlib_common_get_address(bufferY->dtype, bufferY->data,offsetY);
-            rindow_matlib_s_searchsorted(m,pDataA,incA,n,pDataX,incX,right,bufferY->dtype,pDataY,incY);
+            rindow_matlib_s_searchsorted(m,n,pDataA,ldA,pDataX,incX,right,bufferY->dtype,pDataY,incY);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64: {
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataA,bufferA,offsetA)
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,bufferX,offsetX)
             void *pDataY = rindow_matlib_common_get_address(bufferY->dtype, bufferY->data,offsetY);
-            rindow_matlib_d_searchsorted(m,pDataA,incA,n,pDataX,incX,right,bufferY->dtype,pDataY,incY);
+            rindow_matlib_d_searchsorted(m,n,pDataA,ldA,pDataX,incX,right,bufferY->dtype,pDataY,incY);
             break;
         }
         default: {

@@ -78,6 +78,11 @@ $ sudo apt install php8.1-dev
 Run the target php version of phpize and build.
 
 ```shell
+$ cd /path/to/build/directory
+$ git clone https://github.com/rindow/rindow-matlib
+$ cd rindow-matlib
+$ cmake -S . -B build
+$ cd ..
 $ git clone https://github.com/rindow/rindow-openblas
 $ cd rindow-openblas
 $ composer update
@@ -183,6 +188,8 @@ C:\php-sdk-2.2.0>phpsdk-vs16-x64.bat
 ### Build
 
 ```shell
+$ cd /path/to/Rindow-Matlib-project-directory
+$ cmake -S . -B build
 $ PATH %PATH%;/path/to/OpenBLAS/bin
 $ cd /path/to/here
 $ composer update

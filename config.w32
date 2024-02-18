@@ -39,6 +39,7 @@ if (PHP_RINDOW_OPENBLAS != 'no') {
     PHP_RINDOW_OPENBLAS_CFLAGS = PHP_RINDOW_OPENBLAS_CFLAGS + "\
         /I" + PHP_MATLIB + "/include \
         /I" + PHP_MATLIB + "/src \
+        /I" + PHP_MATLIB + "/build/src \
     ";
   } else {
     ERROR("NOT FOUND: Rindow Matlib header files. Please set --with-matlib=/some/directory/path");

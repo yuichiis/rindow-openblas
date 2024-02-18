@@ -301,7 +301,7 @@ class BlasTest extends TestCase
         $offX = -1;
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
 
@@ -416,7 +416,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
@@ -506,7 +506,7 @@ class BlasTest extends TestCase
 
         $offY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
@@ -624,7 +624,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
@@ -714,7 +714,7 @@ class BlasTest extends TestCase
 
         $offY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
@@ -829,7 +829,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
 
@@ -939,7 +939,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
 
@@ -1052,7 +1052,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
 
@@ -1170,7 +1170,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
@@ -1215,7 +1215,7 @@ class BlasTest extends TestCase
 
         $offY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
@@ -1455,7 +1455,7 @@ class BlasTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
             $m,$n,
@@ -1530,7 +1530,7 @@ class BlasTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
             $m,$n,
@@ -1605,7 +1605,7 @@ class BlasTest extends TestCase
 
         $offY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
         $blas->gemv(
             BLAS::RowMajor,$trans,
             $m,$n,
@@ -2057,7 +2057,7 @@ class BlasTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
             $M,$N,$K,
@@ -2141,7 +2141,7 @@ class BlasTest extends TestCase
 
         $offB = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetB must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetB must be greater than or equals 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
             $M,$N,$K,
@@ -2225,7 +2225,7 @@ class BlasTest extends TestCase
 
         $offC = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetC must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetC must be greater than or equals 0.');
         $blas->gemm(
             BLAS::RowMajor,$transA,$transB,
             $M,$N,$K,

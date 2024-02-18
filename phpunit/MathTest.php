@@ -701,103 +701,117 @@ class MathTest extends TestCase
         ];
     }
 
-   public function translate_astype(NDArray $X, $dtype, NDArray $Y) : array
-   {
-       $n = $X->size();
-       $XX = $X->buffer();
-       $offX = $X->offset();
-       $YY = $Y->buffer();
-       $offY = $Y->offset();
-
-       return [
-           $n,
-           $dtype,
-           $XX,$offX,1,
-           $YY,$offY,1
-       ];
-   }
-
-   public function translate_searchsorted(
-       NDArray $A,
-       NDArray $X,
-       bool $right=null,
-       $dtype=null,
-       NDArray $Y=null
-       ) : array
-   {
-       if($A->ndim()!=1) {
-           throw new InvalidArgumentException('A must be 1D NDArray.');
-       }
-       if($right===null) {
-           $right = false;
-       }
-       if($dtype===null) {
-           $dtype = NDArray::uint32;
-       }
-       if($Y===null) {
-           $Y = $this->alloc($X->shape(),$dtype);
-       }
-       $dtype = $Y->dtype();
-       if($dtype!=NDArray::uint32&&$dtype!=NDArray::int32&&
-           $dtype!=NDArray::uint64&&$dtype!=NDArray::int64) {
-           throw new InvalidArgumentException('dtype of Y must be int32 or int64');
-       }
-       if($X->shape()!=$Y->shape()) {
-           $shapeError = '('.implode(',',$X->shape()).'),('.implode(',',$Y->shape()).')';
-           throw new InvalidArgumentException("Unmatch shape of dimension: ".$shapeError);
-       }
-       $m = $A->size();
-       $AA = $A->buffer();
-       $offA = $A->offset();
-       $n = $X->size();
-       $XX = $X->buffer();
-       $offX = $X->offset();
-       $YY = $Y->buffer();
-       $offY = $Y->offset();
-
-       return [
-           $m,
-           $AA,$offA,1,
-           $n,
-           $XX,$offX,1,
-           $right,
-           $YY,$offY,1
-       ];
-   }
-
-   public function translate_cumsum(
-       NDArray $X,
-       bool $exclusive=null,
-       bool $reverse=null,
-       NDArray $Y=null
-       ) : array
-   {
-       if($exclusive===null) {
-           $exclusive = false;
-       }
-       if($reverse===null) {
-           $reverse = false;
-       }
-       if($Y===null) {
-           $Y = $this->alloc($X->shape(),$X->dtype());
-       }
-       if($X->shape()!=$Y->shape()) {
-           $shapeError = '('.implode(',',$X->shape()).'),('.implode(',',$Y->shape()).')';
-           throw new InvalidArgumentException("Unmatch shape of dimension: ".$shapeError);
-       }
-       $n = $X->size();
-       $XX = $X->buffer();
-       $offX = $X->offset();
-       $YY = $Y->buffer();
-       $offY = $Y->offset();
-
-       return [
-           $n,
-           $XX,$offX,1,
-           $exclusive,
-           $reverse,
-           $YY,$offY,1
-       ];
+    public function translate_astype(NDArray $X, $dtype, NDArray $Y) : array
+    {
+        $n = $X->size();
+        $XX = $X->buffer();
+        $offX = $X->offset();
+        $YY = $Y->buffer();
+        $offY = $Y->offset();
+ 
+        return [
+            $n,
+            $dtype,
+            $XX,$offX,1,
+            $YY,$offY,1
+        ];
+    }
+ 
+    public function translate_searchsorted(
+        NDArray $A,
+        NDArray $X,
+        bool $right=null,
+        $dtype=null,
+        NDArray $Y=null
+        ) : array
+    {
+        if($A->ndim()==1) {
+            $individual = false;
+        } elseif($A->ndim()==2) {
+            $individual = true;
+        } else {
+            throw new InvalidArgumentException('A must be 1D or 2D NDArray.');
+        }
+        if($right===null) {
+            $right = false;
+        }
+        if($dtype===null) {
+            $dtype = NDArray::uint32;
+        }
+        if($Y===null) {
+            $Y = $this->alloc($X->shape(),$dtype);
+        }
+        $dtype = $Y->dtype();
+        if($dtype!=NDArray::uint32&&$dtype!=NDArray::int32&&
+            $dtype!=NDArray::uint64&&$dtype!=NDArray::int64) {
+            throw new InvalidArgumentException('dtype of Y must be int32 or int64');
+        }
+        if($X->shape()!=$Y->shape()) {
+            $shapeError = '('.implode(',',$X->shape()).'),('.implode(',',$Y->shape()).')';
+            throw new InvalidArgumentException("Unmatch shape of dimension: ".$shapeError);
+        }
+        if($individual) {
+            [$m,$n] = $A->shape();
+            if($m!=$X->size()) {
+                $shapeError = '('.implode(',',$A->shape()).'),('.implode(',',$X->shape()).')';
+                throw new InvalidArgumentException("Unmatch shape of dimension A,X: ".$shapeError);
+            }
+            $ldA = $n;
+        } else {
+            $m = $X->size();
+            $n = $A->size();
+            $ldA = 0;
+        }
+        $AA = $A->buffer();
+        $offA = $A->offset();
+        $XX = $X->buffer();
+        $offX = $X->offset();
+        $YY = $Y->buffer();
+        $offY = $Y->offset();
+ 
+        return [
+            $m,
+            $n,
+            $AA,$offA,$ldA,
+            $XX,$offX,1,
+            $right,
+            $YY,$offY,1
+        ];
+    }
+ 
+    public function translate_cumsum(
+        NDArray $X,
+        bool $exclusive=null,
+        bool $reverse=null,
+        NDArray $Y=null
+        ) : array
+    {
+        if($exclusive===null) {
+            $exclusive = false;
+        }
+        if($reverse===null) {
+            $reverse = false;
+        }
+        if($Y===null) {
+            $Y = $this->alloc($X->shape(),$X->dtype());
+        }
+        if($X->shape()!=$Y->shape()) {
+            $shapeError = '('.implode(',',$X->shape()).'),('.implode(',',$Y->shape()).')';
+            throw new InvalidArgumentException("Unmatch shape of dimension: ".$shapeError);
+        }
+        $n = $X->size();
+        $XX = $X->buffer();
+        $offX = $X->offset();
+        $YY = $Y->buffer();
+        $offY = $Y->offset();
+ 
+        return [
+            $n,
+            $XX,$offX,1,
+            $exclusive,
+            $reverse,
+            $YY,$offY,1
+        ];
     }
 
     public function translate_transpose(
@@ -944,7 +958,7 @@ class MathTest extends TestCase
 
        $offX = -1;
        $this->expectException(InvalidArgumentException::class);
-       $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+       $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
        $min = $math->sum($N,$XX,$offX,$incX);
    }
 
@@ -1054,7 +1068,7 @@ class MathTest extends TestCase
 
        $offX = -1;
        $this->expectException(InvalidArgumentException::class);
-       $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+       $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
        $min = $math->imin($N,$XX,$offX,$incX);
    }
 
@@ -1164,7 +1178,7 @@ class MathTest extends TestCase
 
        $offX = -1;
        $this->expectException(InvalidArgumentException::class);
-       $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+       $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
        $min = $math->imax($N,$XX,$offX,$incX);
    }
 
@@ -1292,7 +1306,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->increment($N,$alpha,$XX,$offX,$incX,$beta);
     }
 
@@ -1425,7 +1439,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->reciprocal($N,$alpha,$XX,$offX,$incX,$beta);
     }
 
@@ -1553,7 +1567,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->maximum($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -1643,7 +1657,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->maximum($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -1776,7 +1790,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->minimum($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -1866,7 +1880,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->minimum($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -1999,7 +2013,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->greater($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -2089,7 +2103,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->greater($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -2235,7 +2249,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->less($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -2325,7 +2339,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->less($M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);
     }
 
@@ -2509,7 +2523,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->multiply($trans,$M,$N,$XX,$offX,$incX,$AA,$offA,$ldA);
     }
 
@@ -2611,7 +2625,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->multiply($trans,$M,$N,$XX,$offX,$incX,$AA,$offA,$ldA);
     }
 
@@ -2792,7 +2806,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->add($trans,$M,$N,$alpha,$XX,$offX,$incX,$AA,$offA,$ldA);
     }
 
@@ -2894,7 +2908,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->add($trans,$M,$N,$alpha,$XX,$offX,$incX,$AA,$offA,$ldA);
     }
 
@@ -3075,7 +3089,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->duplicate($trans,$M,$N,$XX,$offX,$incX,$AA,$offA,$ldA);
     }
 
@@ -3177,7 +3191,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->duplicate($trans,$M,$N,$XX,$offX,$incX,$AA,$offA,$ldA);
     }
 
@@ -3302,7 +3316,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->square($N,$XX,$offX,$incX);
     }
 
@@ -3431,7 +3445,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->sqrt($N,$XX,$offX,$incX);
     }
 
@@ -3589,7 +3603,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->rsqrt($N,$alpha,$XX,$offX,$incX,$beta);
     }
 
@@ -3755,7 +3769,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->pow($trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);;
     }
 
@@ -3857,7 +3871,7 @@ class MathTest extends TestCase
 
         $offA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
         $math->pow($trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);;
     }
 
@@ -3985,7 +3999,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->exp($N,$XX,$offX,$incX);
     }
 
@@ -4116,7 +4130,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->log($N,$XX,$offX,$incX);
     }
 
@@ -4244,13 +4258,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
         $this->assertEquals([0,1,1,3],$Y->toArray());
 
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,true,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,true,$YY,$offsetY,$incY);
         $this->assertEquals([0,1,2,3],$Y->toArray());
     }
 
@@ -4261,13 +4275,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $m = 0;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument m must be greater than 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusOffsetA()
@@ -4277,13 +4291,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $offsetA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetA must be greater than equals 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Argument offsetA must be greater than or equals 0.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusIncA()
@@ -4293,13 +4307,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
-        $incA = 0;
+        $ldA = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument incA must be greater than 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Argument ldA must be greater than or equals 0.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedIllegalBufferA()
@@ -4309,13 +4323,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $AA = new \stdClass();
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('A must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferAwithSize()
@@ -4325,13 +4339,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $AA = $this->array([1,2])->buffer();
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Vector specification too large for bufferA');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Matrix specification too large for bufferA.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferAwithOffsetA()
@@ -4341,13 +4355,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $offsetA = 1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Vector specification too large for bufferA');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Matrix specification too large for bufferA.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferAwithIncA()
@@ -4357,13 +4371,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
-        $incA = 2;
+        $ldA = 2;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Vector specification too large for bufferA');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Matrix specification too large for bufferA.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusN()
@@ -4373,13 +4387,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $n = 0;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument n must be greater than 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusOffsetX()
@@ -4389,13 +4403,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $offsetX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusIncX()
@@ -4405,13 +4419,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $incX = 0;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incX must be greater than 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedIllegalBufferX()
@@ -4421,13 +4435,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $XX = new \stdClass();
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferXwithSize()
@@ -4437,13 +4451,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $XX = $this->array([1,2])->buffer();
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferXwithOffsetX()
@@ -4453,13 +4467,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $offsetX = 1;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferXwithIncX()
@@ -4469,13 +4483,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $incX = 2;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusOffsetY()
@@ -4485,13 +4499,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $offsetY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedMinusIncY()
@@ -4501,13 +4515,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $incY = 0;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument incY must be greater than 0.');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedIllegalBufferY()
@@ -4517,13 +4531,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $YY = new \stdClass();
         $this->expectException(TypeError::class);
         $this->expectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferYwithSize()
@@ -4533,13 +4547,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $YY = $this->array([1,2])->buffer();
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferY');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferYwithOffsetY()
@@ -4549,13 +4563,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $offsetX = 1;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferX');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedOverflowBufferYwithIncY()
@@ -4565,13 +4579,13 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4]);
         $X = $this->array([-1,1,2,5]);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $incY = 2;
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Vector specification too large for bufferY');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
     public function testsearchsortedUnmatchDataType()
@@ -4581,12 +4595,12 @@ class MathTest extends TestCase
         $A = $this->array([0,2,4],NDArray::float32);
         $X = $this->array([-1,1,2,5],NDArray::float64);
         $Y = $this->zeros([4],NDArray::int32);
-        [$m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
             $this->translate_searchsorted($A,$X,false,null,$Y);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unmatch data type for A and X');
-        $math->searchsorted($m,$AA,$offsetA,$incA,$n,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
 //=========================================================================
@@ -4659,7 +4673,7 @@ class MathTest extends TestCase
 
         $offsetX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
     }
 
@@ -4749,7 +4763,7 @@ class MathTest extends TestCase
 
         $offsetY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
         $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
     }
 
@@ -4881,7 +4895,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->zeros($N,$XX,$offX,$incX);
     }
 
@@ -7188,7 +7202,7 @@ class MathTest extends TestCase
 
         $offX = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetX must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetX must be greater than or equals 0.');
         $math->updateAddOnehot($m,$n,$a,$XX,$offX,$incX,$YY,$offY,$ldY);
     }
 
@@ -7278,7 +7292,7 @@ class MathTest extends TestCase
 
         $offY = -1;
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument offsetY must be greater than equals 0.');
+        $this->expectExceptionMessage('Argument offsetY must be greater than or equals 0.');
         $math->updateAddOnehot($m,$n,$a,$XX,$offX,$incX,$YY,$offY,$ldY);
     }
 

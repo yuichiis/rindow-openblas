@@ -101,7 +101,7 @@ int php_rindow_openblas_assert_vector_buffer_spec(
         return -1;
     }
     if(offset<0) {
-        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Argument offset%s must be greater than equals 0.",name);
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Argument offset%s must be greater than or equals 0.",name);
         return -1;
     }
     if(inc<1) {
@@ -125,7 +125,7 @@ int php_rindow_openblas_assert_matrix_buffer_spec(
         return -1;
     }
     if(offset<0) {
-        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Argument offset%s must be greater than equals 0.",name);
+        zend_throw_exception_ex(spl_ce_InvalidArgumentException, 0, "Argument offset%s must be greater than or equals 0.",name);
         return -1;
     }
     if(ld<1) {
