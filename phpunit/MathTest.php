@@ -4268,6 +4268,27 @@ class MathTest extends TestCase
         $this->assertEquals([0,1,2,3],$Y->toArray());
     }
 
+    public function testsearchsortedIndividual()
+    {
+        $math = $this->getMath();
+
+        $A = $this->array([
+            [1,   3,  5,   7,   9],
+            [1,   2,  3,   4,   5],
+            [0, 100, 20, 300, 400]
+        ]);
+        $X = $this->array([0, 5, 10]);
+        $Y = $this->zeros([3],NDArray::int32);
+        [$m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY] =
+            $this->translate_searchsorted($A,$X,false,null,$Y);
+
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
+        $this->assertEquals([0, 4, 1],$Y->toArray());
+
+        $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,true,$YY,$offsetY,$incY);
+        $this->assertEquals([0, 5, 1],$Y->toArray());
+    }
+
     public function testsearchsortedMinusM()
     {
         $math = $this->getMath();
