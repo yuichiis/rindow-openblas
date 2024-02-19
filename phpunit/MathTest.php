@@ -4,6 +4,7 @@ if(!class_exists('RindowTest\OpenBLAS\Utils')) {
     include_once __DIR__.'/Utils.php';
 }
 use RindowTest\OpenBLAS\Utils;
+use function RindowTest\OpenBLAS\R;
 
 use PHPUnit\Framework\TestCase;
 use Interop\Polite\Math\Matrix\NDArray;
@@ -5668,7 +5669,7 @@ class MathTest extends TestCase
              [16,17,18,19],
              [20,21,22,23]],
         ],NDArray::float32);
-        $A = $A[[1,2]];
+        $A = $A[R(1,3)];
         $B = $this->zeros([4,3,2],NDArray::float32);
         [
             $sourceShape,
@@ -5716,7 +5717,7 @@ class MathTest extends TestCase
              [20,21,22,23]],
         ],NDArray::float32);
         $origB = $this->zeros([5,3,2],NDArray::float32);
-        $B = $origB[[1,4]];
+        $B = $origB[R(1,5)];
         [
             $sourceShape,
             $permBuf,
@@ -5768,7 +5769,7 @@ class MathTest extends TestCase
              [16,17,18,19],
              [20,21,22,23]],
         ],NDArray::float64);
-        $A = $A[[1,2]];
+        $A = $A[R(1,3)];
         $B = $this->zeros([4,3,2],NDArray::float64);
         [
             $sourceShape,
@@ -5816,7 +5817,7 @@ class MathTest extends TestCase
              [20,21,22,23]],
         ],NDArray::float64);
         $origB = $this->zeros([5,3,2],NDArray::float64);
-        $B = $origB[[1,4]];
+        $B = $origB[R(1,5)];
         [
             $sourceShape,
             $permBuf,
@@ -5868,7 +5869,7 @@ class MathTest extends TestCase
              [16,17,18,19],
              [20,21,22,23]],
         ],NDArray::int32);
-        $A = $A[[1,2]];
+        $A = $A[R(1,3)];
         $B = $this->zeros([4,3,2],NDArray::int32);
         [
             $sourceShape,
@@ -5916,7 +5917,7 @@ class MathTest extends TestCase
              [20,21,22,23]],
         ],NDArray::int32);
         $origB = $this->zeros([5,3,2],NDArray::int32);
-        $B = $origB[[1,4]];
+        $B = $origB[R(1,5)];
         [
             $sourceShape,
             $permBuf,
@@ -6101,7 +6102,7 @@ class MathTest extends TestCase
         $math = $this->getMath();
 
         $ORGA = $this->ones([2,3,3]);
-        $A = $ORGA[[1,1]];
+        $A = $ORGA[R(1,2)];
         [
             $m,$n,$k,
             $AA, $offsetA,

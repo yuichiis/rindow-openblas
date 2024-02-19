@@ -6,6 +6,50 @@ use ArrayAccess;
 use ArrayObject;
 use Rindow\OpenBLAS\Buffer;
 
+function R(
+    int $start,
+    int $limit,
+) : Range
+{
+    if(func_num_args()!=2) {
+        throw new InvalidArgumentException('R must have only two arguments: "start" and "limit".');
+    }
+    return new Range(start:$start,limit:$limit);
+}
+
+class Range
+{
+    protected mixed $start;
+    protected mixed $limit;
+    protected mixed $delta;
+
+    public function __construct(
+        int|float $limit,
+        int|float $start=null,
+        int|float $delta=null)
+    {
+        $this->limit = $limit;
+        $this->start = $start ?? 0;
+        $this->delta = $delta ?? (($limit>=$start)? 1 : -1);
+    }
+
+    public function start() : mixed
+    {
+        return $this->start;
+    }
+
+    public function limit() : mixed
+    {
+        return $this->limit;
+    }
+
+    public function delta() : mixed
+    {
+        return $this->delta;
+    }
+}
+
+
 trait Utils
 {
     public function zeros(array $shape,int $dtype=null)
@@ -235,33 +279,43 @@ trait Utils
             public function offsetExists( $offset ) : bool { throw new \Excpetion('not implement'); }
             public function offsetGet( $offset ) : mixed
             {
-                // for range spesification
                 if(is_array($offset)) {
+                    throw new InvalidArgumentException("offset style is old renge style.");
+                }
+                // for single index specification
+                if(is_numeric($offset)) {
                     $shape = $this->shape;
-                    array_shift($shape);
-                    $rowsCount = $offset[1]-$offset[0]+1;
-                    if(count($shape)>0) {
-                        $itemSize = (int)array_product($shape);
-                    } else {
-                        $itemSize = 1;
+                    $max = array_shift($shape);
+                    if(count($shape)==0) {
+                        return $this->buffer[$this->offset+$offset];
                     }
-                    if($rowsCount<0) {
-                        throw new OutOfRangeException('Invalid range');
-                    }
-                    array_unshift($shape,$rowsCount);
                     $size = (int)array_product($shape);
-                    $new = new self($this->buffer,$this->dtype,$shape,$this->offset+$offset[0]*$itemSize);
+                    $new = new self($this->buffer,$this->dtype,$shape,$this->offset+$offset*$size);
                     return $new;
                 }
-        
-                // for single index specification
+
+                // for range spesification
                 $shape = $this->shape;
-                $max = array_shift($shape);
-                if(count($shape)==0) {
-                    return $this->buffer[$this->offset+$offset];
+                array_shift($shape);
+                if(is_array($offset)) {
+                    $start = $offset[0];
+                    $limit = $offset[1]+1;
+                } else {
+                    $start = $offset->start();
+                    $limit = $offset->limit();
                 }
+                $rowsCount = $limit-$start;
+                if(count($shape)>0) {
+                    $itemSize = (int)array_product($shape);
+                } else {
+                    $itemSize = 1;
+                }
+                if($rowsCount<0) {
+                    throw new OutOfRangeException('Invalid range');
+                }
+                array_unshift($shape,$rowsCount);
                 $size = (int)array_product($shape);
-                $new = new self($this->buffer,$this->dtype,$shape,$this->offset+$offset*$size);
+                $new = new self($this->buffer,$this->dtype,$shape,$this->offset+$start*$itemSize);
                 return $new;
             }
             public function offsetSet( $offset , $value ) : void { throw new \Exception('not implement'); }
