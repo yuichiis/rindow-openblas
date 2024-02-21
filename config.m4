@@ -65,6 +65,7 @@ if test "$PHP_RINDOW_OPENBLAS" != "no"; then
       AC_MSG_RESULT(ok)
       PHP_ADD_INCLUDE($PHP_RINDOW_MATLIB/include)
       PHP_ADD_INCLUDE($PHP_RINDOW_MATLIB/src)
+      PHP_ADD_INCLUDE($PHP_RINDOW_MATLIB/build/src)
     else
       AC_MSG_RESULT(no)
       AC_MSG_ERROR(rindow/matlib.h not found. Please specify directory by --with-rindow_matlib option)
