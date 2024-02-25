@@ -321,12 +321,12 @@ static PHP_METHOD(Math, sum)
     switch (buffer->dtype) {
         case php_interop_polite_math_matrix_dtype_float32:{
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,buffer,offsetX)
-            result = rindow_matlib_s_sum(n,pDataX,incX,0.0);
+            result = rindow_matlib_s_sum(n,pDataX,incX);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,buffer,offsetX)
-            result = rindow_matlib_d_sum(n,pDataX,incX,0.0);
+            result = rindow_matlib_d_sum(n,pDataX,incX);
             break;
         }
         case php_interop_polite_math_matrix_dtype_int8:
@@ -339,7 +339,7 @@ static PHP_METHOD(Math, sum)
         case php_interop_polite_math_matrix_dtype_uint64:
         case php_interop_polite_math_matrix_dtype_bool: {
             void *pDataX = rindow_matlib_common_get_address(buffer->dtype,buffer->data,offsetX);
-            result = (double)rindow_matlib_i_sum(buffer->dtype, n, pDataX, incX, 0);
+            result = (double)rindow_matlib_i_sum(buffer->dtype, n, pDataX, incX);
             break;
         }
         default:{
@@ -392,17 +392,22 @@ static PHP_METHOD(Math, imax)
         zend_long i;
         case php_interop_polite_math_matrix_dtype_float32:{
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,buffer,offsetX)
-            resultIdx = rindow_matlib_s_imax(n,pDataX,incX,-INFINITY);
+            resultIdx = rindow_matlib_s_imax(n,pDataX,incX);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,buffer,offsetX)
-            resultIdx = rindow_matlib_d_imax(n,pDataX,incX,-INFINITY);
+            resultIdx = rindow_matlib_d_imax(n,pDataX,incX);
             break;
         }
-        default:{
-            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
-            return;
+        default: {
+            if(!rindow_matlib_common_dtype_is_int(buffer->dtype)) {
+                zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
+                return;
+            }
+            void *pDataX = rindow_matlib_common_get_address(buffer->dtype,buffer->data,offsetX);
+            resultIdx = rindow_matlib_i_imax(buffer->dtype, n, pDataX, incX);
+            break;
         }
     }
     RETURN_LONG(resultIdx);
@@ -450,17 +455,22 @@ static PHP_METHOD(Math, imin)
         zend_long i;
         case php_interop_polite_math_matrix_dtype_float32:{
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataX,buffer,offsetX)
-            resultIdx = rindow_matlib_s_imin(n,pDataX,incX,INFINITY);
+            resultIdx = rindow_matlib_s_imin(n,pDataX,incX);
             break;
         }
         case php_interop_polite_math_matrix_dtype_float64:{
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(double,pDataX,buffer,offsetX)
-            resultIdx = rindow_matlib_d_imin(n,pDataX,incX,INFINITY);
+            resultIdx = rindow_matlib_d_imin(n,pDataX,incX);
             break;
         }
-        default:{
-            zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
-            return;
+        default: {
+            if(!rindow_matlib_common_dtype_is_int(buffer->dtype)) {
+                zend_throw_exception(spl_ce_InvalidArgumentException, "Unsupported data type.", 0);
+                return;
+            }
+            void *pDataX = rindow_matlib_common_get_address(buffer->dtype,buffer->data,offsetX);
+            resultIdx = rindow_matlib_i_imin(buffer->dtype, n, pDataX, incX);
+            break;
         }
     }
     RETURN_LONG(resultIdx);
