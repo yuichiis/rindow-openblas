@@ -1,0 +1,46 @@
+name: tests
+
+on: 
+    push:
+        branches:
+            - master
+
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: ['8.1','8.2','8.3']
+        #ffi: ['','ffi']
+  
+    steps:
+      - name: Checkout codes
+        uses: "actions/checkout@v4"
+        
+      - name: Install php ${{ matrix.php }} dev 
+        run: |
+          sudo apt install libopenblas-dev
+          sudo apt install liblapacke-dev
+          sudo apt install php${{ matrix.php }}-dev
+
+      - name: Download rindow-matlib
+        run: |
+          ( cd .. && git clone https://github.com/rindow/rindow-matlib )
+          ( cd ../rindow-matlib && git checkout 1.0.0 )
+          ( cd ../rindow-matlib && cmake -S . -B build )
+
+      - name: Build
+        run: |
+          composer update
+          phpize${{ matrix.php }}
+          ./configure --enable-rindow_openblas --with-rindow_matlib=../rindow-matlib --with-php-config=php-config${{ matrix.php }}
+          make clean
+          make
+
+      - name: Tests
+        run: |
+          make test
+
+
