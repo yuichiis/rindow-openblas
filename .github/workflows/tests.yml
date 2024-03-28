@@ -52,7 +52,7 @@ jobs:
         run: |
           sh ./packaging.sh ${{ matrix.php }}
           ls *.deb
-          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_0.4.0-1+ubuntuXX.XX_amd64.deb
+          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_0.4.0-1+ubuntu22.04_amd64.deb
 
       - name: Tests
         run: |
