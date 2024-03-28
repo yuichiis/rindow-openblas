@@ -26,6 +26,14 @@ Requirements
 - Linux or Windows 10
 - OpenBLAS
 
+Recommend environment
+=====================
+
+- PHP8.1 or PHP8.2 or PHP8.3
+- Matrix PHP library - rindow-math-matrix 2.0.0 or later. (https://github.com/rindow/rindow-math-matrix)
+- Driver Pack - rindow-math-matrix-matlibext 1.0.0 or later. (https://github.com/rindow/rindow-math-matrix-matlibext)
+- Machine learning library on PHP - rindow-neuralnetworks (https://github.com/rindow/rindow-neuralnetworks)
+
 How to build from source code on Linux
 ======================================
 You can also build and use from source code.
