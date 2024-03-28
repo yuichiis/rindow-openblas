@@ -14,14 +14,14 @@ function R(
     if(func_num_args()!=2) {
         throw new InvalidArgumentException('R must have only two arguments: "start" and "limit".');
     }
-    return new Range(start:$start,limit:$limit);
+    return new Range($limit,$start);
 }
 
 class Range
 {
-    protected mixed $start;
-    protected mixed $limit;
-    protected mixed $delta;
+    protected $start;
+    protected $limit;
+    protected $delta;
 
     public function __construct(
         int|float $limit,
@@ -33,17 +33,17 @@ class Range
         $this->delta = $delta ?? (($limit>=$start)? 1 : -1);
     }
 
-    public function start() : mixed
+    public function start()
     {
         return $this->start;
     }
 
-    public function limit() : mixed
+    public function limit()
     {
         return $this->limit;
     }
 
-    public function delta() : mixed
+    public function delta()
     {
         return $this->delta;
     }
@@ -277,7 +277,7 @@ trait Utils
                 return $this;
             }
             public function offsetExists( $offset ) : bool { throw new \Excpetion('not implement'); }
-            public function offsetGet( $offset ) : mixed
+            public function offsetGet( $offset )
             {
                 if(is_array($offset)) {
                     throw new InvalidArgumentException("offset style is old renge style.");
