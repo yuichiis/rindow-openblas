@@ -13,7 +13,6 @@ jobs:
       fail-fast: true
       matrix:
         php: ['8.1','8.2','8.3']
-        #ffi: ['','ffi']
   
     steps:
       - name: Checkout codes
@@ -39,8 +38,18 @@ jobs:
           make clean
           make
 
+      - name: Install rindow_openblas
+        run: |
+          sh ./packaging.sh ${{ matrix.php }}
+          ls *.deb
+          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_0.4.0-1+ubuntuXX.XX_amd64.deb
+
+      - name: Install phpunit
+        run: |
+          composer require phpunit/phpunit=8.5.*
+
       - name: Tests
         run: |
-          make test
+          phpunit -c phpunit
 
 
