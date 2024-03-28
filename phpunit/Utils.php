@@ -8,7 +8,7 @@ use Rindow\OpenBLAS\Buffer;
 
 function R(
     int $start,
-    int $limit,
+    int $limit
 ) : Range
 {
     if(func_num_args()!=2) {
