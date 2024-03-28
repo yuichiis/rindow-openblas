@@ -51,8 +51,9 @@ jobs:
       - name: Install rindow_openblas
         run: |
           sh ./packaging.sh ${{ matrix.php }}
-          ls *.deb
-          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_0.4.0-1+ubuntu22.04_amd64.deb
+          RINDOW_OPENBLAS_VERSION=`fgrep "# define PHP_RINDOW_OPENBLAS_VERSION" php_rindow_openblas.h | cut -d " " -f 4 | cut -d "\"" -f 2`
+          . /etc/os-release
+          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_${RINDOW_OPENBLAS_VERSION}-1+${OS_VERSION}_amd64.deb
 
       - name: Tests
         run: |
