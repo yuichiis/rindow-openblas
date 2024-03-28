@@ -20,6 +20,7 @@ jobs:
         
       - name: Install php ${{ matrix.php }} dev 
         run: |
+          sudo apt update
           sudo apt install libopenblas-dev
           sudo apt install liblapacke-dev
           sudo apt install php${{ matrix.php }}-dev
