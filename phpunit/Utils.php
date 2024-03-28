@@ -8,20 +8,20 @@ use Rindow\OpenBLAS\Buffer;
 
 function R(
     int $start,
-    int $limit
+    int $limit,
 ) : Range
 {
     if(func_num_args()!=2) {
         throw new InvalidArgumentException('R must have only two arguments: "start" and "limit".');
     }
-    return new Range($limit,$start);
+    return new Range(start:$start,limit:$limit);
 }
 
 class Range
 {
-    protected $start;
-    protected $limit;
-    protected $delta;
+    protected mixed $start;
+    protected mixed $limit;
+    protected mixed $delta;
 
     public function __construct(
         int|float $limit,
@@ -33,17 +33,17 @@ class Range
         $this->delta = $delta ?? (($limit>=$start)? 1 : -1);
     }
 
-    public function start()
+    public function start() : mixed
     {
         return $this->start;
     }
 
-    public function limit()
+    public function limit() : mixed
     {
         return $this->limit;
     }
 
-    public function delta()
+    public function delta() : mixed
     {
         return $this->delta;
     }
@@ -277,7 +277,7 @@ trait Utils
                 return $this;
             }
             public function offsetExists( $offset ) : bool { throw new \Excpetion('not implement'); }
-            public function offsetGet( $offset )
+            public function offsetGet( $offset ) : mixed
             {
                 if(is_array($offset)) {
                     throw new InvalidArgumentException("offset style is old renge style.");
