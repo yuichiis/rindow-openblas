@@ -30,7 +30,7 @@ Recommend environment
 =====================
 
 - PHP8.1 or PHP8.2 or PHP8.3
-- LinearBuffer implements - rindow-openblas 0.4.0 or later. [sources](https://github.com/rindow/rindow-openblas), [binaries](https://github.com/rindow_openblas-binaries)
+- OpenBLAS binding for PHP - rindow-openblas 0.4.0 or later. [sources](https://github.com/rindow/rindow-openblas), [binaries](https://github.com/rindow-openblas/releases)
 - OpenCL binding for PHP - rindow-opencl 0.2.0. [sources](https://github.com/rindow/rindow-opencl), [binaries](https://github.com/rindow-opencl/releases)
 - BLAS libray for OpenCL implements - rindow-clblast 0.2.0. [sources](https://github.com/rindow/rindow-clblast), [binaries](https://github.com/rindow-clblast/releases)
 - Matrix PHP library - rindow-math-matrix 2.0.0 or later. [sources](https://github.com/rindow/rindow-math-matrix)
