@@ -24,18 +24,17 @@ Requirements
 
 - PHP7.2 or PHP7.3 or PHP7.4 or PHP8.0 or PHP8.1 or PHP8.2 or PHP8.3
 - Linux or Windows 10
-- OpenBLAS
+- [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS)
+- [Rindow-Matlib](https://github.com/rindow/rindow-matlib)
 
 Recommend environment
 =====================
 
 - PHP8.1 or PHP8.2 or PHP8.3
-- OpenBLAS binding for PHP - rindow-openblas 0.4.0 or later. [sources](https://github.com/rindow/rindow-openblas), [binaries](https://github.com/rindow-openblas/releases)
 - OpenCL binding for PHP - rindow-opencl 0.2.0. [sources](https://github.com/rindow/rindow-opencl), [binaries](https://github.com/rindow-opencl/releases)
 - BLAS libray for OpenCL implements - rindow-clblast 0.2.0. [sources](https://github.com/rindow/rindow-clblast), [binaries](https://github.com/rindow-clblast/releases)
 - Matrix PHP library - rindow-math-matrix 2.0.0 or later. [sources](https://github.com/rindow/rindow-math-matrix)
 - Driver Pack - rindow-math-matrix-matlibext 1.0.0 or later. [sources](https://github.com/rindow/rindow-math-matrix-matlibext)
-- Machine learning library on PHP - rindow-neuralnetworks [sources](https://github.com/rindow/rindow-neuralnetworks)
 
 How to build from source code on Linux
 ======================================
