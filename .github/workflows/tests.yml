@@ -18,12 +18,21 @@ jobs:
       - name: Checkout codes
         uses: "actions/checkout@v4"
         
-      - name: Install php ${{ matrix.php }} dev 
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          # PHP Extras
+          coverage: none
+          tools: composer, phpunit:8.5
+          ini-values: "memory_limit=512M"
+          # extensions: ${{ matrix.ffi }}
+
+      - name: setup OpenBLAS
         run: |
           sudo apt update
           sudo apt install libopenblas-dev
           sudo apt install liblapacke-dev
-          sudo apt install php${{ matrix.php }}-dev
 
       - name: Download rindow-matlib
         run: |
@@ -44,10 +53,6 @@ jobs:
           sh ./packaging.sh ${{ matrix.php }}
           ls *.deb
           sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_0.4.0-1+ubuntuXX.XX_amd64.deb
-
-      - name: Install phpunit
-        run: |
-          composer require phpunit/phpunit=8.5.*
 
       - name: Tests
         run: |
