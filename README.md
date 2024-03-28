@@ -26,35 +26,6 @@ Requirements
 - Linux or Windows 10
 - OpenBLAS
 
-How to download and setup pre-build binaries
-============================================
-You can download and use pre-built binaries for Windows and Ubuntu from each releases.
-Download the binary for your version of PHP in "Asset" link.
-
-- https://github.com/rindow/rindow-openblas/releases
-
-For Windows, copy rindow_openblas.dll to your PHP extension directory and set extension=rindow_openblas in php.ini.
-
-If you are using Windows, you must Download the version of OpenBLAS binaries that correspond to the rindow_openblas binaries.
-The compatible OpenBLAS Library release number is included in the filename of the rindow-openblas pre-built archive file.
-If you use the wrong OpenBLAS release number DLL, it will not work properly.
-
-- https://github.com/xianyi/OpenBLAS/releases
-
-Unzip it to a suitable location and set the execution path in the bin directory.
-
-```shell
-TMP>copy rindow-openblas-phpX.X-X.X.X-openblasX.X.XX-win-ts-vXXX-x64\rindow_openblas.dll \path\to\php\ext
-TMP>set PATH=%PATH%;\path\to\OpenBLAS\bin
-```
-
-For Ubuntu, if you don't see the bre-build binary you want, click "Show all xxx assets" at the bottom. You will see the hidden prebuilt binaries.
-And use the apt command to install the deb file. 
-
-```shell
-$ sudo apt install ./rindow-openblas-phpX.X_X.X.X-X+ubuntuXX.XX_amd64.deb
-```
-
 How to build from source code on Linux
 ======================================
 You can also build and use from source code.
