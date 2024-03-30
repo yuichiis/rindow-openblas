@@ -171,7 +171,7 @@ trait Utils
 
     protected function argExpectException($class)
     {
-        if(version_compare(phpversion(),'8.1.0','<')) {
+        if(version_compare(phpversion(),'8.0.0','<')) {
             $this->expectException(TypeError::class);
         } else {
             $this->expectException($class);
