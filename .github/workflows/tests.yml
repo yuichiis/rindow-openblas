@@ -8,6 +8,8 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-22.04
+    env:
+      matlib: 1.0.0
 
     strategy:
       fail-fast: true
@@ -36,15 +38,15 @@ jobs:
 
       - name: Download rindow-matlib
         run: |
-          ( cd .. && git clone https://github.com/rindow/rindow-matlib )
-          ( cd ../rindow-matlib && git checkout 1.0.0 )
-          ( cd ../rindow-matlib && cmake -S . -B build )
+          wget https://github.com/rindow/rindow-matlib/archive/refs/tags/${matlib}.tar.gz
+          tar xvf ${matrix}.tar.gz
+          ( cd rindow-matlib-${matlib} && cmake -S . -B build )
 
       - name: Build
         run: |
           composer update
           phpize${{ matrix.php }}
-          ./configure --enable-rindow_openblas --with-rindow_matlib=../rindow-matlib --with-php-config=php-config${{ matrix.php }}
+          ./configure --enable-rindow_openblas --with-rindow_matlib=./rindow-matlib-${matlib} --with-php-config=php-config${{ matrix.php }}
           make clean
           make
 
