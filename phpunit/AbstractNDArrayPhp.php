@@ -13,10 +13,10 @@ use RindowTest\OpenBLAS\HostBuffer;
 abstract class AbstractNDArrayPhp implements NDArray
 {
     protected $buffer;
-    protected int $size;
-    protected int $dtype;
-    protected int $offset;
-    protected array $shape;
+    protected $size;
+    protected $dtype;
+    protected $offset;
+    protected $shape;
 
     public function __construct(
         $array=null, int $dtype=null, array $shape=null, int $offset=null
