@@ -12,7 +12,7 @@ use RindowTest\OpenBLAS\HostBuffer;
 
 abstract class AbstractNDArrayPhp implements NDArray
 {
-    protected object $buffer;
+    protected $buffer;
     protected int $size;
     protected int $dtype;
     protected int $offset;
@@ -71,7 +71,7 @@ abstract class AbstractNDArrayPhp implements NDArray
         $this->offset = $offset;
     }
 
-    function newBuffer($size,$dtype) : object
+    function newBuffer($size,$dtype)
     {
         return new HostBuffer($size,$dtype);
     }
