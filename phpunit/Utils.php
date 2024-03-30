@@ -180,7 +180,7 @@ trait Utils
 
     protected function argExpectExceptionMessage($message)
     {
-        if(version_compare(phpversion(),'8.1.0','<')) {
+        if(version_compare(phpversion(),'8.0.0','<')) {
             $this->expectExceptionMessage('Argument ');
         } else {
             $this->expectExceptionMessage($message);
