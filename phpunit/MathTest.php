@@ -5009,7 +5009,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([1,2,4,9],$B->toArray());
@@ -5032,7 +5032,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([[1,4],[2,5],[3,6]],$B->toArray());
@@ -5062,7 +5062,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5108,7 +5108,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5141,7 +5141,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([1,2,4,9],$B->toArray());
@@ -5164,7 +5164,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([[1,4],[2,5],[3,6]],$B->toArray());
@@ -5194,7 +5194,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5240,7 +5240,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5273,7 +5273,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     
         $this->assertEquals([1,2,4,9],$B->toArray());
@@ -5296,7 +5296,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     
         $this->assertEquals([[1,4],[2,5],[3,6]],$B->toArray());
@@ -5326,7 +5326,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     
         $this->assertEquals([
@@ -5372,7 +5372,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     
         $this->assertEquals([
@@ -5414,7 +5414,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5444,7 +5444,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5473,7 +5473,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5503,7 +5503,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5533,7 +5533,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5563,7 +5563,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
      
@@ -5592,7 +5592,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5621,7 +5621,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5650,7 +5650,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
     }
 
@@ -5682,7 +5682,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5728,7 +5728,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5782,7 +5782,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5828,7 +5828,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5882,7 +5882,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
@@ -5928,7 +5928,7 @@ class MathTest extends TestCase
             $sourceShape,
             $permBuf,
             $AA, $offsetA,
-            $BB, $offsetB,
+            $BB, $offsetB
         );
 
         $this->assertEquals([
