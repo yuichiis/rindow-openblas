@@ -39,7 +39,7 @@ jobs:
       - name: Download rindow-matlib
         run: |
           wget https://github.com/rindow/rindow-matlib/archive/refs/tags/${matlib}.tar.gz
-          tar xvf ${matrix}.tar.gz
+          tar xvf ${matlib}.tar.gz
           ( cd rindow-matlib-${matlib} && cmake -S . -B build )
 
       - name: Build
