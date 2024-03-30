@@ -69,7 +69,7 @@ class MathTest extends TestCase
 
     public function translate_maximum(
         NDArray $A,
-        NDArray $X,
+        NDArray $X
         ) : array
     {
         [$m,$n] = $A->shape();
@@ -238,7 +238,7 @@ class MathTest extends TestCase
         }
         $shapeA = $A->shape();
         if(is_numeric($alpha)) {
-            $alpha = $this->array($alpha,dtype:$A->dtype());
+            $alpha = $this->array($alpha,$A->dtype());
         }
         $shapeX = $alpha->shape();
         if(count($shapeX)==0) {
@@ -817,8 +817,8 @@ class MathTest extends TestCase
 
     public function translate_transpose(
         NDArray $A,
-        array|NDArray $perm,
-        NDArray $B,
+        $perm,
+        NDArray $B
         ) : array
     {
         $AA = $A->buffer();
@@ -842,7 +842,7 @@ class MathTest extends TestCase
     public function translate_bandpart(
         NDArray $A,
         int $lower,
-        int $upper,
+        int $upper
     ) : array
     {
         if($A->ndim()<2) {
@@ -3717,7 +3717,7 @@ class MathTest extends TestCase
         $A = $this->array([[1,2,3],[4,5,6]]);
         $X = $this->array([3,2]);
         [$trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX] =
-            $this->translate_pow($A,$X,trans:true);
+            $this->translate_pow($A,$X,true);
 
         $math->pow($trans,$M,$N,$AA,$offA,$ldA,$XX,$offX,$incX);;
         $this->assertEquals([[1,8,27],[16,25,36]],$A->toArray());
@@ -4211,13 +4211,13 @@ class MathTest extends TestCase
 
         $X = $this->array([NAN,NAN,NAN,NAN],NDArray::float32);
         [$N, $VV, $offV, $XX, $offX, $incX] =
-            $this->translate_fill($this->array(1.0,dtype:$X->dtype()),$X);
+            $this->translate_fill($this->array(1.0,$X->dtype()),$X);
         $math->fill($N, $VV, $offV, $XX, $offX, $incX);
         $this->assertEquals([1,1,1,1],$X->toArray());
 
         $X = $this->array([NAN,NAN,NAN,NAN],NDArray::float64);
         [$N, $VV, $offV, $XX, $offX, $incX] =
-            $this->translate_fill($this->array(1.0,dtype:$X->dtype()),$X);
+            $this->translate_fill($this->array(1.0,$X->dtype()),$X);
         $math->fill($N, $VV, $offV, $XX, $offX, $incX);
         $this->assertEquals([1,1,1,1],$X->toArray());
     }
@@ -4350,7 +4350,7 @@ class MathTest extends TestCase
 
         $AA = new \stdClass();
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('A must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $this->argExpectExceptionMessage('A must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
         $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
@@ -4462,7 +4462,7 @@ class MathTest extends TestCase
 
         $XX = new \stdClass();
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $this->argExpectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
         $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
@@ -4558,7 +4558,7 @@ class MathTest extends TestCase
 
         $YY = new \stdClass();
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $this->argExpectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
         $math->searchsorted($m,$n,$AA,$offsetA,$ldA,$XX,$offsetX,$incX,$right,$YY,$offsetY,$incY);
     }
 
@@ -4725,7 +4725,7 @@ class MathTest extends TestCase
 
         $XX = new \stdClass();
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $this->argExpectExceptionMessage('X must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
         $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
     }
 
@@ -4815,7 +4815,7 @@ class MathTest extends TestCase
 
         $YY = new \stdClass();
         $this->expectException(TypeError::class);
-        $this->expectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
+        $this->argExpectExceptionMessage('Y must implement interface Interop\Polite\Math\Matrix\LinearBuffer');
         $math->cumsum($n,$XX,$offsetX,$incX,$exclusive,$reverse,$YY,$offsetY,$incY);
     }
 
