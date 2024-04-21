@@ -41,8 +41,8 @@ static zend_object* php_rindow_openblas_blas_create_object(zend_class_entry* cla
  {{{ */
 static PHP_METHOD(Blas, getNumThreads)
 {
-    int n;
-    n = openblas_get_num_threads();
+    zend_long n;
+    n = (zend_long)openblas_get_num_threads();
     RETURN_LONG(n);
 }
 /* }}} */
@@ -52,8 +52,8 @@ static PHP_METHOD(Blas, getNumThreads)
  {{{ */
 static PHP_METHOD(Blas, getNumProcs)
 {
-    int n;
-    n = openblas_get_num_procs();
+    zend_long n;
+    n = (zend_long)openblas_get_num_procs();
     RETURN_LONG(n);
 }
 /* }}} */
@@ -77,6 +77,17 @@ static PHP_METHOD(Blas, getCorename)
     char *s;
     s = openblas_get_corename();
     RETURN_STRING(s);
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Blas::
+    public function getParallel() : int
+ {{{ */
+static PHP_METHOD(Blas, getParallel)
+{
+    zend_long n;
+    n = (zend_long)openblas_get_parallel();
+    RETURN_LONG(n);
 }
 /* }}} */
 
@@ -2185,6 +2196,7 @@ static zend_function_entry php_rindow_openblas_blas_me[] = {
     PHP_ME(Blas, getNumProcs,   ai_Blas_void, ZEND_ACC_PUBLIC)
     PHP_ME(Blas, getConfig,     ai_Blas_void, ZEND_ACC_PUBLIC)
     PHP_ME(Blas, getCorename,   ai_Blas_void, ZEND_ACC_PUBLIC)
+    PHP_ME(Blas, getParallel,   ai_Blas_void, ZEND_ACC_PUBLIC)
     PHP_ME(Blas, scal,  ai_Blas_scal,  ZEND_ACC_PUBLIC)
     PHP_ME(Blas, axpy,  ai_Blas_axpy,  ZEND_ACC_PUBLIC)
     PHP_ME(Blas, dot,   ai_Blas_dot,   ZEND_ACC_PUBLIC)

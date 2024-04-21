@@ -286,6 +286,61 @@ int php_rindow_openblas_val2float(
 //}
 
 /* Method Rindow\OpenBLAS\Math::
+    public function getNumThreads() : int
+ {{{ */
+static PHP_METHOD(Math, getNumThreads)
+{
+    zend_long n;
+    n = (zend_long)rindow_matlib_common_get_num_threads();
+    RETURN_LONG(n);
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Math::
+    public function getNumProcs() : int
+ {{{ */
+static PHP_METHOD(Math, getNumProcs)
+{
+    zend_long n;
+    n = (zend_long)rindow_matlib_common_get_nprocs();
+    RETURN_LONG(n);
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Math::
+    public function getConfig() : string
+ {{{ */
+static PHP_METHOD(Math, getConfig)
+{
+    char *s;
+    s = rindow_matlib_common_get_version();
+    RETURN_STRING(s);
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Math::
+    public function getParallel() : int
+ {{{ */
+static PHP_METHOD(Math, getParallel)
+{
+    zend_long n;
+    n = (zend_long)rindow_matlib_common_get_parallel();
+    RETURN_LONG(n);
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Math::
+    public function getVersion() : string
+ {{{ */
+static PHP_METHOD(Math, getVersion)
+{
+    char *s;
+    s = rindow_matlib_common_get_version();
+    RETURN_STRING(s);
+}
+/* }}} */
+
+/* Method Rindow\OpenBLAS\Math::
     public function sum(
         int $n,
         Buffer $X, int $offsetX, int $incX ) : float
@@ -4075,9 +4130,17 @@ ZEND_BEGIN_ARG_INFO_EX(ai_Math_randomSequence, 0, 0, 6)
     ZEND_ARG_INFO(0, seed)
 ZEND_END_ARG_INFO()
 
-/* {{{ Rindow\OpenBLAS\Blas function entries */
+ZEND_BEGIN_ARG_INFO_EX(ai_Math_void, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+/* {{{ Rindow\OpenBLAS\Math function entries */
 static zend_function_entry php_rindow_openblas_math_me[] = {
     /* clang-format off */
+    PHP_ME(Math, getNumThreads,  ai_Math_void,           ZEND_ACC_PUBLIC)
+    PHP_ME(Math, getNumProcs,    ai_Math_void,           ZEND_ACC_PUBLIC)
+    PHP_ME(Math, getConfig,      ai_Math_void,           ZEND_ACC_PUBLIC)
+    PHP_ME(Math, getParallel,    ai_Math_void,           ZEND_ACC_PUBLIC)
+    PHP_ME(Math, getVersion,     ai_Math_void,           ZEND_ACC_PUBLIC)
     PHP_ME(Math, sum,            ai_Math_sum,            ZEND_ACC_PUBLIC)
     PHP_ME(Math, imax,           ai_Math_imax,           ZEND_ACC_PUBLIC)
     PHP_ME(Math, imin,           ai_Math_imin,           ZEND_ACC_PUBLIC)
