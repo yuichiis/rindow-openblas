@@ -12,9 +12,13 @@ void main()
 #endif
 #ifdef __GNUC__
     printf("__GNUC__=%d\n",__GNUC__);
+    printf("__GNUC_MINOR__=%d\n",__GNUC_MINOR__);
+    printf("__GNUC_PATCHLEVEL__=%d\n",__GNUC_PATCHLEVEL__);
 #endif
 #ifdef __clang__
     printf("__clang__=%d\n",__clang__);
+    printf("__clang_major__=%d\n",__clang_major__);
+    printf("__clang_build_version__=%d\n",__clang_build_version__);
 #endif
 
 }
