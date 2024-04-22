@@ -1,9 +1,8 @@
-
-#if PHP_MAJOR_VERSION < 8
-#if _MSC_VER
+#ifdef _MSC_VER
+#if (_MSC_VER % 100 ) <= 16
 errno_t rand_s(unsigned int* randomValue)
 {
-    *randomValue = (((rand()<<17)|(rand()<<2)) ^ rand());
+    *randomValue = (((((uint32_t)rand())<<17)|(((uint32_t)rand())<<2)) ^ (uint32_t)rand());
     return 0;
 }
 #endif
