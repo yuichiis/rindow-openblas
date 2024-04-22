@@ -20,6 +20,9 @@
 
 #include "../../../matlib.c"
 
+typedef int32_t dtype_t;
+typedef int32_t index_t;
+
 //static float s_max(long n, float *x, long incX)
 //{
 //    long i;
