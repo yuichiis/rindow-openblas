@@ -14,6 +14,11 @@ void main()
     printf("__GNUC__=%d\n",__GNUC__);
     printf("__GNUC_MINOR__=%d\n",__GNUC_MINOR__);
     printf("__GNUC_PATCHLEVEL__=%d\n",__GNUC_PATCHLEVEL__);
+#if __GNUC__ <= 9
+    printf("Ubuntu 20.04\n");
+#else
+    printf("Ubuntu 22.04\n");
+#endif
 #endif
 #ifdef __clang__
     printf("__clang__=%d\n",__clang__);
