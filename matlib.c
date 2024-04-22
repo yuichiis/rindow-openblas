@@ -1,3 +1,14 @@
+
+#if PHP_MAJOR_VERSION < 8
+#if _MSC_VER
+errno_t rand_s(unsigned int* randomValue)
+{
+    *randomValue = rand();
+    return 0;
+}
+#endif
+#endif
+
 #include "common.c"
 #include "sum.c"
 #include "imax.c"
