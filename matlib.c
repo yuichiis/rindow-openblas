@@ -3,7 +3,7 @@
 #if _MSC_VER
 errno_t rand_s(unsigned int* randomValue)
 {
-    *randomValue = rand();
+    *randomValue = (((rand()<<17)|(rand()<<2)) ^ rand());
     return 0;
 }
 #endif
