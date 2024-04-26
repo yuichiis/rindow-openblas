@@ -9,6 +9,7 @@ if(version_compare(phpversion(),'8.0.0','<')) {
 }
 
 use Interop\Polite\Math\Matrix\NDArray;
+use Interop\Polite\Math\Matrix\BLAS;
 use TypeError;
 use InvalidArgumentException;
 use RindowTest\OpenBLAS\NDArrayPhp;
@@ -58,6 +59,12 @@ class Range
 
 trait Utils
 {
+    public function alloc(array $shape,int $dtype=null)
+    {
+        $ndarray = $this->array(null,$dtype,$shape);
+        return $ndarray;
+    }
+
     public function zeros(array $shape,int $dtype=null)
     {
         $ndarray = $this->array(null,$dtype,$shape);
@@ -167,6 +174,92 @@ trait Utils
         }
         $string .= ']';
         return $string;
+    }
+
+    protected function copy(NDArray $x,NDArray $y=null) : NDArray
+    {
+        $blas = $this->getBlas();
+
+        if($y==null) {
+            $y = $this->zeros($x->shape(),$x->dtype());
+        }
+        $blas->copy(...$this->translate_copy($x,$y));
+        return $y;
+    }
+
+    protected function isComplex($dtype) : bool
+    {
+        return $dtype==NDArray::complex64||$dtype==NDArray::complex128;
+    }
+
+    protected function buildValByType($value, int $dtype)
+    {
+        if($this->isComplex($dtype)) {
+            throw new InvalidArgumentException('complex value is not supported.');
+        }
+        return $value;
+    }
+
+    protected function transToCode(bool $trans,bool $conj) : int
+    {
+        if($trans) {
+            return $conj ? BLAS::ConjTrans : BLAS::Trans;
+        } else {
+            return $conj ? BLAS::ConjNoTrans : BLAS::NoTrans;
+        }
+    }
+
+    protected function complementTrans(?bool $trans,?bool $conj,int $dtype) : array
+    {
+        $trans = $trans ?? false;
+        if($this->isComplex($dtype)) {
+            $conj = $conj ?? $trans;
+        } else {
+            $conj = $conj ?? false;
+        }
+        return [$trans,$conj];
+    }
+
+    protected function abs($value) : float
+    {
+        if(is_numeric($value)) {
+            return abs($value);
+        }
+        throw new InvalidArgumentException('complex value is not supported.');
+        //$abs = sqrt(($value->real)**2+($value->imag)**2);
+        //return $abs;
+    }
+
+    protected function isclose(NDArray $a, NDArray $b, $rtol=null, $atol=null) : bool
+    {
+        $blas = $this->getBlas();
+
+        $isCpx = $this->isComplex($a->dtype());
+        if($rtol===null) {
+            //$rtol = $isCpx?C(1e-04):1e-04;
+            $rtol = 1e-04;
+        }
+        if($atol===null) {
+            $atol = 1e-07;
+        }
+        if($a->shape()!=$b->shape()) {
+            return false;
+        }
+        // diff = b - a
+        //$alpha =  $isCpx?C(-1):-1;
+        $alpha = -1;
+        $diffs = $this->copy($b);
+        $blas->axpy(...$this->translate_axpy($a,$diffs,$alpha));
+        $iDiffMax = $blas->iamax(...$this->translate_asum($diffs));
+        $diff = $this->abs($diffs->buffer()[$iDiffMax]);
+
+        // close = atol + rtol * b
+        $scalB = $this->copy($b);
+        $blas->scal(...$this->translate_scal($rtol,$scalB));
+        $iCloseMax = $blas->iamax(...$this->translate_asum($scalB));
+        $close = $atol+$this->abs($scalB->buffer()[$iCloseMax]);
+
+        return $diff < $close;
     }
 
     protected function argExpectException($class)

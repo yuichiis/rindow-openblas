@@ -85,7 +85,7 @@ If you want an easier install, use the following spell instead of "make install"
 
 ```shell
 $ sh ./packaging.sh 8.1
-$ sudo apt install ./rindow-openblas-php8.1_X.X.X-X+ubuntuXX.XX_amd64.deb
+$ sudo apt install ./rindow-openblas-php8.1_X.X.X_amd64.deb
 ```
 
 How to build from source code on Windows
