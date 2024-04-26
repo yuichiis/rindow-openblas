@@ -55,7 +55,7 @@ jobs:
           sh ./packaging.sh ${{ matrix.php }}
           RINDOW_OPENBLAS_VERSION=`fgrep "# define PHP_RINDOW_OPENBLAS_VERSION" php_rindow_openblas.h | cut -d " " -f 4 | cut -d "\"" -f 2`
           . /etc/os-release
-          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_${RINDOW_OPENBLAS_VERSION}-1+${ID}${VERSION_ID}_amd64.deb
+          sudo apt install -y ./rindow-openblas-php${{ matrix.php }}_${RINDOW_OPENBLAS_VERSION}_amd64.deb
 
       - name: Tests
         run: |
