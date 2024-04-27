@@ -1814,8 +1814,8 @@ class BlasTest extends TestCase
         $blas = $this->getBlas();
 
         // float32
-        $X = $this->array([100,10,1],NDArray::float32);
-        $Y = $this->array([200,20,2],NDArray::float32);
+        $X = $this->array([100,10,1],$dtype);
+        $Y = $this->array([200,20,2],$dtype);
         [$N,$XX,$offX,$incX,$YY,$offY,$incY] =
             $this->translate_copy($X,$Y);
 
