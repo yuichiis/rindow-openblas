@@ -2480,7 +2480,7 @@ class BlasTest extends TestCase
     /**
     * @dataProvider providerDtypesFloats
     */
-    public function testGemmNormal()
+    public function testGemmNormal($params)
     {
         extract($params);
         $blas = $this->getBlas();
