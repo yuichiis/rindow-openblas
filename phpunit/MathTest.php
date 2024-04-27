@@ -883,6 +883,12 @@ class MathTest extends TestCase
             'float64' => [[
                 'dtype' => NDArray::float64,
             ]],
+            'int32' => [[
+                'dtype' => NDArray::int32,
+            ]],
+            'int64' => [[
+                'dtype' => NDArray::int64,
+            ]],
         ];
     }
 
