@@ -224,6 +224,18 @@ trait Utils
         return $y;
     }
 
+    protected function scal(float $a,NDArray $x) : NDArray
+    {
+        $blas = $this->getBlas();
+
+        $N = $x->size();
+        $XX = $x->buffer();
+        $offX = $x->offset();
+
+        $blas->scal($N,$a,$XX,$offX,1);
+        return $x;
+    }
+
     protected function isComplex($dtype) : bool
     {
         return $dtype==NDArray::complex64||$dtype==NDArray::complex128;
@@ -292,7 +304,7 @@ trait Utils
 
         // close = atol + rtol * b
         $scalB = $this->copy($b);
-        $blas->scal(...$this->translate_scal($rtol,$scalB));
+        $this->scal($rtol,$scalB);
         $iCloseMax = $this->iamax($scalB);
         $close = $atol+$this->abs($scalB->buffer()[$iCloseMax]);
 

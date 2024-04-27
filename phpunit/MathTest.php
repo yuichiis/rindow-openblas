@@ -4212,7 +4212,7 @@ class MathTest extends TestCase
         $math->log($N,$XX,$offX,$incX);
         $math->exp($N,$XX,$offX,$incX);
 
-        $this->assertEquals($this->isClose($this->array([1,2,4,9]),$X->toArray()));
+        $this->assertTrue($this->isclose($this->array([1,2,4,9],$dtype),$X));
     }
 
     public function testlogInvalidValue()
