@@ -87,7 +87,7 @@ static PHP_METHOD(Math, reduceSum)
         case php_interop_polite_math_matrix_dtype_float64: {
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataA,bufferA,offsetA)
             PHP_RINDOW_OPENBLAS_MATH_DEFDATA_TEMPLATE(float,pDataB,bufferB,offsetB)
-            rindow_matlib_s_reducesum((index_t)m,(index_t)n,(index_t)k,pDataA,pDataB);
+            rindow_matlib_d_reducesum((index_t)m,(index_t)n,(index_t)k,pDataA,pDataB);
             break;
         }
         default: {
