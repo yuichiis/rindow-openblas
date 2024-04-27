@@ -287,13 +287,13 @@ trait Utils
         $alpha = -1;
         $diffs = $this->copy($b);
         $this->axpy($a,$diffs,$alpha);
-        $iDiffMax = $blas->iamax($diffs);
+        $iDiffMax = $this->iamax($diffs);
         $diff = $this->abs($diffs->buffer()[$iDiffMax]);
 
         // close = atol + rtol * b
         $scalB = $this->copy($b);
         $blas->scal(...$this->translate_scal($rtol,$scalB));
-        $iCloseMax = $blas->iamax($scalB);
+        $iCloseMax = $this->iamax($scalB);
         $close = $atol+$this->abs($scalB->buffer()[$iCloseMax]);
 
         return $diff < $close;
