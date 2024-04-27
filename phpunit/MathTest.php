@@ -11,6 +11,7 @@ use Interop\Polite\Math\Matrix\NDArray;
 use Interop\Polite\Math\Matrix\BLAS;
 use Rindow\Math\Matrix\MatrixOperator;
 use Rindow\OpenBLAS\Math as Math;
+use Rindow\OpenBLAS\BLAS as OpenBLAS;
 use InvalidArgumentException;
 use RuntimeException;
 use TypeError;
@@ -26,6 +27,12 @@ class MathTest extends TestCase
     {
         $math = new Math();
         return $math;
+    }
+
+    public function getBlas()
+    {
+        $blas = new OpenBLAS();
+        return $blas;
     }
 
     public function checkSkip($mark)
