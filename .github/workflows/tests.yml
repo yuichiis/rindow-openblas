@@ -32,7 +32,6 @@ jobs:
 
       - name: setup OpenBLAS
         run: |
-          sudo apt update
           sudo apt install libopenblas-dev
           sudo apt install liblapacke-dev
 
