@@ -183,8 +183,57 @@ trait Utils
         if($y==null) {
             $y = $this->zeros($x->shape(),$x->dtype());
         }
-        $blas->copy(...$this->translate_copy($x,$y));
+        $N = $x->size();
+        $XX = $x->buffer();
+        $offX = $x->offset();
+        $YY = $y->buffer();
+        $offY = $y->offset();
+        $blas->copy($N,$XX,$offX,1,$YY,$offY,1);
         return $y;
+    }
+
+    protected function axpy(NDArray $x,NDArray $y=null,$alpha=null) : NDArray
+    {
+        $blas = $this->getBlas();
+
+        if($y==null) {
+            $y = $this->zeros($x->shape(),$x->dtype());
+        }
+        if($alpha===null) {
+            $alpha = 1.0;
+        }
+        $N = $x->size();
+        $XX = $x->buffer();
+        $offX = $x->offset();
+        $YY = $y->buffer();
+        $offY = $y->offset();
+
+        $blas->axpy($N,$alpha,$XX,$offX,1,$YY,$offY,1);
+        return $y;
+    }
+
+    protected function iamax(NDArray $x) : int
+    {
+        $blas = $this->getBlas();
+
+        $N = $x->size();
+        $XX = $x->buffer();
+        $offX = $x->offset();
+
+        $y = $blas->iamax($N,$XX,$offX,1);
+        return $y;
+    }
+
+    protected function scal(float $a,NDArray $x) : NDArray
+    {
+        $blas = $this->getBlas();
+
+        $N = $x->size();
+        $XX = $x->buffer();
+        $offX = $x->offset();
+
+        $blas->scal($N,$a,$XX,$offX,1);
+        return $x;
     }
 
     protected function isComplex($dtype) : bool
@@ -249,14 +298,14 @@ trait Utils
         //$alpha =  $isCpx?C(-1):-1;
         $alpha = -1;
         $diffs = $this->copy($b);
-        $blas->axpy(...$this->translate_axpy($a,$diffs,$alpha));
-        $iDiffMax = $blas->iamax(...$this->translate_asum($diffs));
+        $this->axpy($a,$diffs,$alpha);
+        $iDiffMax = $this->iamax($diffs);
         $diff = $this->abs($diffs->buffer()[$iDiffMax]);
 
         // close = atol + rtol * b
         $scalB = $this->copy($b);
-        $blas->scal(...$this->translate_scal($rtol,$scalB));
-        $iCloseMax = $blas->iamax(...$this->translate_asum($scalB));
+        $this->scal($rtol,$scalB);
+        $iCloseMax = $this->iamax($scalB);
         $close = $atol+$this->abs($scalB->buffer()[$iCloseMax]);
 
         return $diff < $close;

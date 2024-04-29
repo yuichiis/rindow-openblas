@@ -677,12 +677,28 @@ class BlasTest extends TestCase
         $this->assertTrue(is_string($s));
     }
 
-    public function testAxpyNormal()
+    public static function providerDtypesFloats()
     {
+        return [
+            'float32' => [[
+                'dtype' => NDArray::float32,
+            ]],
+            'float64' => [[
+                'dtype' => NDArray::float64,
+            ]],
+        ];
+    }
+
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testAxpyNormal($params)
+    {
+        extract($params);
         $blas = $this->getBlas();
 
-        $X = $this->array([1,2,3]);
-        $Y = $this->array([10,20,30]);
+        $X = $this->array([1,2,3],$dtype);
+        $Y = $this->array([10,20,30],$dtype);
         [$N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY] =
             $this->translate_axpy($X,$Y,2);
 
@@ -885,12 +901,16 @@ class BlasTest extends TestCase
         $blas->axpy($N,$alpha,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
-    public function testDotNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testDotNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        $X = $this->array([1,2,3]);
-        $Y = $this->array([4,5,6]);
+        $X = $this->array([1,2,3],$dtype);
+        $Y = $this->array([4,5,6],$dtype);
         [$N,$XX,$offX,$incX,$YY,$offY,$incY] =
             $this->translate_dot($X,$Y);
 
@@ -1093,11 +1113,15 @@ class BlasTest extends TestCase
         $dot = $blas->dot($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
-    public function testAsumNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testAsumNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        $X = $this->array([100,-10,-1000]);
+        $X = $this->array([100,-10,-1000],$dtype);
         [$N,$XX,$offX,$incX] =
             $this->translate_asum($X);
 
@@ -1203,12 +1227,16 @@ class BlasTest extends TestCase
         $min = $blas->asum($N,$XX,$offX,$incX);
     }
 
-    public function testCopyNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testCopyNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        $X = $this->array([100,10,1]);
-        $Y = $this->array([0,0,0]);
+        $X = $this->array([100,10,1],$dtype);
+        $Y = $this->array([0,0,0],$dtype);
         [$N,$XX,$offX,$incX,$YY,$offY,$incY] =
             $this->translate_copy($X,$Y);
 
@@ -1411,12 +1439,15 @@ class BlasTest extends TestCase
         $blas->copy($N,$XX,$offX,$incX,$YY,$offY,$incY);
     }
 
-    public function testNrm2Normal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testNrm2Normal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        // float32
-        $X = $this->array([[1,2],[3,4]],NDArray::float32);
+        $X = $this->array([[1,2],[3,4]],$dtype);
         [$N,$XX,$offX,$incX] =
             $this->translate_asum($X);
 
@@ -1435,12 +1466,15 @@ class BlasTest extends TestCase
 
     }
 
-    public function testRotNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testRotNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
         // float32
-        $dtype = NDArray::float32;
         $x = $this->array([1,2,3,4,5],$dtype);
         $y = $this->array([1,2,3,4,5],$dtype);
         $c = $this->array([cos(pi()/4)],$dtype);
@@ -1478,12 +1512,14 @@ class BlasTest extends TestCase
         }
     }
 
-    public function testRotgNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testRotgNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        // float32
-        $dtype = NDArray::float32;
         $inputs = [
             [1,1],
             [2,2],
@@ -1517,9 +1553,12 @@ class BlasTest extends TestCase
 
     }
    
-    public function testRotmNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testRotmNormal($params)
     {
-        $dtype = NDArray::float32;
+        extract($params);
         //echo "\n===========testRotmgNormal==============\n";
         $blas = $this->getBlas();
 
@@ -1578,9 +1617,12 @@ class BlasTest extends TestCase
         }
     }
 
-    public function testRotmgNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testRotmgNormal($params)
     {
-        $dtype = NDArray::float32;
+        extract($params);
         //echo "\n===========testRotmgNormal==============\n";
         $blas = $this->getBlas();
 
@@ -1645,11 +1687,15 @@ class BlasTest extends TestCase
         }
     }
 
-    public function testScalNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testScalNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        $X = $this->array([1,2,3]);
+        $X = $this->array([1,2,3],$dtype);
         [$N,$alpha,$XX,$offX,$incX] =
             $this->translate_scal(2,$X);
 
@@ -1759,13 +1805,17 @@ class BlasTest extends TestCase
         $blas->scal($N,$alpha,$XX,$offX,$incX);
     }
 
-    public function testSwapNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testSwapNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
         // float32
-        $X = $this->array([100,10,1],NDArray::float32);
-        $Y = $this->array([200,20,2],NDArray::float32);
+        $X = $this->array([100,10,1],$dtype);
+        $Y = $this->array([200,20,2],$dtype);
         [$N,$XX,$offX,$incX,$YY,$offY,$incY] =
             $this->translate_copy($X,$Y);
 
@@ -1785,11 +1835,15 @@ class BlasTest extends TestCase
 
     }
 
-    public function testAMaxNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testAMaxNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        $X = $this->array([100,-10,1]);
+        $X = $this->array([100,-10,1],$dtype);
         [$N,$XX,$offX,$incX] =
             $this->translate_asum($X);
 
@@ -1895,14 +1949,18 @@ class BlasTest extends TestCase
         $min = $blas->iamax($N,$XX,$offX,$incX);
     }
 
-    public function testAminNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testAminNormal($params)
     {
+        extract($params);
         if($this->skipiamin()) return;
         $blas = $this->getBlas();
 
         $X = $this->array([100,-10,1]);
         [$N,$XX,$offX,$incX] =
-            $this->translate_asum($X);
+            $this->translate_asum($X,$dtype);
 
         $min = $blas->iamin($N,$XX,$offX,$incX);
         $this->assertEquals(2,$min);
@@ -2013,13 +2071,17 @@ class BlasTest extends TestCase
         $min = $blas->iamin($N,$XX,$offX,$incX);
     }
 
-    public function testGemvNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testGemvNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        $A = $this->array([[1,2,3],[4,5,6]]);
-        $X = $this->array([100,10,1]);
-        $Y = $this->zeros([2]);
+        $A = $this->array([[1,2,3],[4,5,6]],$dtype);
+        $X = $this->array([100,10,1],$dtype);
+        $Y = $this->zeros([2],$dtype);
 
         [ $trans,$m,$n,$alpha,$AA,$offA,$ldA,
           $XX,$offX,$incX,$beta,$YY,$offY,$incY] =
@@ -2415,14 +2477,18 @@ class BlasTest extends TestCase
             $YY,$offY,$incY);
     }
 
-    public function testGemmNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testGemmNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
-        $A = $this->array([[1,2,3],[4,5,6],[7,8,9]]);
-        $B = $this->array([[1,0,0],[0,1,0],[0,0,1]]);
+        $A = $this->array([[1,2,3],[4,5,6],[7,8,9]],$dtype);
+        $B = $this->array([[1,0,0],[0,1,0],[0,0,1]],$dtype);
         $alpha = 1.0;
         $beta  = 0.0;
-        $C = $this->zeros([3,3]);
+        $C = $this->zeros([3,3],$dtype);
         $transA = false;
         $transB = false;
 
@@ -3135,8 +3201,12 @@ class BlasTest extends TestCase
             $CC,$offC,$ldc);
     }
 
-    public function testSymmNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testSymmNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
         // float32
@@ -3144,15 +3214,15 @@ class BlasTest extends TestCase
             [1,2,3],
             [2,4,5],
             [3,5,6],
-        ],NDArray::float32);
+        ],$dtype);
         $B = $this->array([
             [1,2,3,4],
             [5,6,7,8],
             [9,10,11,12],
-        ],NDArray::float32);
+        ],$dtype);
         $alpha = null;
         $beta  = null;
-        $C = $this->zeros([3,4],NDArray::float32);
+        $C = $this->zeros([3,4],$dtype);
 
         [
             $order,$side,$uplo,
@@ -3225,8 +3295,12 @@ class BlasTest extends TestCase
 
     }
 
-    public function testSyrkNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testSyrkNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
         // float32
@@ -3235,8 +3309,8 @@ class BlasTest extends TestCase
             [4,5,6],
             [7,8,9],
             [10,11,12],
-        ],NDArray::float32);
-        $C = $this->zeros([4,4],NDArray::float32);
+        ],$dtype);
+        $C = $this->zeros([4,4],$dtype);
 
         [
             $order,$uplo,$trans,
@@ -3729,8 +3803,12 @@ class BlasTest extends TestCase
             $CC,$offC,$ldC+1);
     }
 
-    public function testSyr2kNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testSyr2kNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
         // float32
@@ -3739,14 +3817,14 @@ class BlasTest extends TestCase
             [4,5,6],
             [7,8,9],
             [10,11,12],
-        ],NDArray::float32);
+        ],$dtype);
         $B = $this->array([
             [1,3,5],
             [2,4,6],
             [7,9,11],
             [8,10,12],
-        ],NDArray::float32);
-        $C = $this->zeros([4,4],NDArray::float32);
+        ],$dtype);
+        $C = $this->zeros([4,4],$dtype);
 
         [
             $order,$uplo,$trans,
@@ -4009,8 +4087,12 @@ class BlasTest extends TestCase
 
     }
 
-    public function testTrmmNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testTrmmNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
         // float32
@@ -4018,46 +4100,12 @@ class BlasTest extends TestCase
             [1,2,3],
             [9,4,5],
             [9,9,6],
-        ],NDArray::float32);
+        ],$dtype);
         $B = $this->array([
             [1, 2, 3, 4],
             [5, 6, 7, 8],
             [9,10,11,12],
-        ],NDArray::float32);
-
-        [
-            $order,$side,$uplo,$trans,$diag,
-            $M,$N,
-            $alpha,
-            $AA,$offA,$lda,
-            $BB,$offB,$ldb
-        ] = $this->translate_trmm($A,$B);
-
-        $blas->trmm(
-            $order,$side,$uplo,$trans,$diag,
-            $M,$N,
-            $alpha,
-            $AA,$offA,$lda,
-            $BB,$offB,$ldb
-        );
-
-        $this->assertEquals([
-            [ 38, 44, 50, 56],
-            [ 65, 74, 83, 92],
-            [ 54, 60, 66, 72]
-        ],$B->toArray());
-
-        // float64
-        $A = $this->array([
-            [1,2,3],
-            [9,4,5],
-            [9,9,6],
-        ],NDArray::float64);
-        $B = $this->array([
-            [1, 2, 3, 4],
-            [5, 6, 7, 8],
-            [9,10,11,12],
-        ],NDArray::float64);
+        ],$dtype);
 
         [
             $order,$side,$uplo,$trans,$diag,
@@ -4376,67 +4424,24 @@ class BlasTest extends TestCase
 
     }
 
-    public function testTrsmNormal()
+    /**
+    * @dataProvider providerDtypesFloats
+    */
+    public function testTrsmNormal($params)
     {
+        extract($params);
         $blas = $this->getBlas();
 
-        // float32
         $A = $this->array([
             [1,2,3],
             [9,4,5],
             [9,9,6],
-        ],NDArray::float32);
+        ],$dtype);
         $B = $this->array([
             [ 7, 8],
             [10,11],
             [13,14],
-        ],NDArray::float32);
-        [
-            $order,$side,$uplo,$trans,$diag,
-            $M,$N,
-            $alpha,
-            $AA,$offA,$lda,
-            $BB,$offB,$ldb
-        ] = $this->translate_trsm($A,$B);
-        $origB = $this->zeros($B->shape(),$B->dtype());
-        $blas->copy(count($BB),$BB,0,1,$origB->buffer(),0,1);
-
-        $blas->trsm(
-            $order,$side,$uplo,$trans,$diag,
-            $M,$N,
-            $alpha,
-            $AA,$offA,$lda,
-            $BB,$offB,$ldb
-        );
-        $RA = $this->array([
-            [1,2,3],
-            [0,4,5],
-            [0,0,6],
-        ],$A->dtype());
-        $C = $this->zeros($B->shape(),$B->dtype());
-        $blas->gemm(
-            BLAS::RowMajor,$trans,BLAS::NoTrans,
-            $M,$N,$M,
-            1.0,
-            $RA->buffer(),0,$M,
-            $BB,$offB,$ldb,
-            0.0,
-            $C->buffer(),0,$N
-        );
-
-        $this->assertTrue($this->isclose($C,$origB));
-
-        // float64
-        $A = $this->array([
-            [1,2,3],
-            [9,4,5],
-            [9,9,6],
-        ],NDArray::float64);
-        $B = $this->array([
-            [ 7, 8],
-            [10,11],
-            [13,14],
-        ],NDArray::float64);
+        ],$dtype);
         [
             $order,$side,$uplo,$trans,$diag,
             $M,$N,
